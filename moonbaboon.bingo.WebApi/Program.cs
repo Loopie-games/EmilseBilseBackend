@@ -3,7 +3,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace EmilseBilseBingo
+namespace moonbaboon.bingo.WebApi
 {
     public class Program
     {

@@ -3,9 +3,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using moonbaboon.bingo.Core.IServices;
+using moonbaboon.bingo.DataAccess.Repositories;
+using moonbaboon.bingo.Domain.IRepositories;
+using moonbaboon.bingo.Domain.Services;
 using MySqlConnector;
 
-namespace EmilseBilseBingo
+namespace moonbaboon.bingo.WebApi
 {
     public class Startup
     {
@@ -42,7 +46,8 @@ namespace EmilseBilseBingo
             //Setting up dependency injection
 
             //Users
-            services.AddScoped<IPersonRepository, PersonRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserService, UserService>();
             
             
         }

@@ -81,6 +81,43 @@
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
         ]
+      },
+      "moonbaboon.bingo.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        }
+      },
+      "moonbaboon.bingo.DataAccess/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "MySqlConnector": "2.1.11",
+          "moonbaboon.bingo.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.DataAccess.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.DataAccess.dll": {}
+        }
+      },
+      "moonbaboon.bingo.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "moonbaboon.bingo.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.Domain.dll": {}
+        }
       }
     }
   },
@@ -238,12 +275,29 @@
         "swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512",
         "swashbuckle.aspnetcore.swaggerui.nuspec"
       ]
+    },
+    "moonbaboon.bingo.Core/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj",
+      "msbuildProject": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj"
+    },
+    "moonbaboon.bingo.DataAccess/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.DataAccess/moonbaboon.bingo.DataAccess.csproj",
+      "msbuildProject": "../moonbaboon.bingo.DataAccess/moonbaboon.bingo.DataAccess.csproj"
+    },
+    "moonbaboon.bingo.Domain/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.Domain/moonbaboon.bingo.Domain.csproj",
+      "msbuildProject": "../moonbaboon.bingo.Domain/moonbaboon.bingo.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
       "MySqlConnector >= 2.1.11",
-      "Swashbuckle.AspNetCore >= 6.2.3"
+      "Swashbuckle.AspNetCore >= 6.2.3",
+      "moonbaboon.bingo.DataAccess >= 1.0.0",
+      "moonbaboon.bingo.Domain >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -272,7 +326,14 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.DataAccess\\moonbaboon.bingo.DataAccess.csproj": {
+              "projectPath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.DataAccess\\moonbaboon.bingo.DataAccess.csproj"
+            },
+            "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Domain\\moonbaboon.bingo.Domain.csproj": {
+              "projectPath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Domain\\moonbaboon.bingo.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

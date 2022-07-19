@@ -13,7 +13,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers" />
+      <ProjectReference Include="..\moonbaboon.bingo.DataAccess\moonbaboon.bingo.DataAccess.csproj" />
+      <ProjectReference Include="..\moonbaboon.bingo.Domain\moonbaboon.bingo.Domain.csproj" />
     </ItemGroup>
 
 </Project>
