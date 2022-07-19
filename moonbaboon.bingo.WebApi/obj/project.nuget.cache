@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "GNT58Tm/PCVv4/StS0jr/klgukNoDvmxY8FBygNhQTc8Q5cKTAGu0HSrp5QtwTxIxCiRubA2e82pbpZQWsXMdA==",
+  "success": true,
+  "projectFilePath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.WebApi\\moonbaboon.bingo.WebApi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Cecilie\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\mysqlconnector\\2.1.11\\mysqlconnector.2.1.11.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\swashbuckle.aspnetcore\\6.2.3\\swashbuckle.aspnetcore.6.2.3.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.2.3\\swashbuckle.aspnetcore.swagger.6.2.3.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.2.3\\swashbuckle.aspnetcore.swaggergen.6.2.3.nupkg.sha512",
+    "C:\\Users\\Cecilie\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.2.3\\swashbuckle.aspnetcore.swaggerui.6.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}

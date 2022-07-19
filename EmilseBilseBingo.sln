@@ -6,11 +6,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastru
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{09B597C9-D36C-4A6C-907E-794C6D4B493C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.Core", "moonbaboon.bingo.Core\moonbaboon.bingo.Core.csproj", "{E368DA81-619A-4239-B761-373E9941FCD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.Domain", "moonbaboon.bingo.Domain\moonbaboon.bingo.Domain.csproj", "{8561C654-474B-4AC1-9782-2521164665CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.DataAccess", "moonbaboon.bingo.DataAccess\moonbaboon.bingo.DataAccess.csproj", "{03727568-BA62-45B3-9BAC-936054223C80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.WebApi", "moonbaboon.bingo.WebApi\moonbaboon.bingo.WebApi.csproj", "{6A86C0F7-98EE-4969-98F5-347BB346BD53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E368DA81-619A-4239-B761-373E9941FCD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E368DA81-619A-4239-B761-373E9941FCD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E368DA81-619A-4239-B761-373E9941FCD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E368DA81-619A-4239-B761-373E9941FCD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8561C654-474B-4AC1-9782-2521164665CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8561C654-474B-4AC1-9782-2521164665CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8561C654-474B-4AC1-9782-2521164665CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8561C654-474B-4AC1-9782-2521164665CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03727568-BA62-45B3-9BAC-936054223C80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03727568-BA62-45B3-9BAC-936054223C80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03727568-BA62-45B3-9BAC-936054223C80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03727568-BA62-45B3-9BAC-936054223C80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E368DA81-619A-4239-B761-373E9941FCD6} = {8CC50DE1-F206-4431-B08D-53C0B4E1D7DB}
+		{8561C654-474B-4AC1-9782-2521164665CD} = {8CC50DE1-F206-4431-B08D-53C0B4E1D7DB}
+		{03727568-BA62-45B3-9BAC-936054223C80} = {FB4B0E77-A80B-4541-9E81-2E86E09B25DF}
+		{6A86C0F7-98EE-4969-98F5-347BB346BD53} = {09B597C9-D36C-4A6C-907E-794C6D4B493C}
 	EndGlobalSection
 EndGlobal
