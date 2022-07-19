@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "moonbaboon.bingo.Domain/1.0.0": {
+        "dependencies": {
+          "moonbaboon.bingo.Core": "1.0.0"
+        },
+        "runtime": {
+          "moonbaboon.bingo.Domain.dll": {}
+        }
+      },
+      "moonbaboon.bingo.Core/1.0.0": {
+        "runtime": {
+          "moonbaboon.bingo.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "moonbaboon.bingo.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "moonbaboon.bingo.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
