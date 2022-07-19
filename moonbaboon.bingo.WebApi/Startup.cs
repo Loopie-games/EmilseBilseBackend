@@ -42,7 +42,7 @@ namespace EmilseBilseBingo
             //Setting up dependency injection
 
             //Users
-            
+            services.AddScoped<IPersonRepository, PersonRepository>();
             
             
         }

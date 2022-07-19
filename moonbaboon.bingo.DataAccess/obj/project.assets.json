@@ -1,11 +1,87 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {}
+    "net6.0": {
+      "MySqlConnector/2.1.11": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/MySqlConnector.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/MySqlConnector.dll": {}
+        }
+      },
+      "moonbaboon.bingo.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        }
+      },
+      "moonbaboon.bingo.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "moonbaboon.bingo.Core": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.Domain.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "MySqlConnector/2.1.11": {
+      "sha512": "JTWIkFDz0uQhXKLjd53t2zeZn84aGuxCzRRe5NYOInuThRa6OrtdN/iEob2+GYAJeH2f4m42wdmunjT5Y02lIA==",
+      "type": "package",
+      "path": "mysqlconnector/2.1.11",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net45/MySqlConnector.dll",
+        "lib/net45/MySqlConnector.xml",
+        "lib/net461/MySqlConnector.dll",
+        "lib/net461/MySqlConnector.xml",
+        "lib/net471/MySqlConnector.dll",
+        "lib/net471/MySqlConnector.xml",
+        "lib/net5.0/MySqlConnector.dll",
+        "lib/net5.0/MySqlConnector.xml",
+        "lib/net6.0/MySqlConnector.dll",
+        "lib/net6.0/MySqlConnector.xml",
+        "lib/netcoreapp3.1/MySqlConnector.dll",
+        "lib/netcoreapp3.1/MySqlConnector.xml",
+        "lib/netstandard2.0/MySqlConnector.dll",
+        "lib/netstandard2.0/MySqlConnector.xml",
+        "lib/netstandard2.1/MySqlConnector.dll",
+        "lib/netstandard2.1/MySqlConnector.xml",
+        "logo.png",
+        "mysqlconnector.2.1.11.nupkg.sha512",
+        "mysqlconnector.nuspec"
+      ]
+    },
+    "moonbaboon.bingo.Core/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj",
+      "msbuildProject": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj"
+    },
+    "moonbaboon.bingo.Domain/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.Domain/moonbaboon.bingo.Domain.csproj",
+      "msbuildProject": "../moonbaboon.bingo.Domain/moonbaboon.bingo.Domain.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net6.0": []
+    "net6.0": [
+      "MySqlConnector >= 2.1.11",
+      "moonbaboon.bingo.Domain >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Cecilie\\.nuget\\packages\\": {}
@@ -33,7 +109,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Domain\\moonbaboon.bingo.Domain.csproj": {
+              "projectPath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Domain\\moonbaboon.bingo.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -45,6 +125,12 @@
     "frameworks": {
       "net6.0": {
         "targetAlias": "net6.0",
+        "dependencies": {
+          "MySqlConnector": {
+            "target": "Package",
+            "version": "[2.1.11, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",

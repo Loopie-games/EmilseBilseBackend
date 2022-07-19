@@ -7,8 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="IRepositories" />
       <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\moonbaboon.bingo.Core\moonbaboon.bingo.Core.csproj" />
     </ItemGroup>
 
 </Project>

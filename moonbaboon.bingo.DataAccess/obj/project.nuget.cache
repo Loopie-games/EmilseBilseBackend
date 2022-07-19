@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "2RIhw1LGOAoIVQURTKn4CkiFpK2FakJ5PtRDBIt0jPiIrApkAm66EzcpyrHFkg/e34/c8UkABjxbU810JMW5zQ==",
+  "dgSpecHash": "Bq8b/wrUAAhFY4ZEqXrr8jq4Z0sWNaWGexjTtlMkeXvBmE2+wYaSvjjVDy/CJbUuooRQ9d1mVE/0BZaPrCHnqA==",
   "success": true,
   "projectFilePath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.DataAccess\\moonbaboon.bingo.DataAccess.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Cecilie\\.nuget\\packages\\mysqlconnector\\2.1.11\\mysqlconnector.2.1.11.nupkg.sha512"
+  ],
   "logs": []
 }

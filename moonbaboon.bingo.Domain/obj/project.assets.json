@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net6.0": {}
+    "net6.0": {
+      "moonbaboon.bingo.Core/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/moonbaboon.bingo.Core.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "moonbaboon.bingo.Core/1.0.0": {
+      "type": "project",
+      "path": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj",
+      "msbuildProject": "../moonbaboon.bingo.Core/moonbaboon.bingo.Core.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net6.0": []
+    "net6.0": [
+      "moonbaboon.bingo.Core >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\Cecilie\\.nuget\\packages\\": {}
@@ -33,7 +52,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Core\\moonbaboon.bingo.Core.csproj": {
+              "projectPath": "D:\\Cecilie\\Kode projekter\\EmilseBilseBingo\\2.0\\Backend\\EmilseBilseBackend\\moonbaboon.bingo.Core\\moonbaboon.bingo.Core.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
