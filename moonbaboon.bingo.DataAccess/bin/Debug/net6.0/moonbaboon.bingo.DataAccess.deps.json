@@ -1,0 +1,65 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "moonbaboon.bingo.DataAccess/1.0.0": {
+        "dependencies": {
+          "MySqlConnector": "2.1.11",
+          "moonbaboon.bingo.Domain": "1.0.0"
+        },
+        "runtime": {
+          "moonbaboon.bingo.DataAccess.dll": {}
+        }
+      },
+      "MySqlConnector/2.1.11": {
+        "runtime": {
+          "lib/net6.0/MySqlConnector.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.1.11.0"
+          }
+        }
+      },
+      "moonbaboon.bingo.Core/1.0.0": {
+        "runtime": {
+          "moonbaboon.bingo.Core.dll": {}
+        }
+      },
+      "moonbaboon.bingo.Domain/1.0.0": {
+        "dependencies": {
+          "moonbaboon.bingo.Core": "1.0.0"
+        },
+        "runtime": {
+          "moonbaboon.bingo.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "moonbaboon.bingo.DataAccess/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "MySqlConnector/2.1.11": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-JTWIkFDz0uQhXKLjd53t2zeZn84aGuxCzRRe5NYOInuThRa6OrtdN/iEob2+GYAJeH2f4m42wdmunjT5Y02lIA==",
+      "path": "mysqlconnector/2.1.11",
+      "hashPath": "mysqlconnector.2.1.11.nupkg.sha512"
+    },
+    "moonbaboon.bingo.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "moonbaboon.bingo.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
