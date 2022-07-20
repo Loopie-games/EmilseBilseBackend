@@ -1,0 +1,11 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=76e846f6_002D4b97_002D4496_002D80c7_002D6995165144ef/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IUserService_IsAvailable" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IService.IUserServiceTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::8AEAB8C9-F61B-45E0-82A3-87D1E5F79173::net6.0::moonbaboon.bingo.DataAccess.Test.Repositories.UserRepositoryTest.UserRepository_IsIUserRepository&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::BC2711E9-F8C9-4309-99DC-C02DDAFE94D1::net6.0::moonbaboon.bingo.WebApi.Test.Controllers.UserControllerTest.UserController_IsOfTypeControllerBase&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::BC2711E9-F8C9-4309-99DC-C02DDAFE94D1::net6.0::moonbaboon.bingo.WebApi.Test.Controllers.UserControllerTest.UserController_UsesApiControllerAttribute&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::BC2711E9-F8C9-4309-99DC-C02DDAFE94D1::net6.0::moonbaboon.bingo.WebApi.Test.Controllers.UserControllerTest.UserController_UsesRouteAttribute&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::BC2711E9-F8C9-4309-99DC-C02DDAFE94D1::net6.0::moonbaboon.bingo.WebApi.Test.Controllers.UserControllerTest&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
