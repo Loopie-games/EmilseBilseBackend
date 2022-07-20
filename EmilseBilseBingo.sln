@@ -14,6 +14,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.DataAccess
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.WebApi", "moonbaboon.bingo.WebApi\moonbaboon.bingo.WebApi.csproj", "{6A86C0F7-98EE-4969-98F5-347BB346BD53}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CoreTest", "CoreTest", "{81583ACA-3BEF-4C72-A1C4-E4797AE506A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.core.test", "moonbaboon.bingo.core.test\moonbaboon.bingo.core.test.csproj", "{6043A040-EF23-41C0-A2D1-3B50B01F0EF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.Domain.Test", "moonbaboon.bingo.Domain.Test\moonbaboon.bingo.Domain.Test.csproj", "{6D0CFCBF-AEC9-4493-8121-012A876B4249}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InfrastructureTest", "InfrastructureTest", "{AFEAAA62-5188-4758-8532-6880ABA4EDF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.DataAccess.Test", "moonbaboon.bingo.DataAccess.Test\moonbaboon.bingo.DataAccess.Test.csproj", "{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PresentationTest", "PresentationTest", "{AC8AD0A9-50C7-481A-888D-FF75E6D4ED2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "moonbaboon.bingo.WebApi.Test", "moonbaboon.bingo.WebApi.Test\moonbaboon.bingo.WebApi.Test.csproj", "{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,11 +50,31 @@ Global
 		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A86C0F7-98EE-4969-98F5-347BB346BD53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6043A040-EF23-41C0-A2D1-3B50B01F0EF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6043A040-EF23-41C0-A2D1-3B50B01F0EF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6043A040-EF23-41C0-A2D1-3B50B01F0EF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6043A040-EF23-41C0-A2D1-3B50B01F0EF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D0CFCBF-AEC9-4493-8121-012A876B4249}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D0CFCBF-AEC9-4493-8121-012A876B4249}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D0CFCBF-AEC9-4493-8121-012A876B4249}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D0CFCBF-AEC9-4493-8121-012A876B4249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E368DA81-619A-4239-B761-373E9941FCD6} = {8CC50DE1-F206-4431-B08D-53C0B4E1D7DB}
 		{8561C654-474B-4AC1-9782-2521164665CD} = {8CC50DE1-F206-4431-B08D-53C0B4E1D7DB}
 		{03727568-BA62-45B3-9BAC-936054223C80} = {FB4B0E77-A80B-4541-9E81-2E86E09B25DF}
 		{6A86C0F7-98EE-4969-98F5-347BB346BD53} = {09B597C9-D36C-4A6C-907E-794C6D4B493C}
+		{6043A040-EF23-41C0-A2D1-3B50B01F0EF1} = {81583ACA-3BEF-4C72-A1C4-E4797AE506A2}
+		{6D0CFCBF-AEC9-4493-8121-012A876B4249} = {81583ACA-3BEF-4C72-A1C4-E4797AE506A2}
+		{8AEAB8C9-F61B-45E0-82A3-87D1E5F79173} = {AFEAAA62-5188-4758-8532-6880ABA4EDF0}
+		{BC2711E9-F8C9-4309-99DC-C02DDAFE94D1} = {AC8AD0A9-50C7-481A-888D-FF75E6D4ED2C}
 	EndGlobalSection
 EndGlobal
