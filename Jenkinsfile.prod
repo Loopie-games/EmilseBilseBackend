@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    parameters {
+        run filter: 'SUCCESSFUL', name: 'PROMOTED_BUILD', projectName: 'EmilseBilseBackend-test'
+    }
+
+    stages {
+        stage('Deploy to prod') {
+            steps {
+                sh "docker compose --env-file ./config/Prod.env pull"
+                sh "docker compose --env-file ./config/Prod.env up -d"
+            }
+        }
+    }
+}
