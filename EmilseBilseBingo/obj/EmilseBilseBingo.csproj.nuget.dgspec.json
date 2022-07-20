@@ -1,25 +1,31 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\MIKEH\\RiderProjects\\EmilseBilseBingo\\EmilseBilseBingo\\EmilseBilseBingo.csproj": {}
+    "F:\\emilsebilse\\new\\EmilseBilseBackend\\EmilseBilseBingo\\EmilseBilseBingo.csproj": {}
   },
   "projects": {
-    "C:\\Users\\MIKEH\\RiderProjects\\EmilseBilseBingo\\EmilseBilseBingo\\EmilseBilseBingo.csproj": {
+    "F:\\emilsebilse\\new\\EmilseBilseBackend\\EmilseBilseBingo\\EmilseBilseBingo.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\MIKEH\\RiderProjects\\EmilseBilseBingo\\EmilseBilseBingo\\EmilseBilseBingo.csproj",
+        "projectUniqueName": "F:\\emilsebilse\\new\\EmilseBilseBackend\\EmilseBilseBingo\\EmilseBilseBingo.csproj",
         "projectName": "EmilseBilseBingo",
-        "projectPath": "C:\\Users\\MIKEH\\RiderProjects\\EmilseBilseBingo\\EmilseBilseBingo\\EmilseBilseBingo.csproj",
-        "packagesPath": "C:\\Users\\MIKEH\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\MIKEH\\RiderProjects\\EmilseBilseBingo\\EmilseBilseBingo\\obj\\",
+        "projectPath": "F:\\emilsebilse\\new\\EmilseBilseBackend\\EmilseBilseBingo\\EmilseBilseBingo.csproj",
+        "packagesPath": "C:\\Users\\skupi\\.nuget\\packages\\",
+        "outputPath": "F:\\emilsebilse\\new\\EmilseBilseBackend\\EmilseBilseBingo\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\MIKEH\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\skupi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -61,7 +67,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.301\\RuntimeIdentifierGraph.json"
         }
       }
     }
