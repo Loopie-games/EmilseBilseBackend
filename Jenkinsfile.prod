@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        run filter: 'SUCCESSFUL', name: 'PROMOTED_BUILD', projectName: 'EmilseBilseBackend-test'
+        run filter: 'SUCCESSFUL', name: 'PROMOTED_BUILD', projectName: 'EBB-backend-test'
     }
 
     stages {
