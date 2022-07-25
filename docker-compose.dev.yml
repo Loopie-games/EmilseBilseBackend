@@ -7,4 +7,4 @@ services:
     image: "localhost:7002/ebb-dev-backend-test_api:${IMAGE_TAG}"
     container_name: "${CONT_NAME}"
     ports:
-      - "${PORT}:90"
+      - "${PORT}:81"
