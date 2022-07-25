@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    parameters {
+        run filter: 'SUCCESSFUL', name: 'PROMOTED_BUILD', projectName: 'EBB-dev-backend-test'
+    }
+
+    stages {
+        stage('Deploy to prod') {
+            steps {
+                sh "docker compose -f docker-compose.dev.yml --env-file ./config/DevProd.env pull"
+                sh "docker compose -f docker-compose.dev.yml --env-file ./config/DevProd.env up -d"
+            }
+        }
+    }
+}

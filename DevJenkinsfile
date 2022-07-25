@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    triggers {
+        pollSCM "*/5 * * * *"
+    }
+
+    stages {
+
+        stage ("Starting Dev Pipeline") {
+            steps {
+                sh "echo 'Dev pipeline starting'"
+            }
+        }
+
+        stage ("Build Backend") {
+            steps {
+                sh "dotnet build ."
+            }
+        }
+
+        stage ("Reset Containers") {
+            steps {
+                script {
+                    try {
+                        sh "docker compose -f docker-compose.dev.yml --env-file config/DevTest.env down"
+                    }
+                    finally {}
+                }
+            }
+        }
+
+        stage ("Deploy Backend") {
+            steps {
+                sh "docker compose -f docker-compose.dev.yml --env-file config/DevTest.env up -d --build"
+            }
+        }
+
+        stage('Push image to register') {
+            steps {
+                sh "docker compose -f docker-compose.dev.yml --env-file ./config/DevTest.env push"
+            }
+        }
+    }
+}
