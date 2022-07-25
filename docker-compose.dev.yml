@@ -4,7 +4,7 @@ services:
   api:
     build:
       context: ""
-    image: "localhost:7002/EBB-dev-backend-test_api:${IMAGE_TAG}"
+    image: "localhost:7002/ebb-dev-backend-test_api:${IMAGE_TAG}"
     container_name: "${CONT_NAME}"
     ports:
       - "${PORT}:90"
