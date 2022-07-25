@@ -15,6 +15,7 @@ tarballs/
 test-results/
 idea/
 
+
 # Mac bundle stuff
 *.dmg
 *.app
@@ -407,3 +408,5 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+EmilseBilseBingo/obj/
