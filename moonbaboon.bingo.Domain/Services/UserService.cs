@@ -24,5 +24,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
+
+        public User? GetById(string id)
+        {
+            return _userRepository.ReadById(id).Result;
+        }
     }
 }
