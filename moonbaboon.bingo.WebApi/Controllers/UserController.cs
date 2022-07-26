@@ -22,8 +22,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _userService.GetAll();
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<User?> GetById(string id)
+        {
+            var user = _userService.GetById(id);
+            return user;
+        }
         
-        [HttpPost]
+        [HttpPost(nameof(Login))]
         public ActionResult<LoginResponse> Login(LoginDto dto)
         {
             var user = _userService.Login(dto.Username, dto.Password);
