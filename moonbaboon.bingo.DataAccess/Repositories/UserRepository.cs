@@ -28,12 +28,32 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var ent = new User(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString());
+                var ent = new User(reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString())
+                {
+                    Id = reader.GetValue(0).ToString()
+                };
                 list.Add(ent);
-                
             }
             await _connection.CloseAsync();
             return list;
+        }
+
+        public async Task<User?> Login(string dtoUsername, string dtoPassword)
+        {
+            User? user = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{Username}` = '{dtoUsername}' AND `{Password}` = '{dtoPassword}';", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                user = new User(reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString())
+                {
+                    Id = reader.GetValue(0).ToString()
+                };
+            }
+            await _connection.CloseAsync();
+            return user;
         }
     }
 }
