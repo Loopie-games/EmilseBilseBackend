@@ -100,7 +100,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             if (ent == null)
             {
-                throw new InvalidDataException("ERROR: TileItem not created");
+                throw new InvalidDataException("ERROR: User not created");
             }
             return ent;
         }
