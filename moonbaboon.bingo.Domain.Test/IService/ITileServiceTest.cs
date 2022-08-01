@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
         public void GetTileById_NotNullIfFound()
         {
             string tileId = Guid.NewGuid().ToString();
-            Tile t = new Tile(tileId, Guid.NewGuid().ToString(), "test");
+            Tile t = new Tile(Guid.NewGuid().ToString(), "test");
             _service.Setup(service => service.GetById(tileId))
                 .Returns(t);
             Assert.NotNull(_service.Object.GetById(tileId));
@@ -46,7 +46,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
 
             string wrongTileId = Guid.NewGuid().ToString();
 
-            Tile t = new Tile(tileId, Guid.NewGuid().ToString(), "Test");
+            Tile t = new Tile(Guid.NewGuid().ToString(), "Test");
             _service.Setup(service => service.GetById(tileId))
                 .Returns(t);
             Assert.Null(_service.Object.GetById(wrongTileId));
@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
         public void GetTileById_WithId()
         {
             string tileId = Guid.NewGuid().ToString();
-            Tile testTile = new Tile(tileId, Guid.NewGuid().ToString(), "Test");
+            Tile testTile = new Tile(Guid.NewGuid().ToString(), "Test");
             _service.Setup(service => service.GetById(tileId))
                 .Returns(testTile);
             Assert.Equal(testTile, _service.Object.GetById(tileId));
@@ -65,7 +65,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
         [Fact]
         public void CreateTile()
         {
-            Tile tileToCreate = new Tile(null, Guid.NewGuid().ToString(), "Test");
+            Tile tileToCreate = new Tile(Guid.NewGuid().ToString(), "Test");
             _service.Setup(service => service.CreateTile(tileToCreate)).Returns(tileToCreate);
 
             Assert.Equal(tileToCreate, _service.Object.CreateTile(tileToCreate));

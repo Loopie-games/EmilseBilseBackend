@@ -8,9 +8,8 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class Tile
     {
-        public Tile(string? id, string userId, string action)
+        public Tile(string userId, string action)
         {
-            Id = id;
             UserId = userId;
             Action = action;
         }
