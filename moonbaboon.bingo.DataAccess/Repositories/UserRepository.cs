@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -73,6 +74,35 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return user;
+        }
+
+        public async Task<User> Create(User user)
+        {
+            User? ent = null;
+            string uuid = System.Guid.NewGuid().ToString();
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand($"INSERT INTO `{Table}`(`{Id}`, `{Username}`, `{Password}`, `{Nickname}`) VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Nickname}'); SELECT * FROM `{Table}` WHERE `{Id}` = '{uuid}'", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.GetValue(1).ToString() == user.Username)
+                {
+                    ent = new User(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                        reader.GetValue(3).ToString())
+                    {
+                        Id = reader.GetValue(0).ToString()
+                    };
+                }
+            }
+            
+            await _connection.CloseAsync();
+
+            if (ent == null)
+            {
+                throw new InvalidDataException("ERROR: TileItem not created");
+            }
+            return ent;
         }
     }
 }
