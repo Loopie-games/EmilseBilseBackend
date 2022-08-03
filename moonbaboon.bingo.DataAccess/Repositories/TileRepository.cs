@@ -21,9 +21,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         private readonly MySqlConnection _connection = new MySqlConnection("Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;");
 
-        public Task<Tile?> Create(Tile tileToCreate)
+        public async Task<Tile?> Create(Tile tileToCreate)
         {
-            throw new NotImplementedException();
+            tileToCreate.Id = Guid.NewGuid().ToString();
+
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES (`{tileToCreate.Id}`, `{tileToCreate.UserId}`, `{tileToCreate.Action}`)");
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+
+            bool success = true;
+
+            while(await reader.ReadAsync())
+            {
+                success = reader.GetBoolean(0); //INSERT statement only returns a boolean, so assumption can be made about return-type
+            }
+
+            await _connection.CloseAsync();
+            return (success) ? tileToCreate : null;
         }
 
         public async Task<List<Tile>> FindAll()
