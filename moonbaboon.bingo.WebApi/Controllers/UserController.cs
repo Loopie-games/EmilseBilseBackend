@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
+        private const int MaxNameLength = 25;
+        private const int MinNameLength = 8;
+        private const int MinNickNameLength = 3;
+        private const int MaxPasswordLength = 30;
+        private const int MinPasswordLength = 5;
 
         private readonly IUserService _userService;
 
@@ -23,7 +29,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
-            return _userService.GetAll();
+            return Ok(_userService.GetAll());
         }
 
         [HttpGet("{id}")]
@@ -58,12 +64,19 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 NickName = nickName;
                 Password = password;
             }
+            
 
             [Required]
+            [StringLength(MaxNameLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinNameLength)]
+            [DefaultValue($"{nameof(UserName)}")]
             public string UserName { get; set; }
             [Required]
+            [StringLength(MaxNameLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinNickNameLength)]
+            [DefaultValue($"{nameof(NickName)}")]
             public string NickName { get; set; }
             [Required]
+            [StringLength(MaxPasswordLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinPasswordLength)]
+            [DefaultValue($"{nameof(Password)}")]
             public string Password { get; set; }
         }
         
