@@ -34,5 +34,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _userRepository.Create(user).Result;
         }
+
+        public bool VerifyUsername(string username)
+        {
+            return _userRepository.VerifyUsername(username).Result;
+        }
     }
 }

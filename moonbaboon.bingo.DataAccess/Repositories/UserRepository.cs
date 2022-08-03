@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -103,6 +104,26 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 throw new InvalidDataException("ERROR: User not created");
             }
             return ent;
+        }
+
+        public async Task<bool> VerifyUsername(string username)
+        {
+            username = username.ToLower();
+            var b = true;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE Lower(`{Username}`) = '{username}';", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.GetValue(1).ToString()?.ToLower() == username)
+                {
+                    b = false;
+                }
+            }
+            
+            await _connection.CloseAsync();
+            return b;
         }
     }
 }
