@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mime;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -20,48 +22,55 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
-            return _userService.GetAll();
+            return Ok(_userService.GetAll());
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<User?> GetById(string id)
         {
             var user = _userService.GetById(id);
-            return user;
+            if (user != null)
+            {
+               return Ok(user); 
+            }
+
+            return NotFound();
+        }
+        [HttpGet(nameof(VerifyUsername))]
+        public IActionResult VerifyUsername(string username)
+        {
+            return !_userService.VerifyUsername(username) ? new JsonResult($"Username '{username}' is already in use.") : new JsonResult(true);
         }
 
         [HttpPost(nameof(CreateUser))]
-        public ActionResult<UserDto> CreateUser(CreateUserDto user)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<User?> CreateUser(CreateUserDto user)
         {
-            return new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.NickName)));
-        }
-        
-        public class CreateUserDto
-        {
-            public CreateUserDto(string userName, string nickName, string password)
+            if (!_userService.VerifyUsername(user.UserName))
             {
-                UserName = userName;
-                NickName = nickName;
-                Password = password;
+                return BadRequest($"Username '{user.UserName}' is already in use.");
             }
-
-            public string UserName { get; set; }
-            public string NickName { get; set; }
-            public string Password { get; set; }
+            
+            var userCreated = new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.NickName)));
+            return CreatedAtAction(nameof(GetById), new {id = userCreated.Id}, userCreated);
         }
-        
+
         public class UserDto
         {
             public UserDto(User u)
             {
                 Id = u.Id;
-                UserName = u.Username;
-                NickName = u.Nickname;
+                Username = u.Username;
+                Nickname = u.Nickname;
             }
 
             public string? Id { get; set; }
-            public string UserName { get; set; }
-            public string NickName { get; set; }
+            public string Username { get; set; }
+            public string Nickname { get; set; }
             
             
         }

@@ -9,5 +9,6 @@ namespace moonbaboon.bingo.Core.IServices
         public User? Login(string dtoUsername, string dtoPassword);
         public User? GetById(string id);
         public User CreateUser(User user);
+        public bool VerifyUsername(string username);
     }
 }
