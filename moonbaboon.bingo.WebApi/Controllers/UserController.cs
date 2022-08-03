@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -39,6 +41,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(CreateUser))]
+        [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<User?> CreateUser(CreateUserDto user)
@@ -56,8 +59,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Password = password;
             }
 
+            [Required]
             public string UserName { get; set; }
+            [Required]
             public string NickName { get; set; }
+            [Required]
             public string Password { get; set; }
         }
         
