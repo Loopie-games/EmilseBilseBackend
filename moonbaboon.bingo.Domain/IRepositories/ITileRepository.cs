@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<Tile?> Create(Tile tileToCreate);
         public Task<List<Tile>> FindAll();
         public Task<Tile?> FindById(string id);
-        public Task<Tile?> Delete(string id);
+        public Task<bool> Delete(string id);
 
     }
 }

@@ -79,7 +79,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tile;
         }
 
-        public Task<Tile?> Delete(string id)
+        public Task<bool> Delete(string id)
         {
             throw new NotImplementedException();
         }
