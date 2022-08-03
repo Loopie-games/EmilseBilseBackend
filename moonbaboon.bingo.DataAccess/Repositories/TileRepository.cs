@@ -82,12 +82,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = false;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"");
+            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{Table}` WHERE `{Id}`='{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
             {
-                success = reader.GetBoolean(0);
+                success = reader.GetBoolean(0); //DELETE statement only returns a boolean, so assumption can be made about return-type
             }
 
             await _connection.CloseAsync();
