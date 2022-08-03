@@ -28,7 +28,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES (`{tileToCreate.Id}`, `{tileToCreate.UserId}`, `{tileToCreate.Action}`)", _connection);
+            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}')", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
