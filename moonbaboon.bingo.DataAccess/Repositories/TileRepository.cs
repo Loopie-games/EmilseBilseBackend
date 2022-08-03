@@ -24,14 +24,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<Tile?> Create(Tile tileToCreate)
         {
             tileToCreate.Id = Guid.NewGuid().ToString();
+            bool success = true;
 
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES (`{tileToCreate.Id}`, `{tileToCreate.UserId}`, `{tileToCreate.Action}`)");
+            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES (`{tileToCreate.Id}`, `{tileToCreate.UserId}`, `{tileToCreate.Action}`)", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-
-            bool success = true;
-
             while(await reader.ReadAsync())
             {
                 success = reader.GetBoolean(0); //INSERT statement only returns a boolean, so assumption can be made about return-type
@@ -65,7 +63,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             Tile? tile = null;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{Id}`=`${id}`;");
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{Id}`='{id}';", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
