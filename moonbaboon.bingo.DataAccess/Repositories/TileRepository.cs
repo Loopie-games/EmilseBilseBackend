@@ -79,9 +79,21 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tile;
         }
 
-        public Task<bool> Delete(string id)
+        public async Task<bool> Delete(string id)
         {
-            throw new NotImplementedException();
+            bool success = false;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new MySqlCommand($"");
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                success = reader.GetBoolean(0);
+            }
+
+            await _connection.CloseAsync();
+            return success;
         }
     }
 }
