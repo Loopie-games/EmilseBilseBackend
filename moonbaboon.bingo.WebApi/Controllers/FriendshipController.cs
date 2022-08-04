@@ -22,5 +22,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return Ok(_friendshipService.GetAll());
         }
+        
+        [HttpGet(nameof(GetFriendsByUserId))]
+        public ActionResult<List<Friend>> GetFriendsByUserId(string userId)
+        {
+            return Ok(_friendshipService.GetFriendsByUserId(userId) );
+        }
     }
 }
