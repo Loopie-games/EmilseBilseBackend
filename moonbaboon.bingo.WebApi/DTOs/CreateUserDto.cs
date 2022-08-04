@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 
-namespace moonbaboon.bingo.WebApi.Controllers
+namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class CreateUserDto
         {
@@ -12,6 +11,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             private const int MinNickNameLength = 3;
             private const int MaxPasswordLength = 30;
             private const int MinPasswordLength = 5;
+            private const string ErrorMessageNameLength = "{0} length must be between {2} and {1} Characters.";
             
             public CreateUserDto(string userName, string nickName, string password)
             {
@@ -22,15 +22,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
             
 
             [Required]
-            [StringLength(MaxNameLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinNameLength)]
+            [StringLength(MaxNameLength, ErrorMessage = ErrorMessageNameLength, MinimumLength = MinNameLength)]
             [DefaultValue($"{nameof(UserName)}")]
             public string UserName { get; set; }
             [Required]
-            [StringLength(MaxNameLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinNickNameLength)]
+            [StringLength(MaxNameLength, ErrorMessage = ErrorMessageNameLength, MinimumLength = MinNickNameLength)]
             [DefaultValue($"{nameof(NickName)}")]
             public string NickName { get; set; }
             [Required]
-            [StringLength(MaxPasswordLength, ErrorMessage = "{0} length must be between {2} and {1}.", MinimumLength = MinPasswordLength)]
+            [StringLength(MaxPasswordLength, ErrorMessage = ErrorMessageNameLength, MinimumLength = MinPasswordLength)]
             [DefaultValue($"{nameof(Password)}")]
             public string Password { get; set; }
         }

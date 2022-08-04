@@ -49,7 +49,13 @@ namespace moonbaboon.bingo.WebApi
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             
+            //Tiles
+            services.AddScoped<ITileRepository, TileRepository>();
+            services.AddScoped<ITileService, TileService>();
             
+            //Friendships
+            services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+            services.AddScoped<IFriendshipService, FriendshipService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
