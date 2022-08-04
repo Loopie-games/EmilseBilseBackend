@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc;
 
-namespace moonbaboon.bingo.WebApi.Controllers
+namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class CreateUserDto
         {
