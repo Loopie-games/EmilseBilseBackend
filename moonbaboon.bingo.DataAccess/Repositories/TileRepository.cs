@@ -41,7 +41,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<List<Tile>> FindAll()
         {
-            List<Tile> tiles = new List<Tile>();
+            List<Tile> tiles = new();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` ORDER BY `{Id}`;", _connection);
