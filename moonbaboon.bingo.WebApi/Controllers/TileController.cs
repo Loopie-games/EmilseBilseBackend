@@ -27,6 +27,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<Tile?> GetById(string id) {
             return _tileService.GetById(id);
         }
+        [HttpGet(nameof(GetAboutUserById))]
+        public ActionResult<List<Tile>> GetAboutUserById(string id)
+        {
+            return _tileService.GetAboutUserById(id);
+        }
 
         [HttpPost(nameof(Create))]
         public ActionResult<CreateResponse?> Create(Tile tile)

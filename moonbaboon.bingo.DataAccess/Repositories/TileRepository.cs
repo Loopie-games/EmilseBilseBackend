@@ -105,5 +105,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return success;
         }
+
+        public async Task<List<Tile>> GetAboutUserById(string id)
+        {
+            List<Tile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{UserId}` = '{id}';", _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                Tile tile = new Tile(reader.GetValue(1).ToString() ?? "[ERR]", reader.GetValue(2).ToString() ?? "[ERR]")
+                {
+                    Id = reader.GetValue(0).ToString() ?? "[ERR]",
+                    AddedById = reader.GetValue(3).ToString() ?? "[ERR]",
+                };
+                tiles.Add(tile);
+            }
+            await _connection.CloseAsync();
+            return tiles;
+        }
     }
 }
