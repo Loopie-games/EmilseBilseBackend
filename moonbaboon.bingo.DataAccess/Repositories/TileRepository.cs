@@ -18,6 +18,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private const string UserId = "UserId";
         private const string Action = "Action";
         private const string AddedById = "AddedById";
+        
+        //Usertable
+        private const string UserTable = "User";
+        private const string UserRowUsername = "Username";
+        private const string UserRowNickname = "Nickname";
 
         private readonly MySqlConnection _connection = new MySqlConnection("Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;");
 
@@ -104,6 +109,51 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.CloseAsync();
             return success;
+        }
+
+        public async Task<List<Tile>> GetAboutUserById(string id)
+        {
+            List<Tile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{UserId}` = '{id}';", _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                Tile tile = new Tile(reader.GetValue(1).ToString() ?? "[ERR]", reader.GetValue(2).ToString() ?? "[ERR]")
+                {
+                    Id = reader.GetValue(0).ToString() ?? "[ERR]",
+                    AddedById = reader.GetValue(3).ToString() ?? "[ERR]",
+                };
+                tiles.Add(tile);
+            }
+            await _connection.CloseAsync();
+            return tiles;
+        }
+        
+        public async Task<List<TileForUser>> GetAboutUserById_TileForUser(string id)
+        {
+            List<TileForUser> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"SELECT {Table}.{Id}, u1.{UserRowNickname}, {Table}.{Action}, u2.{UserRowNickname} " +
+                $"FROM `{Table}` " +
+                $"JOIN {UserTable} as u1 on u1.{Id} = {Table}.{UserId} " +
+                $"JOIN {UserTable} as u2 on u2.{Id} = {Table}.{AddedById} " +
+                $"WHERE {Table}.{UserId} = '{id}'", _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                TileForUser tile = new(reader.GetValue(1).ToString() ?? "[ERR]", reader.GetValue(2).ToString() ?? "[ERR]")
+                {
+                    Id = reader.GetValue(0).ToString() ?? "[ERR]",
+                    AddedByNickname = reader.GetValue(3).ToString() ?? "[ERR]",
+                };
+                tiles.Add(tile);
+            }
+            await _connection.CloseAsync();
+            return tiles;
         }
     }
 }
