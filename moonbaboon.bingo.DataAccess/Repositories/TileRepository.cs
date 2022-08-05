@@ -17,6 +17,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private const string Id = "Id";
         private const string UserId = "UserId";
         private const string Action = "Action";
+        private const string AddedById = "AddedById";
 
         private readonly MySqlConnection _connection = new MySqlConnection("Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;");
 
@@ -25,9 +26,19 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             tileToCreate.Id = Guid.NewGuid().ToString();
             bool success = true;
 
+            var sqlCommand =
+                $"INSERT INTO `{Table}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}'";
+
+            if (tileToCreate.AddedById is not null)
+            {
+                sqlCommand += $",'{tileToCreate.AddedById}'";
+            }
+
+            sqlCommand += ");";
+
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"INSERT INTO `{Table}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}')", _connection);
+            await using MySqlCommand command = new(sqlCommand, _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -50,6 +61,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 Tile tile = new Tile(reader.GetValue(1).ToString() ?? "[ERR]", reader.GetValue(2).ToString() ?? "[ERR]")
                 {
                     Id = reader.GetValue(0).ToString() ?? "[ERR]",
+                    AddedById = reader.GetValue(3).ToString() ?? "[ERR]",
                 };
                 tiles.Add(tile);
             }
@@ -68,7 +80,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 tile = new Tile(reader.GetValue(1).ToString() ?? "[ERR]", reader.GetValue(2).ToString() ?? "[ERR]")
                 {
-                    Id = reader.GetValue(0).ToString() ?? "[ERR]"
+                    Id = reader.GetValue(0).ToString() ?? "[ERR]",
+                    AddedById = reader.GetValue(3).ToString() ?? "[ERR]",
                 };
             }
 
