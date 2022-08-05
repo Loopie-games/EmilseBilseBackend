@@ -1,8 +1,5 @@
 ﻿using moonbaboon.bingo.Core.Models;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Core.IServices
 {
@@ -13,5 +10,6 @@ namespace moonbaboon.bingo.Core.IServices
         public Tile? CreateTile(Tile tileToCreate);
         public bool DeleteTile(string id);
         public List<Tile> GetAboutUserById(string id);
+        public List<TileForUser> GetAboutUserById_TileForUser(string id);
     }
 }

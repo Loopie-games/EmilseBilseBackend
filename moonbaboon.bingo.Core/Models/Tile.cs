@@ -19,4 +19,19 @@ namespace moonbaboon.bingo.Core.Models
         
         public string? AddedById { get; set; }
     }
+
+    public class TileForUser
+    {
+        public TileForUser(string userNickname, string action)
+        {
+            UserNickname = userNickname;
+            Action = action;
+        }
+
+        public string? Id { get; set; }
+        public string UserNickname { get; set; }
+        public string Action { get; set; }
+        
+        public string? AddedByNickname { get; set; }
+    }
 }
