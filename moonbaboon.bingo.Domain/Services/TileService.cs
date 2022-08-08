@@ -36,5 +36,15 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _tileRepository.Delete(id).Result;
         }
+
+        public List<Tile> GetAboutUserById(string id)
+        {
+            return _tileRepository.GetAboutUserById(id).Result;
+        }
+
+        public List<TileForUser> GetAboutUserById_TileForUser(string id)
+        {
+            return _tileRepository.GetAboutUserById_TileForUser(id).Result;
+        }
     }
 }
