@@ -49,63 +49,35 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<User?> CreateUser(CreateUserDto user)
+        public ActionResult<User?> CreateUser(UserDtos.CreateUserDto user)
         {
             if (!_userService.VerifyUsername(user.UserName))
             {
                 return BadRequest($"Username '{user.UserName}' is already in use.");
             }
-            
-            var userCreated = new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.NickName)));
-            return CreatedAtAction(nameof(GetById), new {id = userCreated.Id}, userCreated);
-        }
 
-        public class UserDto
-        {
-            public UserDto(User u)
+            var u = new User(user.UserName, user.Password, user.Salt, user.NickName);
+            if (!string.IsNullOrEmpty(user.ProfilePicUrl))
             {
-                Id = u.Id;
-                Username = u.Username;
-                Nickname = u.Nickname;
+                u.ProfilePicUrl = user.ProfilePicUrl;
             }
-
-            public string? Id { get; set; }
-            public string Username { get; set; }
-            public string Nickname { get; set; }
-            
-            
+            var userCreated = new UserDtos.UserDto(_userService.CreateUser(u));
+            return CreatedAtAction(nameof(GetById), new {id = userCreated.Id}, userCreated);
         }
 
 
         [HttpPost(nameof(Login))]
-        public ActionResult<LoginResponse> Login(LoginDto dto)
+        public ActionResult<UserDtos.LoginResponse> Login(UserDtos.LoginDto dto)
         {
             var user = _userService.Login(dto.Username, dto.Password);
-            return user is {Id: { }} ? new LoginResponse(true, user.Id) : new LoginResponse(false, "null");
+            return user is {Id: { }} ? new UserDtos.LoginResponse(true, user.Id) : new UserDtos.LoginResponse(false, "null");
         }
 
-        public class LoginResponse
+        [HttpGet(nameof(GetSalt))]
+        public ActionResult<string?> GetSalt(string username)
         {
-            public LoginResponse(bool isValid, string userId)
-            {
-                IsValid = isValid;
-                UserId = userId;
-            }
-            public bool IsValid { get; set; }
-            public string UserId { get; set; }
+            return _userService.GetSalt(username);
         }
-        
-        public class LoginDto
-        {
-            public LoginDto(string username, string password)
-            {
-                Username = username;
-                Password = password;
-            }
 
-            public string Username { get; set; }
-            public string Password { get; set; }
-        }
-        
     }
 }
