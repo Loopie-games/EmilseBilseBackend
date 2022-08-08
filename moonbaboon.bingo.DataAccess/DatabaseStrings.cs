@@ -26,5 +26,6 @@
         //Rows
         public const string Username = "Username";
         public const string Nickname = "Nickname";
+        public const string Password = "Password";
     }
 }
