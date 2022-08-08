@@ -60,12 +60,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 u.ProfilePicUrl = user.ProfilePicUrl;
             }
-            var userCreated = new UserDtos.UserDto(_userService.CreateUser(u));
-            if (string.IsNullOrEmpty(userCreated.Id)) return BadRequest("$Error in Backend: CreateUser");
-            var gu  = _userService.GetById(userCreated.Id);
-            if (gu == null) return BadRequest("$Error in Backend: CreateUser");
-            gu.Id = userCreated.Id;
-            return new UserDtos.UserDto(gu);
+            return  new UserDtos.UserDto(_userService.CreateUser(u));
 
         }
 
