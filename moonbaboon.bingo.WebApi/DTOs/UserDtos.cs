@@ -63,7 +63,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
 
             public string? ProfilePicUrl { get; set; }
         }
-        
+
         public class LoginResponse
         {
             public LoginResponse(bool isValid, string userId)

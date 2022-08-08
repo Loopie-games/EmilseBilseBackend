@@ -73,5 +73,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return user is {Id: { }} ? new UserDtos.LoginResponse(true, user.Id) : new UserDtos.LoginResponse(false, "null");
         }
 
+        [HttpGet(nameof(GetSalt))]
+        public ActionResult<string?> GetSalt(string username)
+        {
+            return _userService.GetSalt(username);
+        }
+
     }
 }

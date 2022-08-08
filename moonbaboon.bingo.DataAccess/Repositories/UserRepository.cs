@@ -61,7 +61,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<User?> ReadById(string id)
         {
-            
             User? user = null;
             await _connection.OpenAsync();
 
@@ -136,6 +135,21 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             
             await _connection.CloseAsync();
             return b;
+        }
+
+        public async Task<string?> GetSalt(string username)
+        {
+            string? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand($"SELECT {DatabaseStrings.UserTable}.{DatabaseStrings.Salt} FROM `{DatabaseStrings.UserTable}` WHERE `{DatabaseStrings.Username}` = '{username}'", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ent = reader.GetValue(0).ToString();
+            }
+            await _connection.CloseAsync();
+            return ent ?? "null";
         }
     }
 }
