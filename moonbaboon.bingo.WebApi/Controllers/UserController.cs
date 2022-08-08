@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest($"Username '{user.UserName}' is already in use.");
             }
             
-            var userCreated = new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.NickName)));
+            var userCreated = new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.Salt,user.NickName)));
             return CreatedAtAction(nameof(GetById), new {id = userCreated.Id}, userCreated);
         }
 

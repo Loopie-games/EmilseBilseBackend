@@ -33,5 +33,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
             [StringLength(MaxPasswordLength, ErrorMessage = ErrorMessageNameLength, MinimumLength = MinPasswordLength)]
             [DefaultValue($"{nameof(Password)}")]
             public string Password { get; set; }
+
+            public string Salt { get; set; }
         }
     }

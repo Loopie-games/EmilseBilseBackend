@@ -21,14 +21,27 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var ent = new User(reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString())
-                {
-                    Id = reader.GetValue(0).ToString()
-                };
+                var ent = ReaderToUser(reader);
                 list.Add(ent);
             }
             await _connection.CloseAsync();
             return list;
+        }
+
+        private static User? ReaderToUser(MySqlDataReader reader)
+        {
+            var ent = new User(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
+                reader.GetValue(4).ToString())
+            {
+                Id = reader.GetValue(0).ToString()
+            };
+            var ppUrl = reader.GetValue(5).ToString();
+            if (!string.IsNullOrEmpty(ppUrl))
+            {
+                ent.ProfilePicUrl = ppUrl;
+            }
+
+            return ent;
         }
 
         public async Task<User?> Login(string dtoUsername, string dtoPassword)
@@ -40,10 +53,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                user = new User(reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString())
-                {
-                    Id = reader.GetValue(0).ToString()
-                };
+                user = ReaderToUser(reader);
             }
             await _connection.CloseAsync();
             return user;
@@ -59,10 +69,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                user = new User(reader.GetValue(1).ToString(),reader.GetValue(2).ToString(),reader.GetValue(3).ToString())
-                {
-                    Id = reader.GetValue(0).ToString()
-                };
+                user = ReaderToUser(reader);
             }
             await _connection.CloseAsync();
             return user;
@@ -74,9 +81,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             string uuid = Guid.NewGuid().ToString();
             await _connection.OpenAsync();
 
+            var insertInto = $"INSERT INTO `{DatabaseStrings.UserTable}`(`{DatabaseStrings.Id}`, `{DatabaseStrings.Username}`, `{DatabaseStrings.Password}`, `{DatabaseStrings.Salt}`, `{DatabaseStrings.Nickname}`";
+            var values = $"VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Salt}', '{user.Nickname}'";
+            
+            if(string.IsNullOrEmpty(user.ProfilePicUrl))
+            {
+                insertInto += $", `{DatabaseStrings.ProfilePic}`";
+                values += $", '{user.ProfilePicUrl}'";
+            }
+
+            values += ");";
+            insertInto += ") ";
+            
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{DatabaseStrings.UserTable}`(`{DatabaseStrings.Id}`, `{DatabaseStrings.Username}`, `{DatabaseStrings.Password}`, `{DatabaseStrings.Nickname}`) " +
-                $"VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Nickname}'); " +
+                insertInto + values +
                 $"SELECT * FROM `{DatabaseStrings.UserTable}` " +
                 $"WHERE `{DatabaseStrings.Id}` = '{uuid}'", _connection);
             await using var reader = await command.ExecuteReaderAsync();
@@ -84,11 +102,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 if (reader.GetValue(1).ToString() == user.Username)
                 {
-                    ent = new User(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
-                        reader.GetValue(3).ToString())
-                    {
-                        Id = reader.GetValue(0).ToString()
-                    };
+                    ent = ReaderToUser(reader);
                 }
             }
             

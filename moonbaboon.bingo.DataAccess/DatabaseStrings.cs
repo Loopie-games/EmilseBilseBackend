@@ -27,5 +27,7 @@
         public const string Username = "Username";
         public const string Nickname = "Nickname";
         public const string Password = "Password";
+        public const string Salt = "Salt";
+        public const string ProfilePic = "ProfilePicURL";
     }
 }
