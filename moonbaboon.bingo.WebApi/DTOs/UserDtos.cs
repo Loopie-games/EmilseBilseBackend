@@ -17,11 +17,12 @@ namespace moonbaboon.bingo.WebApi.DTOs
             private const int MinPasswordLength = 5;
             private const string ErrorMessageNameLength = "{0} length must be between {2} and {1} Characters.";
 
-            public CreateUserDto(string userName, string nickName, string password)
+            public CreateUserDto(string userName, string nickName, string password, string salt)
             {
                 UserName = userName;
                 NickName = nickName;
                 Password = password;
+                Salt = salt;
             }
 
 
