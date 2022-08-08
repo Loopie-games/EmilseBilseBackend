@@ -13,7 +13,11 @@ namespace moonbaboon.bingo.Core.Models
 
         public string? Id { get; set; }
         public string Username { get; set; }
+        
+        public string Salt { get; set; }
         public string Password { get; set; }
         public string Nickname { get; set; }
+
+        public string ProfilePicUrl { get; set; }
     }
 }
