@@ -46,9 +46,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(CreateUser))]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDtos.UserDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<User?> CreateUser(UserDtos.CreateUserDto user)
+        public ActionResult<UserDtos.UserDto> CreateUser(UserDtos.CreateUserDto user)
         {
             if (!_userService.VerifyUsername(user.UserName))
             {
@@ -61,12 +61,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 u.ProfilePicUrl = user.ProfilePicUrl;
             }
             var userCreated = new UserDtos.UserDto(_userService.CreateUser(u));
-            if (!string.IsNullOrEmpty(userCreated.Id))
-            {
-                return _userService.GetById(userCreated.Id);
-            }
+            if (string.IsNullOrEmpty(userCreated.Id)) return BadRequest("$Error in Backend: CreateUser");
+            var gu  = _userService.GetById(userCreated.Id);
+            if (gu == null) return BadRequest("$Error in Backend: CreateUser");
+            gu.Id = userCreated.Id;
+            return new UserDtos.UserDto(gu);
 
-            return BadRequest("$Error in Backend: CreateUser");
         }
 
 
