@@ -37,7 +37,6 @@ namespace moonbaboon.bingo.WebApi.DTOs
             public string NickName { get; set; }
 
             [Required]
-            [StringLength(MaxPasswordLength, ErrorMessage = ErrorMessageNameLength, MinimumLength = MinPasswordLength)]
             [DefaultValue($"{nameof(Password)}")]
             public string Password { get; set; }
 
