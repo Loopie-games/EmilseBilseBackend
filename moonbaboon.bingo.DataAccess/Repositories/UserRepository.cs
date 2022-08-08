@@ -84,7 +84,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             var insertInto = $"INSERT INTO `{DatabaseStrings.UserTable}`(`{DatabaseStrings.Id}`, `{DatabaseStrings.Username}`, `{DatabaseStrings.Password}`, `{DatabaseStrings.Salt}`, `{DatabaseStrings.Nickname}`";
             var values = $"VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Salt}', '{user.Nickname}'";
             
-            if(string.IsNullOrEmpty(user.ProfilePicUrl))
+            if(!string.IsNullOrEmpty(user.ProfilePicUrl))
             {
                 insertInto += $", `{DatabaseStrings.ProfilePic}`";
                 values += $", '{user.ProfilePicUrl}'";

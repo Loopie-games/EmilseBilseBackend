@@ -55,8 +55,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 return BadRequest($"Username '{user.UserName}' is already in use.");
             }
-            
-            var userCreated = new UserDto(_userService.CreateUser(new User(user.UserName, user.Password, user.Salt,user.NickName)));
+
+            var u = new User(user.UserName, user.Password, user.Salt, user.NickName);
+            if (!string.IsNullOrEmpty(user.ProfilePicUrl))
+            {
+                u.ProfilePicUrl = user.ProfilePicUrl;
+            }
+            var userCreated = new UserDto(_userService.CreateUser(u));
             return CreatedAtAction(nameof(GetById), new {id = userCreated.Id}, userCreated);
         }
 
@@ -67,13 +72,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Id = u.Id;
                 Username = u.Username;
                 Nickname = u.Nickname;
+                ProfilePicUrl = u.ProfilePicUrl;
             }
 
             public string? Id { get; set; }
             public string Username { get; set; }
             public string Nickname { get; set; }
-            
-            
+
+            public string? ProfilePicUrl { get; set; }
         }
 
 
