@@ -16,22 +16,11 @@ namespace moonbaboon.bingo.WebApi.DTOs
                 Password = password;
                 Salt = salt;
             }
-
-
-            [Required]
-            [DefaultValue($"{nameof(UserName)}")]
+            
             public string UserName { get; set; }
-
-            [Required]
-            [DefaultValue($"{nameof(NickName)}")]
             public string NickName { get; set; }
-
-            [Required]
-            [DefaultValue($"{nameof(Password)}")]
             public string Password { get; set; }
-
-            [Required] public string Salt { get; set; }
-
+            public string Salt { get; set; }
             public string? ProfilePicUrl { get; set; }
 
 
