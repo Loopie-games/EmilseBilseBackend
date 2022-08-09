@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -8,6 +9,7 @@ using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -19,7 +21,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             _userService = userService;
         }
-
+        
         [HttpGet]
         public ActionResult<List<User>> GetAll()
         {
@@ -45,6 +47,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return !_userService.VerifyUsername(username) ? new JsonResult($"Username '{username}' is already in use.") : new JsonResult(true);
         }
 
+        [AllowAnonymous]
         [HttpPost(nameof(CreateUser))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDtos.UserDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -62,14 +65,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             return  new UserDtos.UserDto(_userService.CreateUser(u));
 
-        }
-
-
-        [HttpPost(nameof(Login))]
-        public ActionResult<UserDtos.LoginResponse> Login(UserDtos.LoginDto dto)
-        {
-            var user = _userService.Login(dto.Username, dto.Password);
-            return user is {Id: { }} ? new UserDtos.LoginResponse(true, user.Id) : new UserDtos.LoginResponse(false, "null");
         }
 
         [HttpGet(nameof(GetSalt))]
