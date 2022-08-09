@@ -40,17 +40,22 @@ namespace moonbaboon.bingo.Domain.Services
         {
             //getting UserId
             var aboutUser = _userRepository.GetByUsername(tileToCreate.AboutUserName).Result;
-            if (aboutUser is null)
+            if (aboutUser is null || aboutUser.Id is null)
             {
                 return null;
             }
+            
+            Console.Out.WriteLine(aboutUser.Id);
             
             //validating friendship between users
             if (!_friendshipRepository.ValidateFriendship(aboutUser.Id, tileToCreate.AddedByUserId).Result)
             {
                 return null;
             }
-            return _tileRepository.CreateTile_TileForUser(tileToCreate);
+            return _tileRepository.CreateTile_TileForUser(new Tile(aboutUser.Id, tileToCreate.Action)
+            {
+                AddedById = tileToCreate.AddedByUserId
+            }).Result;
         }
 
         public bool DeleteTile(string id)

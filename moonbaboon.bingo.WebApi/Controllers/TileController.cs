@@ -41,9 +41,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<TileForUser> Create(TileNewFromUser tile)
+        public ActionResult<TileForUser?> Create(TileNewFromUser tile)
         {
-            TileForUser t = _tileService.CreateTile_TileForUser(tile);
+            TileForUser? t = _tileService.CreateTile_TileForUser(tile);
             return t;
         }
         

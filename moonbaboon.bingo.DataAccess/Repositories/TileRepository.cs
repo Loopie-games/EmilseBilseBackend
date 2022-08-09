@@ -141,9 +141,46 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tiles;
         }
 
-        public TileForUser CreateTile_TileForUser(TileNewFromUser tileToCreate)
+        public async Task<TileForUser?> CreateTile_TileForUser(Tile tileToCreate)
         {
-            throw new NotImplementedException();
+            TileForUser? ent = null;
+            tileToCreate.Id = Guid.NewGuid().ToString();
+            var sqlCommand =
+                $"INSERT INTO {DatabaseStrings.TileTable} " +
+                $"VALUES ('{tileToCreate.Id}','{tileToCreate.UserId}', '{tileToCreate.Action}'";
+
+            if (tileToCreate.AddedById is not null)
+            {
+                sqlCommand += $",'{tileToCreate.AddedById}'";
+            }
+
+            sqlCommand += "); " +
+                          $"SELECT {DatabaseStrings.TileTable}.{DatabaseStrings.Id}, u1.{DatabaseStrings.Nickname}, {DatabaseStrings.TileTable}.{DatabaseStrings.Action}, u2.{DatabaseStrings.Nickname} " +
+                          $"FROM `{DatabaseStrings.TileTable}` " +
+                          $"JOIN {DatabaseStrings.UserTable} as u1 on u1.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} " +
+                          $"JOIN {DatabaseStrings.UserTable} as u2 on u2.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.AddedById} " +
+                          $"WHERE {DatabaseStrings.TileTable}.{DatabaseStrings.Id} = '{tileToCreate.Id}'";;
+
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(sqlCommand, _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                if (!reader.HasRows) continue;
+                ent = new TileForUser(reader.GetValue(1).ToString(), reader.GetValue(2).ToString())
+                {
+                    Id = reader.GetValue(0).ToString()
+                };
+                var addedBy = reader.GetValue(3).ToString();
+                if (!string.IsNullOrEmpty(addedBy))
+                {
+                    ent.AddedByNickname = addedBy;
+                }
+            }
+
+            await _connection.CloseAsync();
+            return ent;
         }
     }
 }

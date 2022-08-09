@@ -63,12 +63,17 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public async Task<bool> ValidateFriendship(string? aboutUserId, string addedByUserId)
+        public async Task<bool> ValidateFriendship(string userId1, string userId2)
         {
             var ent = false;
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.FriendshipTable}` ORDER BY `{DatabaseStrings.Id}`;", _connection);
+            await using var command = new MySqlCommand(
+                $"SELECT {DatabaseStrings.FriendshipTable}.{DatabaseStrings.Accepted} " +
+                $"FROM `{DatabaseStrings.FriendshipTable}` " +
+                $"WHERE ({DatabaseStrings.FriendshipTable}.{DatabaseStrings.FriendId1} = '{userId1}' && {DatabaseStrings.FriendshipTable}.{DatabaseStrings.FriendId2} = '{userId2}') " +
+                $"OR ({DatabaseStrings.FriendshipTable}.{DatabaseStrings.FriendId1} = '{userId2}' && {DatabaseStrings.FriendshipTable}.{DatabaseStrings.FriendId2} = '{userId1}')",
+                _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
