@@ -6,7 +6,7 @@ using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FriendshipController: ControllerBase
