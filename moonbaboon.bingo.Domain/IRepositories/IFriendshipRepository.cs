@@ -8,5 +8,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
     {
         public Task<List<Friendship>> FindAll();
         public Task<List<Friend>> FindAcceptedFriendshipsByUserId(string userId);
+        public Task<bool> ValidateFriendship(string userId1, string userId2);
     }
 }

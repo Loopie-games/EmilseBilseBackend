@@ -12,5 +12,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<User> Create(User user);
         public Task<bool> VerifyUsername(string username);
         public Task<string?> GetSalt(string username);
+        public Task<User?> GetByUsername(string username);
     }
 }
