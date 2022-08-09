@@ -61,14 +61,5 @@ namespace moonbaboon.bingo.Domain.Test.IService
                 .Returns(testTile);
             Assert.Equal(testTile, _service.Object.GetById(tileId));
         }
-
-        [Fact]
-        public void CreateTile()
-        {
-            Tile tileToCreate = new Tile(Guid.NewGuid().ToString(), "Test");
-            _service.Setup(service => service.CreateTile(tileToCreate)).Returns(tileToCreate);
-
-            Assert.Equal(tileToCreate, _service.Object.CreateTile(tileToCreate));
-        }
     }
 }

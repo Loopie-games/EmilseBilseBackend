@@ -151,5 +151,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return ent ?? "null";
         }
+
+        public async Task<User?> GetByUsername(string username)
+        {
+            User? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM `{DatabaseStrings.UserTable}` " +
+                $"WHERE `{DatabaseStrings.Username}` = '{username}';",
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ent = ReaderToUser(reader);
+            }
+            
+            await _connection.CloseAsync();
+            return ent;
+        }
     }
 }

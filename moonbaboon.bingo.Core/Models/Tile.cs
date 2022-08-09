@@ -34,4 +34,18 @@ namespace moonbaboon.bingo.Core.Models
         
         public string? AddedByNickname { get; set; }
     }
+
+    public class TileNewFromUser
+    {
+        public TileNewFromUser(string addedByUserId, string action, string aboutUserName)
+        {
+            AddedByUserId = addedByUserId;
+            Action = action;
+            AboutUserName = aboutUserName;
+        }
+
+        public string AddedByUserId { get; set; }
+        public string Action { get; set; }
+        public string AboutUserName { get; set; }
+    }
 }
