@@ -62,5 +62,23 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return list;
         }
+
+        public async Task<bool> ValidateFriendship(string? aboutUserId, string addedByUserId)
+        {
+            var ent = false;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.FriendshipTable}` ORDER BY `{DatabaseStrings.Id}`;", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.HasRows)
+                {
+                    ent = Convert.ToBoolean(reader.GetValue(0).ToString());
+                }
+            }
+            await _connection.CloseAsync();
+            return ent;
         }
+    }
     }
