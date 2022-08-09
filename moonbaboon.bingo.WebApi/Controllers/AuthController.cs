@@ -1,7 +1,9 @@
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
