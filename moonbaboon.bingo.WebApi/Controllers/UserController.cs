@@ -47,6 +47,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return !_userService.VerifyUsername(username) ? new JsonResult($"Username '{username}' is already in use.") : new JsonResult(true);
         }
 
+        [AllowAnonymous]
         [HttpPost(nameof(CreateUser))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDtos.UserDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,14 +65,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             return  new UserDtos.UserDto(_userService.CreateUser(u));
 
-        }
-
-
-        [HttpPost(nameof(Login))]
-        public ActionResult<UserDtos.LoginResponse> Login(UserDtos.LoginDto dto)
-        {
-            var user = _userService.Login(dto.Username, dto.Password);
-            return user is {Id: { }} ? new UserDtos.LoginResponse(true, user.Id) : new UserDtos.LoginResponse(false, "null");
         }
 
         [HttpGet(nameof(GetSalt))]
