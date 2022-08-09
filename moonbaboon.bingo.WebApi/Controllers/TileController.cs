@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -40,27 +41,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<CreateResponse?> Create(Tile tile)
+        public ActionResult<TileForUser> Create(TileNewFromUser tile)
         {
-            Tile? t = _tileService.CreateTile(tile);
-            return (t != null) ? new CreateResponse(t.UserId, t.Action) : null;
+            TileForUser t = _tileService.CreateTile_TileForUser(tile);
+            return t;
         }
+        
+        
 
         [HttpPost(nameof(Delete))]
         public ActionResult<bool> Delete(string id)
         {
             return _tileService.DeleteTile(id);
-        }
-
-        public class CreateResponse {
-            public string UserId;
-            public string Action;
-
-            public CreateResponse(string userId, string action)
-            {
-                Action = action;
-                UserId = userId;
-            }
         }
     }
 }

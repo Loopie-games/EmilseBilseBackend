@@ -3,28 +3,13 @@ using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TileRepository : ITileRepository
     {
-        //Table
-        private const string Table = "BingoTile";
-
-        //Rows
-        private const string Id = "Id";
-        private const string UserId = "UserId";
-        private const string Action = "Action";
-        private const string AddedById = "AddedById";
-        
-        //Usertable
-        private const string UserTable = "User";
-        private const string UserRowUsername = "Username";
-        private const string UserRowNickname = "Nickname";
-
-        private readonly MySqlConnection _connection = new MySqlConnection("Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;");
+        private readonly MySqlConnection _connection = new(DatabaseStrings.SqLconnection);
 
         public async Task<Tile?> Create(Tile tileToCreate)
         {
@@ -32,7 +17,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = true;
 
             var sqlCommand =
-                $"INSERT INTO `{Table}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}'";
+                $"INSERT INTO `{DatabaseStrings.TileTable}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}'";
 
             if (tileToCreate.AddedById is not null)
             {
@@ -59,7 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` ORDER BY `{Id}`;", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` ORDER BY `{DatabaseStrings.Id}`;", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -79,7 +64,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             Tile? tile = null;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{Id}`='{id}';", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.Id}`='{id}';", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -99,7 +84,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = false;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{Table}` WHERE `{Id}`='{id}'", _connection);
+            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.Id}`='{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -116,7 +101,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{Table}` WHERE `{UserId}` = '{id}';", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.UserId}` = '{id}';", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -137,11 +122,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {Table}.{Id}, u1.{UserRowNickname}, {Table}.{Action}, u2.{UserRowNickname} " +
-                $"FROM `{Table}` " +
-                $"JOIN {UserTable} as u1 on u1.{Id} = {Table}.{UserId} " +
-                $"JOIN {UserTable} as u2 on u2.{Id} = {Table}.{AddedById} " +
-                $"WHERE {Table}.{UserId} = '{id}'", _connection);
+                $"SELECT {DatabaseStrings.TileTable}.{DatabaseStrings.Id}, u1.{DatabaseStrings.Nickname}, {DatabaseStrings.TileTable}.{DatabaseStrings.Action}, u2.{DatabaseStrings.Nickname} " +
+                $"FROM `{DatabaseStrings.TileTable}` " +
+                $"JOIN {DatabaseStrings.UserTable} as u1 on u1.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} " +
+                $"JOIN {DatabaseStrings.UserTable} as u2 on u2.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.AddedById} " +
+                $"WHERE {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} = '{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -154,6 +139,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return tiles;
+        }
+
+        public TileForUser CreateTile_TileForUser(TileNewFromUser tileToCreate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

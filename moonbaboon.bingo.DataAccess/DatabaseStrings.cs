@@ -19,8 +19,6 @@
         public const string FriendId2 = "FriendId2";
         public const string Accepted = "Accepted";
         
-        
-        
         //User
         public const string UserTable = "User";
         //Rows
@@ -29,5 +27,14 @@
         public const string Password = "Password";
         public const string Salt = "Salt";
         public const string ProfilePic = "ProfilePicURL";
+        
+        //Tile
+        //Table
+        public const string TileTable = "BingoTile";
+
+        //Rows
+        public const string UserId = "UserId";
+        public const string Action = "Action";
+        public const string AddedById = "AddedById";
     }
 }
