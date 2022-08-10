@@ -46,7 +46,7 @@ namespace moonbaboon.bingo.DataAccess
         public const string Pin = "Pin";
         
         //PendingPlayers
-        public const string PendingPlayerTable = "Pending Player";
+        public const string PendingPlayerTable = "PendingPlayer";
         
         //Rows
         public const string LobbyId = "LobbyId";

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -43,9 +44,33 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             if (toCreate.Id == null)
             {
-                throw new InvalidDataException("ERROR: User not created");
+                throw new InvalidDataException($"ERROR: {nameof(PendingPlayer)} not created");
             }
             return toCreate;
+        }
+
+        public async Task<List<PendingPlayerForUser>> GetByLobbyId(string lobbyId)
+        {
+            List<PendingPlayerForUser> list = new();
+            
+            await _connection.OpenAsync();
+            await using var command = new MySqlCommand(
+                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname} " +
+                $"FROM {DBStrings.PendingPlayerTable} " +
+                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
+                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} = '{lobbyId}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var ent = new PendingPlayerForUser(reader.GetValue(1).ToString(), reader.GetValue(2).ToString())
+                    {
+                        Id = reader.GetValue(0).ToString()
+                    };
+                list.Add(ent);
+            }
+            await _connection.CloseAsync();
+            return list;
         }
     }
 }

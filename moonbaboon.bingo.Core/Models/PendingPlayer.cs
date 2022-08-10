@@ -16,7 +16,14 @@
 
     public class PendingPlayerForUser
     {
+        public PendingPlayerForUser(string username, string nickname)
+        {
+            Username = username;
+            Nickname = nickname;
+        }
+
         public string? Id { get; set; }
         public string Username { get; set; }
+        public string Nickname { get; set; }
     }
 }
