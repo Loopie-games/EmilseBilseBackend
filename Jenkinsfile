@@ -6,18 +6,20 @@ pipeline {
     }
 
     stages {
-        steps ("Clean up test-results"){
-            dir("moonbaboon.bingo.core.test"){
-                sh "rm -rf TestResults"
-            }
-            dir("moonbaboon.bingo.DataAccess.Test"){
-                sh "rm -rf TestResults"
-            }
-            dir("moonbaboon.bingo.Domain.Test"){
-                sh "rm -rf TestResults"
-            }
-            dir("moonbaboon.bingo.WebApi.Test"){
-                sh "rm -rf TestResults"
+        stage ("Clean up test-results"){
+            steps {
+                dir("moonbaboon.bingo.core.test"){
+                    sh "rm -rf TestResults"
+                }
+                dir("moonbaboon.bingo.DataAccess.Test"){
+                    sh "rm -rf TestResults"
+                }
+                dir("moonbaboon.bingo.Domain.Test"){
+                    sh "rm -rf TestResults"
+                }
+                dir("moonbaboon.bingo.WebApi.Test"){
+                    sh "rm -rf TestResults"
+                }
             }
         }
 
@@ -32,10 +34,12 @@ pipeline {
                 sh "dotnet test --collect:'XPlat Code Coverage'"
             }
             post {
-                archiveArtifacts "moonbaboon.bingo.core.test/TestResults/*/coverage.cobertura.xml"
-                archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/coverage.cobertura.xml"
-                archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/coverage.cobertura.xml"
-                archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/coverage.cobertura.xml"
+                success {
+                    archiveArtifacts "moonbaboon.bingo.core.test/TestResults/*/coverage.cobertura.xml"
+                    archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/coverage.cobertura.xml"
+                    archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/coverage.cobertura.xml"
+                    archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/coverage.cobertura.xml"
+                }
             }
         }
 
