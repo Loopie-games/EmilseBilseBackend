@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.Domain.Services;
 
 namespace moonbaboon.bingo.WebApi.SignalR
 {
@@ -23,8 +22,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
                 await Clients.Caller.SendAsync("receiveLobby", lobby);
             }
-
-
+            
         }
 
     }
