@@ -14,9 +14,24 @@ namespace moonbaboon.bingo.WebApi.SignalR
             _lobbyService = lobbyService;
         }
 
+        public async Task JoinLobby(string userId, string pin)
+        {
+            var pp = _lobbyService.JoinLobby(userId, pin);
+            if (pp?.Lobby.Id != null)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id);
+                await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
+            }
+        }
+
         public async Task CreateLobby(string hostId)
         {
             var lobby = _lobbyService.Create(new Lobby(hostId));
+            if (lobby?.Pin != null)
+            {
+                var pp = _lobbyService.JoinLobby(hostId, lobby.Pin);
+            }
+
             if (lobby?.Id != null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
