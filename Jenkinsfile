@@ -6,16 +6,47 @@ pipeline {
     }
 
     stages {
-
-        stage ("Hello World!") {
-            steps {
-                sh "echo 'hello world!'"
+        stage ("Clean up test-results"){
+            dir("moonbaboon.bingo.core.test"){
+                sh "rm -rf TestResults"
+            }
+            dir("moonbaboon.bingo.DataAccess.Test"){
+                sh "rm -rf TestResults"
+            }
+            dir("moonbaboon.bingo.Domain.Test"){
+                sh "rm -rf TestResults"
+            }
+            dir("moonbaboon.bingo.WebApi.Test"){
+                sh "rm -rf TestResults"
             }
         }
 
         stage ("Build Backend") {
             steps {
                 sh "dotnet build ."
+            }
+        }
+
+        stage ("Testing backend") {
+            steps {
+                dir("moonbaboon.bingo.core.test"){
+                    sh "dotnet test --collect:'XPlat Code Coverage'"
+                }
+                dir("moonbaboon.bingo.DataAccess.Test"){
+                    sh "dotnet test --collect:'XPlat Code Coverage'"
+                }
+                dir("moonbaboon.bingo.Domain.Test"){
+                    sh "dotnet test --collect:'XPlat Code Coverage'"
+                }
+                dir("moonbaboon.bingo.WebApi.Test"){
+                    sh "dotnet test --collect:'XPlat Code Coverage'"
+                }
+            }
+            post {
+                archiveArtifacts "moonbaboon.bingo.core.test/TestResults/*/"
+                archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/"
+                archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/"
+                archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/"
             }
         }
 
