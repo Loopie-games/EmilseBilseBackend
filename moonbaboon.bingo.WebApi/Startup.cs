@@ -122,6 +122,10 @@ namespace moonbaboon.bingo.WebApi
             //Friendships
             services.AddScoped<IFriendshipRepository, FriendshipRepository>();
             services.AddScoped<IFriendshipService, FriendshipService>();
+            
+            //Lobby
+            services.AddScoped<ILobbyRepository, LobbyRepository>();
+            services.AddScoped<ILobbyService, LobbyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
