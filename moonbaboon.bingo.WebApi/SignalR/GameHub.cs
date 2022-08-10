@@ -15,13 +15,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
             _lobbyService = lobbyService;
         }
 
-        public override Task OnConnectedAsync()
-        {
-            Clients.Caller.SendAsync("onConnect", "Connected");
-            
-            return base.OnConnectedAsync();
-        }
-
         public async Task CreateLobby(string hostId)
         {
             var lobby = _lobbyService.Create(new Lobby(hostId));
