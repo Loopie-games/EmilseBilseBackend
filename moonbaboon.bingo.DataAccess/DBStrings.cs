@@ -1,6 +1,8 @@
-﻿namespace moonbaboon.bingo.DataAccess
+﻿using System;
+
+namespace moonbaboon.bingo.DataAccess
 {
-    public static class DatabaseStrings
+    public static class DBStrings
     {
         public static string SqLconnection = "Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;";
 
@@ -29,12 +31,19 @@
         public const string ProfilePic = "ProfilePicURL";
         
         //Tile
-        //Table
         public const string TileTable = "BingoTile";
 
         //Rows
         public const string UserId = "UserId";
         public const string Action = "Action";
         public const string AddedById = "AddedById";
+        
+        //Lobby
+        public const string LobbyTable = "Lobby";
+        
+        //Rows
+        public const string Host = "Host";
+        public const string Pin = "Pin";
+
     }
 }
