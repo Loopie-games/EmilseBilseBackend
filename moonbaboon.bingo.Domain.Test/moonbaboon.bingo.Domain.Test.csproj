@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\moonbaboon.bingo.Core\moonbaboon.bingo.Core.csproj" />
+      <ProjectReference Include="..\moonbaboon.bingo.Domain\moonbaboon.bingo.Domain.csproj" />
     </ItemGroup>
 
 </Project>
