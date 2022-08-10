@@ -35,11 +35,5 @@ pipeline {
                 sh "docker compose -f docker-compose.dev.yml --env-file config/DevTest.env up -d --build"
             }
         }
-
-        stage('Push image to register') {
-            steps {
-                sh "docker compose -f docker-compose.dev.yml --env-file ./config/DevTest.env push"
-            }
-        }
     }
 }
