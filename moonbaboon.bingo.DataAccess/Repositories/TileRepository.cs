@@ -9,7 +9,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TileRepository : ITileRepository
     {
-        private readonly MySqlConnection _connection = new(DatabaseStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
         public async Task<Tile?> Create(Tile tileToCreate)
         {
@@ -17,7 +17,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = true;
 
             var sqlCommand =
-                $"INSERT INTO `{DatabaseStrings.TileTable}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}'";
+                $"INSERT INTO `{DBStrings.TileTable}` VALUES ('{tileToCreate.Id}', '{tileToCreate.UserId}', '{tileToCreate.Action}'";
 
             if (tileToCreate.AddedById is not null)
             {
@@ -44,7 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` ORDER BY `{DatabaseStrings.Id}`;", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DBStrings.TileTable}` ORDER BY `{DBStrings.Id}`;", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -64,7 +64,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             Tile? tile = null;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.Id}`='{id}';", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DBStrings.TileTable}` WHERE `{DBStrings.Id}`='{id}';", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -84,7 +84,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = false;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.Id}`='{id}'", _connection);
+            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DBStrings.TileTable}` WHERE `{DBStrings.Id}`='{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -101,7 +101,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.TileTable}` WHERE `{DatabaseStrings.UserId}` = '{id}';", _connection);
+            await using MySqlCommand command = new MySqlCommand($"SELECT * FROM `{DBStrings.TileTable}` WHERE `{DBStrings.UserId}` = '{id}';", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -122,11 +122,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DatabaseStrings.TileTable}.{DatabaseStrings.Id}, u1.{DatabaseStrings.Nickname}, {DatabaseStrings.TileTable}.{DatabaseStrings.Action}, u2.{DatabaseStrings.Nickname} " +
-                $"FROM `{DatabaseStrings.TileTable}` " +
-                $"JOIN {DatabaseStrings.UserTable} as u1 on u1.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} " +
-                $"JOIN {DatabaseStrings.UserTable} as u2 on u2.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.AddedById} " +
-                $"WHERE {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} = '{id}'", _connection);
+                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, u1.{DBStrings.Nickname}, {DBStrings.TileTable}.{DBStrings.Action}, u2.{DBStrings.Nickname} " +
+                $"FROM `{DBStrings.TileTable}` " +
+                $"JOIN {DBStrings.UserTable} as u1 on u1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} as u2 on u2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} " +
+                $"WHERE {DBStrings.TileTable}.{DBStrings.UserId} = '{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
             {
@@ -146,7 +146,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             TileForUser? ent = null;
             tileToCreate.Id = Guid.NewGuid().ToString();
             var sqlCommand =
-                $"INSERT INTO {DatabaseStrings.TileTable} " +
+                $"INSERT INTO {DBStrings.TileTable} " +
                 $"VALUES ('{tileToCreate.Id}','{tileToCreate.UserId}', '{tileToCreate.Action}'";
 
             if (tileToCreate.AddedById is not null)
@@ -155,11 +155,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
 
             sqlCommand += "); " +
-                          $"SELECT {DatabaseStrings.TileTable}.{DatabaseStrings.Id}, u1.{DatabaseStrings.Nickname}, {DatabaseStrings.TileTable}.{DatabaseStrings.Action}, u2.{DatabaseStrings.Nickname} " +
-                          $"FROM `{DatabaseStrings.TileTable}` " +
-                          $"JOIN {DatabaseStrings.UserTable} as u1 on u1.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.UserId} " +
-                          $"JOIN {DatabaseStrings.UserTable} as u2 on u2.{DatabaseStrings.Id} = {DatabaseStrings.TileTable}.{DatabaseStrings.AddedById} " +
-                          $"WHERE {DatabaseStrings.TileTable}.{DatabaseStrings.Id} = '{tileToCreate.Id}'";;
+                          $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, u1.{DBStrings.Nickname}, {DBStrings.TileTable}.{DBStrings.Action}, u2.{DBStrings.Nickname} " +
+                          $"FROM `{DBStrings.TileTable}` " +
+                          $"JOIN {DBStrings.UserTable} as u1 on u1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
+                          $"JOIN {DBStrings.UserTable} as u2 on u2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} " +
+                          $"WHERE {DBStrings.TileTable}.{DBStrings.Id} = '{tileToCreate.Id}'";;
 
             await _connection.OpenAsync();
 
