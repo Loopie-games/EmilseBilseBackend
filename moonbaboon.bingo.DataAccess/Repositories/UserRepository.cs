@@ -10,14 +10,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class UserRepository: IUserRepository
     {
-        private readonly MySqlConnection _connection = new(DatabaseStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
         
         public async Task<List<User>> FindAll()
         {
             var list = new List<User>();
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.UserTable}` ORDER BY `{DatabaseStrings.Id}`;", _connection);
+            await using var command = new MySqlCommand($"SELECT * FROM `{DBStrings.UserTable}` ORDER BY `{DBStrings.Id}`;", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -49,7 +49,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             User? user = null;
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.UserTable}` WHERE `{DatabaseStrings.Username}` = '{dtoUsername}' AND `{DatabaseStrings.Password}` = '{dtoPassword}';", _connection);
+            await using var command = new MySqlCommand($"SELECT * FROM `{DBStrings.UserTable}` WHERE `{DBStrings.Username}` = '{dtoUsername}' AND `{DBStrings.Password}` = '{dtoPassword}';", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -64,7 +64,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             User? user = null;
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand($"SELECT * FROM `{DatabaseStrings.UserTable}` WHERE `{DatabaseStrings.Id}` = '{id}';", _connection);
+            await using var command = new MySqlCommand($"SELECT * FROM `{DBStrings.UserTable}` WHERE `{DBStrings.Id}` = '{id}';", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -80,12 +80,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             string uuid = Guid.NewGuid().ToString();
             await _connection.OpenAsync();
 
-            var insertInto = $"INSERT INTO `{DatabaseStrings.UserTable}`(`{DatabaseStrings.Id}`, `{DatabaseStrings.Username}`, `{DatabaseStrings.Password}`, `{DatabaseStrings.Salt}`, `{DatabaseStrings.Nickname}`";
+            var insertInto = $"INSERT INTO `{DBStrings.UserTable}`(`{DBStrings.Id}`, `{DBStrings.Username}`, `{DBStrings.Password}`, `{DBStrings.Salt}`, `{DBStrings.Nickname}`";
             var values = $"VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Salt}', '{user.Nickname}'";
             
             if(!string.IsNullOrEmpty(user.ProfilePicUrl))
             {
-                insertInto += $", `{DatabaseStrings.ProfilePic}`";
+                insertInto += $", `{DBStrings.ProfilePic}`";
                 values += $", '{user.ProfilePicUrl}'";
             }
 
@@ -94,8 +94,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             
             await using var command = new MySqlCommand(
                 insertInto + values +
-                $"SELECT * FROM `{DatabaseStrings.UserTable}` " +
-                $"WHERE `{DatabaseStrings.Id}` = '{uuid}'", _connection);
+                $"SELECT * FROM `{DBStrings.UserTable}` " +
+                $"WHERE `{DBStrings.Id}` = '{uuid}'", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -121,8 +121,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT * FROM `{DatabaseStrings.UserTable}` " +
-                $"WHERE Lower(`{DatabaseStrings.Username}`) = '{username}';",
+                $"SELECT * FROM `{DBStrings.UserTable}` " +
+                $"WHERE Lower(`{DBStrings.Username}`) = '{username}';",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -142,7 +142,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             string? ent = null;
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand($"SELECT {DatabaseStrings.UserTable}.{DatabaseStrings.Salt} FROM `{DatabaseStrings.UserTable}` WHERE `{DatabaseStrings.Username}` = '{username}'", _connection);
+            await using var command = new MySqlCommand($"SELECT {DBStrings.UserTable}.{DBStrings.Salt} FROM `{DBStrings.UserTable}` WHERE `{DBStrings.Username}` = '{username}'", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -158,8 +158,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT * FROM `{DatabaseStrings.UserTable}` " +
-                $"WHERE `{DatabaseStrings.Username}` = '{username}';",
+                $"SELECT * FROM `{DBStrings.UserTable}` " +
+                $"WHERE `{DBStrings.Username}` = '{username}';",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
