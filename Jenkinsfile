@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage ("Clean up test-results"){
+        steps ("Clean up test-results"){
             dir("moonbaboon.bingo.core.test"){
                 sh "rm -rf TestResults"
             }
