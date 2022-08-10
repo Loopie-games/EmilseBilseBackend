@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.Domain.Services
             _lobbyRepository = lobbyRepository;
         }
 
-        public Lobby? GetById(string id)
+        public LobbyForUser? GetById(string id)
         {
             return _lobbyRepository.FindById(id).Result;
         }

@@ -17,7 +17,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{lobbyId}")]
-        public ActionResult<Lobby?> GetById(string lobbyId)
+        public ActionResult<LobbyForUser?> GetById(string lobbyId)
         {
             return _lobbyService.GetById(lobbyId);
         }

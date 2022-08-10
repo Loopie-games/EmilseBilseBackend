@@ -13,4 +13,20 @@
         
         public string? Pin { get; set; }
     }
+
+    public class LobbyForUser
+    {
+        public LobbyForUser(string id, string hostUsername, string pin)
+        {
+            Id = id;
+            HostUsername = hostUsername;
+            Pin = pin;
+        }
+
+        public string Id { get; set; }
+
+        public string HostUsername { get; set; }
+        
+        public string Pin { get; set; }
+    }
 }

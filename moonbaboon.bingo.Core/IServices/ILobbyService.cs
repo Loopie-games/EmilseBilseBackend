@@ -5,7 +5,7 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface ILobbyService
     {
-        public Lobby? GetById(string id);
+        public LobbyForUser? GetById(string id);
         
         public Lobby? Create(Lobby lobbyToCreate);
     }

@@ -44,25 +44,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return lobbyToCreate;
         }
 
-        public async Task<Lobby?> FindById(string id)
+        public async Task<LobbyForUser?> FindById(string id)
         {
-            Lobby? ent = null;
+            LobbyForUser? ent = null;
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.LobbyTable} " +
+                $"SELECT {DBStrings.LobbyTable}.{DBStrings.Id}, host.{DBStrings.Nickname}, {DBStrings.LobbyTable}.{DBStrings.Pin} " +
+                $"FROM {DBStrings.LobbyTable} " +
+                $"JOIN {DBStrings.UserTable} as host " +
+                $"ON host.{DBStrings.Id} = {DBStrings.LobbyTable}.{DBStrings.Host} " +
                 $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                if (reader.HasRows && reader.GetValue(1).ToString() is not null)
+                if (reader.HasRows)
                 {
-                    ent = new Lobby(reader.GetValue(1).ToString()!)
-                    {
-                        Id = reader.GetValue(0).ToString(),
-                        Pin = reader.GetValue(2).ToString()
-                    };
+                    ent = new LobbyForUser(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),  reader.GetValue(2).ToString());
                 }
             }
             
