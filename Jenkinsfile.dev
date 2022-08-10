@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh "docker compose -f docker-compose.dev.yml --env-file config/DevTest.env down"
+                        sh "docker compose -f docker-compose.dev.yml --env-file config/Dev.env down"
                     }
                     finally {}
                 }
@@ -32,13 +32,7 @@ pipeline {
 
         stage ("Deploy Backend") {
             steps {
-                sh "docker compose -f docker-compose.dev.yml --env-file config/DevTest.env up -d --build"
-            }
-        }
-
-        stage('Push image to register') {
-            steps {
-                sh "docker compose -f docker-compose.dev.yml --env-file ./config/DevTest.env push"
+                sh "docker compose -f docker-compose.dev.yml --env-file config/Dev.env up -d --build"
             }
         }
     }
