@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -22,9 +23,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Lobby?> Create(Lobby lobby)
+        public ActionResult<Lobby?> Create(CreateLobbyDto lobby)
         {
-            return _lobbyService.Create(lobby);
+            return _lobbyService.Create(new Lobby(lobby.HostId));
         }
     }
 }
