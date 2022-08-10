@@ -104,6 +104,8 @@ namespace moonbaboon.bingo.WebApi
                 {
                     policy.AllowAnyHeader()
                         .AllowAnyMethod()
+                        .WithOrigins("http://localhost:3000")
+                        .WithOrigins("http://localhost:9071")
                         .WithOrigins("http://185.51.76.204:9071/")
                         .AllowCredentials();
                 });
