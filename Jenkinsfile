@@ -29,24 +29,13 @@ pipeline {
 
         stage ("Testing backend") {
             steps {
-                dir("moonbaboon.bingo.core.test"){
-                    sh "dotnet test --collect:'XPlat Code Coverage'"
-                }
-                dir("moonbaboon.bingo.DataAccess.Test"){
-                    sh "dotnet test --collect:'XPlat Code Coverage'"
-                }
-                dir("moonbaboon.bingo.Domain.Test"){
-                    sh "dotnet test --collect:'XPlat Code Coverage'"
-                }
-                dir("moonbaboon.bingo.WebApi.Test"){
-                    sh "dotnet test --collect:'XPlat Code Coverage'"
-                }
+                sh "dotnet test --collect:'XPlat Code Coverage'"
             }
             post {
-                archiveArtifacts "moonbaboon.bingo.core.test/TestResults/*/"
-                archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/"
-                archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/"
-                archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/"
+                archiveArtifacts "moonbaboon.bingo.core.test/TestResults/*/coverage.cobertura.xml"
+                archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/coverage.cobertura.xml"
+                archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/coverage.cobertura.xml"
+                archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/coverage.cobertura.xml"
             }
         }
 
