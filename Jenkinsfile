@@ -39,6 +39,10 @@ pipeline {
                     archiveArtifacts "moonbaboon.bingo.DataAccess.Test/TestResults/*/coverage.cobertura.xml"
                     archiveArtifacts "moonbaboon.bingo.Domain.Test/TestResults/*/coverage.cobertura.xml"
                     archiveArtifacts "moonbaboon.bingo.WebApi.Test/TestResults/*/coverage.cobertura.xml"
+                    publishCoverage adapters: [coberturaAdapter(path: 'moonbaboon.bingo.core.test/TestResults/*/coverage.cobertura.xml', thresholds: [[failUnhealthy: false, thresholdTarget: 'Conditional', unhealthyThreshold: 80.0, unstableThreshold: 50.0]])], sourceFileResolver: sourceFiles('NEVER_STORE')
+                    publishCoverage adapters: [coberturaAdapter(path: 'moonbaboon.bingo.DataAccess.Test/TestResults/*/coverage.cobertura.xml', thresholds: [[failUnhealthy: false, thresholdTarget: 'Conditional', unhealthyThreshold: 80.0, unstableThreshold: 50.0]])], sourceFileResolver: sourceFiles('NEVER_STORE')
+                    publishCoverage adapters: [coberturaAdapter(path: 'moonbaboon.bingo.Domain.Test/TestResults/*/coverage.cobertura.xml', thresholds: [[failUnhealthy: false, thresholdTarget: 'Conditional', unhealthyThreshold: 80.0, unstableThreshold: 50.0]])], sourceFileResolver: sourceFiles('NEVER_STORE')
+                    publishCoverage adapters: [coberturaAdapter(path: 'moonbaboon.bingo.WebApi.Test/TestResults/*/coverage.cobertura.xml', thresholds: [[failUnhealthy: false, thresholdTarget: 'Conditional', unhealthyThreshold: 80.0, unstableThreshold: 50.0]])], sourceFileResolver: sourceFiles('NEVER_STORE')
                 }
             }
         }
