@@ -28,7 +28,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                Console.WriteLine(reader.HasRows);
                 toCreate.Id = reader.GetValue(0).ToString();
                 var lobby = new Lobby(reader.GetValue(3).ToString())
                 {
