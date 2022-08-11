@@ -44,6 +44,12 @@ namespace moonbaboon.bingo.DataAccess
         //Rows
         public const string Host = "Host";
         public const string Pin = "Pin";
+        
+        //PendingPlayers
+        public const string PendingPlayerTable = "PendingPlayer";
+        
+        //Rows
+        public const string LobbyId = "LobbyId";
 
     }
 }

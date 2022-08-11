@@ -39,12 +39,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             if (lobbyToCreate.Id == null)
             {
-                throw new InvalidDataException("ERROR: User not created");
+                throw new InvalidDataException($"ERROR: {nameof(Lobby)} not created");
             }
             return lobbyToCreate;
         }
 
-        public async Task<LobbyForUser?> FindById(string id)
+        public async Task<LobbyForUser?> FindById_ForUser(string id)
         {
             LobbyForUser? ent = null;
             await _connection.OpenAsync();
@@ -64,7 +64,56 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     ent = new LobbyForUser(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),  reader.GetValue(2).ToString());
                 }
             }
-            
+            await _connection.CloseAsync();
+            return ent;
+        }
+
+        public async Task<Lobby?> FindById(string id)
+        {
+            Lobby? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM {DBStrings.LobbyTable} " +
+                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.HasRows)
+                {
+                    ent = new Lobby(reader.GetValue(1).ToString())
+                    {
+                        Id = reader.GetValue(0).ToString(),
+                        Pin = reader.GetValue(2).ToString()
+                    };
+                }
+            }
+            await _connection.CloseAsync();
+            return ent;
+        }
+
+        public async Task<Lobby?> FindByPin(string pin)
+        {
+            Lobby? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM {DBStrings.LobbyTable} " +
+                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Pin} = '{pin}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.HasRows)
+                {
+                    ent = new Lobby(reader.GetValue(1).ToString())
+                    {
+                        Id = reader.GetValue(0).ToString(),
+                        Pin = reader.GetValue(2).ToString()
+                    };
+                }
+            }
             await _connection.CloseAsync();
             return ent;
         }
