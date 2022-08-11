@@ -8,11 +8,13 @@ namespace moonbaboon.bingo.Domain.Services
     {
         private readonly ILobbyRepository _lobbyRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
+        private readonly IUserRepository _userRepository;
 
-        public LobbyService(ILobbyRepository lobbyRepository, IPendingPlayerRepository pendingPlayerRepository)
+        public LobbyService(ILobbyRepository lobbyRepository, IPendingPlayerRepository pendingPlayerRepository, IUserRepository userRepository)
         {
             _lobbyRepository = lobbyRepository;
             _pendingPlayerRepository = pendingPlayerRepository;
+            _userRepository = userRepository;
         }
 
         public LobbyForUser? GetById(string id)
@@ -32,12 +34,18 @@ namespace moonbaboon.bingo.Domain.Services
 
         public PendingPlayer? JoinLobby(string userId, string pin)
         {
+            var user = _userRepository.ReadById(userId).Result;
             var lobby = _lobbyRepository.FindByPin(pin).Result;
-            if (lobby == null)
+            if (lobby?.Id == null || user?.Id == null)
             {
                 return null;
             }
-            return _pendingPlayerRepository.Create(new PendingPlayer(userId, lobby)).Result;
+            var pp = _pendingPlayerRepository.IsPlayerInLobby(userId, lobby.Id).Result;
+            if (pp != null)
+            {
+                return pp;
+            }
+            return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
         }
     }
 }
