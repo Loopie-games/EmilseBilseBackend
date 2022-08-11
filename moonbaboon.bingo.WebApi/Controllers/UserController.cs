@@ -67,7 +67,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         }
 
-        [HttpGet(nameof(GetSalt))]
+        [HttpGet(nameof(GetSalt) + "/{username}")]
         public ActionResult<string?> GetSalt(string username)
         {
             return _userService.GetSalt(username);
