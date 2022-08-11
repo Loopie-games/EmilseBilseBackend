@@ -35,8 +35,39 @@ public class ILobbyServiceTest
     }
     
     [Fact]
-    public void ILobbyService_Create(){}
-    
+    public void ILobbyService_GetById_NullInput()
+    {
+        string uuid = Guid.NewGuid().ToString();
+        LobbyForUser lobby = new LobbyForUser(uuid, "<TEST>", "test1");
+        _service.Setup(service => service.GetById(uuid)).Returns(lobby);
+        Assert.NotEqual(lobby, _service.Object.GetById(null));
+    }
+
     [Fact]
-    public void ILobbyService_Create_NullInput(){}
+    public void ILobbyService_Create_NotNull()
+    {
+        string hostUUID = Guid.NewGuid().ToString();
+        Lobby lobbyToCreate = new Lobby(hostUUID);
+        _service.Setup(service => service.Create(lobbyToCreate)).Returns(lobbyToCreate);
+        Assert.NotNull(_service.Object.Create(lobbyToCreate));
+    }
+
+    [Fact]
+    public void ILobbyService_Create()
+    {
+        string hostUUID = Guid.NewGuid().ToString();
+        Lobby lobbyToCreate = new Lobby(hostUUID);
+        _service.Setup(service => service.Create(lobbyToCreate)).Returns(lobbyToCreate);
+        Assert.Equal(lobbyToCreate, _service.Object.Create(lobbyToCreate));
+    }
+
+    [Fact]
+    public void ILobbyService_Create_NullInput()
+    {
+        string hostUUID = Guid.NewGuid().ToString();
+        Lobby lobbyToCreate = new Lobby(hostUUID);
+        _service.Setup(service => service.Create(lobbyToCreate)).Returns(lobbyToCreate);
+        Assert.NotEqual(lobbyToCreate, _service.Object.Create(null));
+
+    }
 }
