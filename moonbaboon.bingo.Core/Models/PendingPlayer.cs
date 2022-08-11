@@ -2,14 +2,14 @@
 {
     public class PendingPlayer
     {
-        public PendingPlayer(string user, Lobby lobby)
+        public PendingPlayer(UserSimple user, Lobby lobby)
         {
             User = user;
             Lobby = lobby;
         }
 
         public string? Id { get; set; }
-        public string User { get; set; }
+        public UserSimple User { get; set; }
         public Lobby Lobby { get; set; }
         
     }
