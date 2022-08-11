@@ -45,7 +45,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             
-            return Ok(tokenHandler.WriteToken(token));
+            return Ok(new AuthResponse {UUID = user.Id!, JWT = tokenHandler.WriteToken(token)});
+        }
+
+        public class AuthResponse
+        {
+            public string UUID { get; set; }
+            public string JWT { get; set; }
         }
     }
 }
