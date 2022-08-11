@@ -20,16 +20,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"INSERT INTO `{DBStrings.PendingPlayerTable}`(`{DBStrings.Id}`, `{DBStrings.UserId}`, `{DBStrings.LobbyId}`) " +
                 $"VALUES ('{uuid}','{toCreate.User}','{toCreate.Lobby.Id}'); " +
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.LobbyTable}.* " +
+                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.PendingPlayerTable}.{DBStrings.UserId}, {DBStrings.LobbyTable}.* " +
                 $"FROM `{DBStrings.PendingPlayerTable}` " +
-                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
                 $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{uuid}'", 
+                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.Id} = '{uuid}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                if (reader.GetValue(1).ToString() != toCreate.User) continue;
+                Console.WriteLine(reader.HasRows);
                 toCreate.Id = reader.GetValue(0).ToString();
                 var lobby = new Lobby(reader.GetValue(3).ToString())
                 {
