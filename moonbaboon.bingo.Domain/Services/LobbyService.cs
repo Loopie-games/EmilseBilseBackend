@@ -71,5 +71,20 @@ namespace moonbaboon.bingo.Domain.Services
             }
             return false;
         }
+
+        public bool LeaveLobby(string lobbyId, string userId)
+        {
+            var pp = _pendingPlayerRepository.IsPlayerInLobby(userId, lobbyId).Result;
+            if (pp != null)
+            {
+                if(_lobbyRepository.FindById(lobbyId).Result?.Host == userId)
+                {
+                    return CloseLobby(lobbyId, userId);
+                }
+                return _pendingPlayerRepository.Delete(pp.Id).Result;
+            }
+
+            return false;
+        }
     }
 }

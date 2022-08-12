@@ -52,5 +52,14 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await Clients.Group(cl.LobbyId).SendAsync("lobbyClosed");
             }
         }
+
+        public async Task LeaveLobby(LeaveLobbyDto ll)
+        {
+            if (_lobbyService.LeaveLobby(ll.LobbyId, ll.UserId))
+            {
+                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", _pendingPlayerService.GetByLobbyId(ll.LobbyId));
+            }
+        }
+        
     }
 }
