@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+COPY ./moonbaboon.bingo.WebApi/bin/Debug/net6.0 App/
 WORKDIR /App
-COPY . .
-CMD [ "dotnet", "run", "--project", "./moonbaboon.bingo.WebApi/" ]
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENTRYPOINT ["dotnet", "moonbaboon.bingo.WebApi.dll"]
