@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.IServices;
+﻿using System;
+using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
 
@@ -46,6 +47,19 @@ namespace moonbaboon.bingo.Domain.Services
                 return pp;
             }
             return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
+        }
+
+        public bool CloseLobby(string lobbyId, string hostId)
+        {
+            var lobby = _lobbyRepository.FindById(lobbyId).Result;
+            if (lobby?.Host == hostId)
+            {
+                if (_pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result)
+                {
+                    return _lobbyRepository.DeleteLobby(lobbyId).Result;
+                }
+            }
+            return false;
         }
     }
 }

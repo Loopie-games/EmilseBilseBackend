@@ -11,5 +11,7 @@ namespace moonbaboon.bingo.Core.IServices
         public Lobby? Create(Lobby lobbyToCreate);
         
         public PendingPlayer? JoinLobby(string userId, string pin);
+
+        public bool CloseLobby(string lobbyId, string hostId);
     }
 }

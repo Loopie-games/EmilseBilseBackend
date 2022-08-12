@@ -117,5 +117,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return ent;
         }
+
+        public async Task<bool> DeleteLobby(string lobbyId)
+        {
+            bool b = false;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"DELETE FROM `{DBStrings.LobbyTable}` " +
+                $"WHERE `{DBStrings.Id}`='{lobbyId}'; " +
+                $"SELECT ROW_COUNT()",
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
+            }
+            
+            await _connection.CloseAsync();
+            return b;
+        }
     }
 }
