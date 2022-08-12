@@ -1,4 +1,4 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
-COPY . App/
+COPY ./moonbaboon.bingo.WebApi/bin/Debug/net6.0 App/
 WORKDIR /App
-CMD [ "dotnet", "run", "--project", "./moonbaboon.bingo.WebApi/" ]
+ENTRYPOINT ["dotnet", "--environment", "moonbaboon.bingo.WebApi.dll"]
