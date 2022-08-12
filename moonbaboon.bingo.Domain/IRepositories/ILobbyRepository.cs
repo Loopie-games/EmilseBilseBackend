@@ -7,6 +7,10 @@ namespace moonbaboon.bingo.Domain.IRepositories
     {
         public Task<Lobby?> Create(Lobby lobbyToCreate);
         
-        public Task<LobbyForUser?> FindById(string id);
+        public Task<LobbyForUser?> FindById_ForUser(string id);
+        
+        public Task<Lobby?> FindById(string id);
+        
+        public Task<Lobby?> FindByPin(string pin);
     }
 }

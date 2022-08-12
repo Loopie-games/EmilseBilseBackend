@@ -38,14 +38,21 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Username)                    
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim("UserID", user.Id!)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             
-            return Ok(tokenHandler.WriteToken(token));
+            return Ok(new AuthResponse {UUID = user.Id!, JWT = tokenHandler.WriteToken(token)});
+        }
+
+        public class AuthResponse
+        {
+            public string UUID { get; set; }
+            public string JWT { get; set; }
         }
     }
 }

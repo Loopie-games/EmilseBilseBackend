@@ -97,7 +97,10 @@ namespace moonbaboon.bingo.WebApi
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithOrigins("http://localhost:3000")
-                        .WithOrigins("http://185.51.76.204:9070/")
+                        .WithOrigins("http://localhost:9070")
+                        .WithOrigins("http://localhost:9090")
+                        .WithOrigins("http://185.51.76.204:9070")
+                        .WithOrigins("http://185.51.76.204:9090")
                         .AllowCredentials();
                 });
                 options.AddPolicy(POLICY_PROD, policy =>
@@ -106,7 +109,7 @@ namespace moonbaboon.bingo.WebApi
                         .AllowAnyMethod()
                         .WithOrigins("http://localhost:3000")
                         .WithOrigins("http://localhost:9071")
-                        .WithOrigins("http://185.51.76.204:9071/")
+                        .WithOrigins("http://185.51.76.204:9071")
                         .AllowCredentials();
                 });
             });
@@ -128,6 +131,10 @@ namespace moonbaboon.bingo.WebApi
             //Lobby
             services.AddScoped<ILobbyRepository, LobbyRepository>();
             services.AddScoped<ILobbyService, LobbyService>();
+            
+            //PendingPlayer
+            services.AddScoped<IPendingPlayerRepository, PendingPlayerRepository>();
+            services.AddScoped<IPendingPlayerService, PendingPlayerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -142,7 +149,15 @@ namespace moonbaboon.bingo.WebApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-            app.UseCors(env.IsProduction() ? POLICY_PROD : POLICY_DEV);
+            if (env.IsProduction())
+            {
+                app.UseCors(POLICY_PROD);
+            }
+            else
+            {
+                app.UseCors(POLICY_DEV);
+            }
+            
 
             app.UseRouting();
             app.UseAuthentication();
