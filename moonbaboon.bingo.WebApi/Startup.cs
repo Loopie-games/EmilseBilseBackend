@@ -149,7 +149,15 @@ namespace moonbaboon.bingo.WebApi
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-            app.UseCors(env.IsProduction() ? POLICY_PROD : POLICY_DEV);
+            if (env.IsProduction())
+            {
+                app.UseCors(POLICY_PROD);
+            }
+            else
+            {
+                app.UseCors(POLICY_DEV);
+            }
+            
 
             app.UseRouting();
             app.UseAuthentication();
