@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.SignalR
 {
@@ -29,21 +31,26 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         public async Task CreateLobby(string hostId)
         {
-            var lobby = _lobbyService.Create(new Lobby(hostId));
-            if (lobby?.Pin != null)
+            var lobby = _lobbyService.GetByHostId(hostId);
+            if (lobby?.Id != null)
             {
-                var pp = _lobbyService.JoinLobby(hostId, lobby.Pin);
+                _lobbyService.CloseLobby(lobby.Id, hostId);
             }
-
+            lobby = _lobbyService.Create(new Lobby(hostId));
             if (lobby?.Id != null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
                 await Clients.Caller.SendAsync("receiveLobby", lobby);
             }
-            
-        }
-        
-        
 
+        }
+
+        public async Task CloseLobby(CloseLobbyDto cl)
+        {
+            if (_lobbyService.CloseLobby(cl.LobbyId, cl.HostId))
+            {
+                await Clients.Group(cl.LobbyId).SendAsync("lobbyClosed");
+            }
+        }
     }
 }

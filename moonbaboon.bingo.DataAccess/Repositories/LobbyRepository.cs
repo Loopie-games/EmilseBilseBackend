@@ -50,10 +50,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.LobbyTable}.{DBStrings.Id}, host.{DBStrings.Nickname}, {DBStrings.LobbyTable}.{DBStrings.Pin} " +
+                $"SELECT {DBStrings.LobbyTable}.{DBStrings.Id}, hostId.{DBStrings.Nickname}, {DBStrings.LobbyTable}.{DBStrings.Pin} " +
                 $"FROM {DBStrings.LobbyTable} " +
-                $"JOIN {DBStrings.UserTable} as host " +
-                $"ON host.{DBStrings.Id} = {DBStrings.LobbyTable}.{DBStrings.Host} " +
+                $"JOIN {DBStrings.UserTable} as hostId " +
+                $"ON hostId.{DBStrings.Id} = {DBStrings.LobbyTable}.{DBStrings.Host} " +
                 $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
@@ -76,6 +76,31 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"SELECT * FROM {DBStrings.LobbyTable} " +
                 $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                if (reader.HasRows)
+                {
+                    ent = new Lobby(reader.GetValue(1).ToString())
+                    {
+                        Id = reader.GetValue(0).ToString(),
+                        Pin = reader.GetValue(2).ToString()
+                    };
+                }
+            }
+            await _connection.CloseAsync();
+            return ent;
+        }
+
+        public async Task<Lobby?> FindByHostId(string hostId)
+        {
+            Lobby? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM {DBStrings.LobbyTable} " +
+                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Host} = '{hostId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -116,6 +141,26 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return ent;
+        }
+
+        public async Task<bool> DeleteLobby(string lobbyId)
+        {
+            bool b = false;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"DELETE FROM `{DBStrings.LobbyTable}` " +
+                $"WHERE `{DBStrings.Id}`='{lobbyId}'; " +
+                $"SELECT ROW_COUNT()",
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
+            }
+            
+            await _connection.CloseAsync();
+            return b;
         }
     }
 }

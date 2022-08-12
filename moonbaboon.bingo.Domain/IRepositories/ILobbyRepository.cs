@@ -11,6 +11,10 @@ namespace moonbaboon.bingo.Domain.IRepositories
         
         public Task<Lobby?> FindById(string id);
         
+        public Task<Lobby?> FindByHostId(string hostId);
+        
         public Task<Lobby?> FindByPin(string pin);
+        public Task<bool> DeleteLobby(string lobbyId);
+        
     }
 }

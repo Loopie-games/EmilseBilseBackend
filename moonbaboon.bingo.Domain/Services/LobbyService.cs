@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.IServices;
+﻿using System;
+using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
 
@@ -22,6 +23,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindById_ForUser(id).Result;
         }
 
+        public Lobby? GetByHostId(string hostId)
+        {
+            return _lobbyRepository.FindByHostId(hostId).Result;
+        }
+
         public Lobby? FindByPin(string pin)
         {
             return _lobbyRepository.FindByPin(pin).Result;
@@ -29,7 +35,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Lobby? Create(Lobby lobbyToCreate)
         {
-            return _lobbyRepository.Create(lobbyToCreate).Result;
+            var lobby = _lobbyRepository.Create(lobbyToCreate).Result;
+            if (lobby?.Pin != null)
+            {
+                var pp = JoinLobby(lobby.Host, lobby.Pin);
+            }
+            return lobby;
         }
 
         public PendingPlayer? JoinLobby(string userId, string pin)
@@ -46,6 +57,19 @@ namespace moonbaboon.bingo.Domain.Services
                 return pp;
             }
             return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
+        }
+
+        public bool CloseLobby(string lobbyId, string hostId)
+        {
+            var lobby = _lobbyRepository.FindById(lobbyId).Result;
+            if (lobby?.Host == hostId)
+            {
+                if (_pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result)
+                {
+                    return _lobbyRepository.DeleteLobby(lobbyId).Result;
+                }
+            }
+            return false;
         }
     }
 }
