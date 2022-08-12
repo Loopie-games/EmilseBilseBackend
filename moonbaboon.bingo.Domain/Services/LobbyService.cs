@@ -23,6 +23,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindById_ForUser(id).Result;
         }
 
+        public Lobby? GetByHostId(string hostId)
+        {
+            return _lobbyRepository.FindByHostId(hostId).Result;
+        }
+
         public Lobby? FindByPin(string pin)
         {
             return _lobbyRepository.FindByPin(pin).Result;
@@ -30,7 +35,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Lobby? Create(Lobby lobbyToCreate)
         {
-            return _lobbyRepository.Create(lobbyToCreate).Result;
+            var lobby = _lobbyRepository.Create(lobbyToCreate).Result;
+            if (lobby?.Pin != null)
+            {
+                var pp = JoinLobby(lobby.Host, lobby.Pin);
+            }
+            return lobby;
         }
 
         public PendingPlayer? JoinLobby(string userId, string pin)
