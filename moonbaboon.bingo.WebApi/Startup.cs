@@ -97,7 +97,10 @@ namespace moonbaboon.bingo.WebApi
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithOrigins("http://localhost:3000")
-                        .WithOrigins("http://185.51.76.204:9070/")
+                        .WithOrigins("http://localhost:9070")
+                        .WithOrigins("http://localhost:9090")
+                        .WithOrigins("http://185.51.76.204:9070")
+                        .WithOrigins("http://185.51.76.204:9090")
                         .AllowCredentials();
                 });
                 options.AddPolicy(POLICY_PROD, policy =>
@@ -106,7 +109,7 @@ namespace moonbaboon.bingo.WebApi
                         .AllowAnyMethod()
                         .WithOrigins("http://localhost:3000")
                         .WithOrigins("http://localhost:9071")
-                        .WithOrigins("http://185.51.76.204:9071/")
+                        .WithOrigins("http://185.51.76.204:9071")
                         .AllowCredentials();
                 });
             });
