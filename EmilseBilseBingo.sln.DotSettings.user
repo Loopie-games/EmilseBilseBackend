@@ -1,5 +1,5 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=76e846f6_002D4b97_002D4496_002D80c7_002D6995165144ef/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="IUserService_IsAvailable" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=76e846f6_002D4b97_002D4496_002D80c7_002D6995165144ef/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IUserService_IsAvailable" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Or&gt;
     &lt;TestAncestor&gt;
       &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IService.IUserServiceTest&lt;/TestId&gt;
@@ -10,11 +10,15 @@
       &lt;TestId&gt;xUnit::BC2711E9-F8C9-4309-99DC-C02DDAFE94D1::net6.0::moonbaboon.bingo.WebApi.Test.Controllers.UserControllerTest&lt;/TestId&gt;
       &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.Services.FriendshipServiceTest.FriendshipService_IsAvailable&lt;/TestId&gt;
       &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IRepository.IFriendshipRepositoryTest&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IRepository.ILobbyRepositoryTest.ILobbyRepository_Create_ReturnsLobby&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IRepository.ILobbyRepositoryTest.ILobbyRepository_Create_ReturnsNull&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IRepository.ILobbyRepositoryTest.ILobbyRepository_FindById_IsAvailable&lt;/TestId&gt;
+      &lt;TestId&gt;xUnit::6D0CFCBF-AEC9-4493-8121-012A876B4249::net6.0::moonbaboon.bingo.Domain.Test.IRepository.ILobbyRepositoryTest.ILobbyRepository_FindById_ReturnsNothing&lt;/TestId&gt;
     &lt;/TestAncestor&gt;
     &lt;Project Location="/home/jagd/MoonBaboon/EmilseBilseBackend/moonbaboon.bingo.core.test" Presentation="&amp;lt;CoreTest&amp;gt;\&amp;lt;moonbaboon.bingo.core.test&amp;gt;" /&gt;
   &lt;/Or&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=99eedcc3_002D4100_002D4321_002D9cb5_002Dd78e585d717d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IFriendshipRepository_ValidateFriendship" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=99eedcc3_002D4100_002D4321_002D9cb5_002Dd78e585d717d/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="IFriendshipRepository_ValidateFriendship" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;Or&gt;
     &lt;Project Location="/home/jagd/MoonBaboon/EmilseBilseBackend" Presentation="&amp;lt;InfrastructureTest&amp;gt;" /&gt;
     &lt;Project Location="/home/jagd/MoonBaboon/EmilseBilseBackend" Presentation="&amp;lt;CoreTest&amp;gt;" /&gt;
