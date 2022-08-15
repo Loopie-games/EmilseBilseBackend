@@ -11,14 +11,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class LobbyRepository : ILobbyRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
-        private static Random random = new Random();
+        private static readonly Random Random = new();
 
         public async Task<Lobby?> Create(Lobby lobbyToCreate)
         {
             string uuid = Guid.NewGuid().ToString();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var pin = new string(Enumerable.Repeat(chars, 5)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+                .Select(s => s[Random.Next(s.Length)]).ToArray());
             
             await _connection.OpenAsync();
 

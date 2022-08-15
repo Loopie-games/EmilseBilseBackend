@@ -135,6 +135,10 @@ namespace moonbaboon.bingo.WebApi
             //PendingPlayer
             services.AddScoped<IPendingPlayerRepository, PendingPlayerRepository>();
             services.AddScoped<IPendingPlayerService, PendingPlayerService>();
+            
+            //Game
+            services.AddScoped<IGameRepository, GameRepository>();
+            services.AddScoped<IGameService, GameService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

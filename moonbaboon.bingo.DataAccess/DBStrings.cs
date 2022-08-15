@@ -50,6 +50,12 @@ namespace moonbaboon.bingo.DataAccess
         
         //Rows
         public const string LobbyId = "LobbyId";
+        
+        //Game
+        public const string GameTable = "Game";
+        //Rows
+        public const string WinnerId = "WinnerId";
+        public const string HostId = "HostId";
 
     }
 }
