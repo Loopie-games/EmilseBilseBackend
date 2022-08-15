@@ -6,5 +6,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IGameRepository
     {
         public Task<Game?> FindById(string id);
+
+        public Task<Game?> Create(string hostId);
     }
 }
