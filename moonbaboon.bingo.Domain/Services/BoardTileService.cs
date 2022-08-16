@@ -17,5 +17,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _boardTileRepository.FindById(id).Result;
         }
+
+        public BoardTile? Create(BoardTile toCreate)
+        {
+            return _boardTileRepository.Create(toCreate).Result;
+        }
     }
 }
