@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 
@@ -20,6 +21,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<Board?> GetById(string id)
         {
             return _boardService.GetById(id);
+        }
+        
+        [HttpPost(nameof(Create))]
+        public ActionResult<Board?> Create(string userId, string gameId)
+        {
+            return _boardService.CreateBoard(userId, gameId);
         }
     }
 }
