@@ -60,6 +60,16 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", _pendingPlayerService.GetByLobbyId(ll.LobbyId));
             }
         }
+
+        public async Task StartGame(StartGameDtos sg)
+        {
+            var lobby = _lobbyService.GetById(sg.LobbyId);
+            if (lobby is not null)
+            {
+                await Clients.Group(lobby.Id).SendAsync("gameStarting");
+            }
+            
+        }
         
     }
 }
