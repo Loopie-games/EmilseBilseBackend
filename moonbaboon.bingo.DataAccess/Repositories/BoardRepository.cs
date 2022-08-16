@@ -10,7 +10,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class BoardRepository :IBoardRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
-        private static readonly Random Random = new();
 
         public async Task<Board?> FindById(string id)
         {

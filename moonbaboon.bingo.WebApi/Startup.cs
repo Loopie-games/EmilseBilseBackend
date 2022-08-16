@@ -143,6 +143,10 @@ namespace moonbaboon.bingo.WebApi
             //Board
             services.AddScoped<IBoardRepository, BoardRepository>();
             services.AddScoped<IBoardService, BoardService>();
+            
+            //BoardTile
+            services.AddScoped<IBoardTileRepository, BoardTileRepository>();
+            services.AddScoped<IBoardTileService, BoardTileService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
