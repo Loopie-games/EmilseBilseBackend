@@ -21,5 +21,10 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _boardTileService.GetById(id);
         }
         
+        [HttpPost(nameof(Create))]
+        public ActionResult<BoardTile?> Create(BoardTile boardTile)
+        {
+            return _boardTileService.Create(boardTile);
+        }
     }
 }
