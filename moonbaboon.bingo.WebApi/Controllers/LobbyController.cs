@@ -28,7 +28,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
         
         [HttpGet(nameof(GetPlayersInLobby))]
-        public ActionResult<List<PendingPlayerForUser>> GetPlayersInLobby(string lobbyId)
+        public ActionResult<List<PendingPlayer>> GetPlayersInLobby(string lobbyId)
         {
             return _pendingPlayerService.GetByLobbyId(lobbyId);
         }
