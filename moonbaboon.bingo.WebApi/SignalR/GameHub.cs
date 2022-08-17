@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -18,8 +19,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         public override Task OnConnectedAsync()
         {
-            
-            Console.WriteLine(Context.ConnectionId);
             return base.OnConnectedAsync();
         }
 
@@ -80,7 +79,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
     {
         public string? GetUserId(HubConnectionContext connection)
         {
-            throw new NotImplementedException();
+            return connection.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
     }
 }

@@ -133,10 +133,12 @@ namespace moonbaboon.bingo.WebApi
             });
 
             //Setting up dependency injection
-
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
+            
+            //Auth
+            services.AddScoped<IAuthService, AuthService>();
             
             //Tiles
             services.AddScoped<ITileRepository, TileRepository>();
