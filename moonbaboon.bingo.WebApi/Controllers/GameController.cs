@@ -22,9 +22,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<Game?> Create(string userId, string lobbyId)
+        public ActionResult<Game?> Create(string hostId)
         {
-            return _gameService.Create(lobbyId, userId);
+            return _gameService.Create(hostId);
         }
     }
 }

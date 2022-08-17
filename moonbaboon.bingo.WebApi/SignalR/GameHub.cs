@@ -59,7 +59,13 @@ namespace moonbaboon.bingo.WebApi.SignalR
             if (lobby?.Id != null)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
+                List<PendingPlayerDto> playerlist = new();
+                foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                {
+                    playerlist.Add(new PendingPlayerDto(player));
+                }
                 await Clients.Caller.SendAsync("receiveLobby", lobby);
+                await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerlist);
             }
 
         }
@@ -67,10 +73,16 @@ namespace moonbaboon.bingo.WebApi.SignalR
         public async Task StartGame(StartGameDtos sg)
         {
             var lobby = _lobbyService.GetById(sg.LobbyId);
-            if (lobby is not null)
+            if (lobby?.Id is not null)
             {
-                _gameService.NewGame(lobby);
-                await Clients.Group(lobby.Id).SendAsync("gameStarting");
+                if (lobby.Host == Context.User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                {
+                   var game = _gameService.NewGame(lobby);
+                   if (game?.Id != null)
+                   {
+                       await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);  
+                   }
+                }
             }
         }
 
@@ -86,8 +98,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
         {
             if (_lobbyService.LeaveLobby(ll.LobbyId, ll.UserId))
             {
-                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", _pendingPlayerService.GetByLobbyId(ll.LobbyId));
-            }
+                List<PendingPlayerDto> playerlist = new();
+                foreach (var player in _pendingPlayerService.GetByLobbyId(ll.LobbyId))
+                {
+                    playerlist.Add(new PendingPlayerDto(player));
+                }
+                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", playerlist);            }
         }
 
     }
