@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             if (lobby?.Id is null || lobby.Pin is null) return NotFound("lobby not found");
             var host = _userService.GetById(lobby.Host);
             if (host is null) return NotFound("host not found");;
-
+            host.Id = null;
             return Ok(new LobbyForPlayerDto(lobby.Id, lobby.Pin, new UserSimple(host)));
         }
         
