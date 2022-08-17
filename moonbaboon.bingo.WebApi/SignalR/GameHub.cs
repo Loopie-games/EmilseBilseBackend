@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -37,7 +38,13 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 
                 await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id);
                 await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
-                await Clients.Group(pp.Lobby.Id).SendAsync("lobbyPlayerListUpdate", _pendingPlayerService.GetByLobbyId(pp.Lobby.Id));
+                List<PendingPlayerDto> playerlist = new();
+                foreach (var player in _pendingPlayerService.GetByLobbyId(pp.Lobby.Id))
+                {
+                    playerlist.Add(new PendingPlayerDto(player));
+                }
+                
+                await Clients.Group(pp.Lobby.Id).SendAsync("lobbyPlayerListUpdate", playerlist);
             }
         }
 
