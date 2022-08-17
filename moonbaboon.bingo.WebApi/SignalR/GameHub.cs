@@ -16,18 +16,21 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly ILobbyService _lobbyService;
         private readonly IPendingPlayerService _pendingPlayerService;
         private readonly IGameService _gameService;
+        private readonly IBoardService _boardService;
 
 
         public override Task OnConnectedAsync()
         {
+            //Console.WriteLine(Context.User.Identity.Name);
             return base.OnConnectedAsync();
         }
 
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService)
+        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
             _gameService = gameService;
+            _boardService = boardService;
         }
 
         public async Task JoinLobby(string userId, string pin)
@@ -80,7 +83,17 @@ namespace moonbaboon.bingo.WebApi.SignalR
                    var game = _gameService.NewGame(lobby);
                    if (game?.Id != null)
                    {
-                       await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);  
+                       foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                       {
+                           var board = _boardService.GetByUserAndGameId(player.User.Id, game.Id);
+                           if (board is not null)
+                           {
+                               Console.WriteLine(player.User.Username);
+                               Console.WriteLine();
+                               await Clients.User(player.User.Id).SendAsync("boardReady", board.Id);
+                               await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
+                           }
+                       }
                    }
                 }
             }
@@ -112,7 +125,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
     {
         public string? GetUserId(HubConnectionContext connection)
         {
-            return connection.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return connection.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

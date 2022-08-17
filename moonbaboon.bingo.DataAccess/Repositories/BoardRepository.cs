@@ -37,6 +37,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             Board? ent = null;
             
+            
             string uuid = Guid.NewGuid().ToString();
 
             await _connection.OpenAsync();
@@ -58,6 +59,28 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             
             await _connection.CloseAsync();
             
+            return ent;
+        }
+
+        public async Task<Board?> FindByUserAndGameId(string userId, string gameId)
+        {
+            Board? ent = null;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"SELECT * FROM `{DBStrings.BoardTable}` " +
+                $"WHERE `{DBStrings.UserId}`='{userId}' AND {DBStrings.BoardTable}.{DBStrings.GameId} = '{gameId}';", 
+                _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ent = new Board(reader.GetValue(1).ToString(), reader.GetValue(2).ToString())
+                {
+                    Id = reader.GetValue(0).ToString(),
+                };
+            }
+
+            await _connection.CloseAsync();
             return ent;
         }
     }

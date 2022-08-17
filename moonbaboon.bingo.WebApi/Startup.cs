@@ -65,6 +65,7 @@ namespace moonbaboon.bingo.WebApi
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
+                            
                         }
                         return Task.CompletedTask;
                     }

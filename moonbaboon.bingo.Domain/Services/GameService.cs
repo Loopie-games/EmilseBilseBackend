@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -48,12 +49,12 @@ namespace moonbaboon.bingo.Domain.Services
 
                 foreach (var player in players)
                 {
-                    var board = _boardRepository.Create(player.Id, game.Id).Result;
+                    var board = _boardRepository.Create(player.User.Id, game.Id).Result;
                     if (board != null)
                     {
-                        for (int i = 0; i < 25; i++)
+                        for (int i = 0; i < 24; i++)
                         {
-                            var boardtile = _boardTileRepository.Create(new BoardTile(board,"b0d4d781-8c4d-47d2-a3a5-2f32b93188d3",i, false));
+                            var boardtile = _boardTileRepository.Create(new BoardTile(board,"b0d4d781-8c4d-47d2-a3a5-2f32b93188d3",i, false)).Result;
                         }
                     }
                 }

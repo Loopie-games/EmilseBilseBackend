@@ -17,7 +17,7 @@ namespace moonbaboon.bingo.Domain.Services
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id!)
+                    new Claim(ClaimTypes.NameIdentifier, user.Id!, "userId")
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),

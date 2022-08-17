@@ -109,7 +109,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 {
                     Id = reader.GetValue(0).ToString()
                 };
-                 list.Add(boardTile);
+                list.Add(boardTile);
 
             }
 
