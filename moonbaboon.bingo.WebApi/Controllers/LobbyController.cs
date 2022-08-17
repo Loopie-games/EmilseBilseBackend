@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -14,17 +15,26 @@ namespace moonbaboon.bingo.WebApi.Controllers
     {
         private readonly ILobbyService _lobbyService;
         private readonly IPendingPlayerService _pendingPlayerService;
+        private readonly IUserService _userService;
 
-        public LobbyController(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService)
+        public LobbyController(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IUserService userService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
+            _userService = userService;
         }
 
         [HttpGet("{lobbyId}")]
-        public ActionResult<LobbyForUser?> GetById(string lobbyId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LobbyForPlayerDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<LobbyForPlayerDto> GetById(string lobbyId)
         {
-            return _lobbyService.GetById(lobbyId);
+            var lobby = _lobbyService.GetById(lobbyId);
+            if (lobby?.Id is null || lobby.Pin is null) return NotFound("lobby not found");
+            var host = _userService.GetById(lobby.Host);
+            if (host is null) return NotFound("host not found");;
+
+            return Ok(new LobbyForPlayerDto(lobby.Id, lobby.Pin, new UserSimple(host)));
         }
         
         [HttpGet(nameof(GetPlayersInLobby))]

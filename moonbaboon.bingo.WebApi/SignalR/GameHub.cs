@@ -62,10 +62,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             var lobby = _lobbyService.GetById(sg.LobbyId);
             if (lobby is not null)
             {
-                foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
-                {
-                    
-                }
+                _gameService.NewGame(lobby);
                 await Clients.Group(lobby.Id).SendAsync("gameStarting");
             }
         }

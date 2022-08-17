@@ -30,5 +30,10 @@ namespace moonbaboon.bingo.Domain.Services
             }
             return  null;
         }
+
+        public Game? NewGame(Lobby lobby)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

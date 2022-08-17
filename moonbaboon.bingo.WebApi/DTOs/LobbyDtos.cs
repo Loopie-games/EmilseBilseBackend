@@ -1,7 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.DTOs
 {
+    public class LobbyForPlayerDto
+    {
+        public LobbyForPlayerDto(string lobbyId, string pin, UserSimple host)
+        {
+            LobbyId = lobbyId;
+            Pin = pin;
+            Host = host;
+        }
+
+        public string LobbyId { get; set; }
+        public UserSimple Host { get; set; }
+        public string Pin { get; set; }
+    }
+    
     public class CreateLobbyDto
     {
         public CreateLobbyDto(string hostId)
@@ -29,7 +44,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
 
         
     }
-    
+
     public class LeaveLobbyDto
     {
         public LeaveLobbyDto(string lobbyId, string userId)

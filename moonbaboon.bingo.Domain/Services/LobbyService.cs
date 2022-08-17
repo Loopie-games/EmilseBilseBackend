@@ -18,9 +18,9 @@ namespace moonbaboon.bingo.Domain.Services
             _userRepository = userRepository;
         }
 
-        public LobbyForUser? GetById(string id)
+        public Lobby? GetById(string id)
         {
-            return _lobbyRepository.FindById_ForUser(id).Result;
+            return _lobbyRepository.FindById(id).Result;
         }
 
         public Lobby? GetByHostId(string hostId)
