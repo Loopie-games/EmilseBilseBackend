@@ -57,6 +57,15 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         }
 
+        public async Task StartGame(StartGameDtos sg)
+        {
+            var lobby = _lobbyService.GetById(sg.LobbyId);
+            if (lobby is not null)
+            {
+                await Clients.Group(lobby.Id).SendAsync("gameStarting");
+            }
+        }
+
         public async Task CloseLobby(CloseLobbyDto cl)
         {
             if (_lobbyService.CloseLobby(cl.LobbyId, cl.HostId))
