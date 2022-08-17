@@ -12,14 +12,16 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IBoardRepository _boardRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
         private readonly ITileRepository _tileRepository;
+        private readonly IBoardTileRepository _boardTileRepository;
 
-        public GameService(IGameRepository gameRepository, ILobbyRepository lobbyRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, ITileRepository tileRepository)
+        public GameService(IGameRepository gameRepository, ILobbyRepository lobbyRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, ITileRepository tileRepository, IBoardTileRepository boardTileRepository)
         {
             _gameRepository = gameRepository;
             _lobbyRepository = lobbyRepository;
             _boardRepository = boardRepository;
             _pendingPlayerRepository = pendingPlayerRepository;
             _tileRepository = tileRepository;
+            _boardTileRepository = boardTileRepository;
         }
 
         public Game? GetById(string id)
@@ -41,7 +43,19 @@ namespace moonbaboon.bingo.Domain.Services
                 var tiles = new List<Tile>();
                 foreach (var player in players)
                 {
-                    
+                    tiles.AddRange(_tileRepository.GetAboutUserById(player.Id).Result);
+                }
+
+                foreach (var player in players)
+                {
+                    var board = _boardRepository.Create(player.Id, game.Id).Result;
+                    if (board != null)
+                    {
+                        for (int i = 0; i < 25; i++)
+                        {
+                            var boardtile = _boardTileRepository.Create(new BoardTile(board,"b0d4d781-8c4d-47d2-a3a5-2f32b93188d3",i, false));
+                        }
+                    }
                 }
             }
             

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 
@@ -21,6 +22,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _boardTileService.GetById(id);
         }
         
+        [HttpGet(nameof(GetByBoardId) + "{id}")]
+        public ActionResult<List<BoardTile?>> GetByBoardId(string id)
+        {
+            return _boardTileService.GetByBoardId(id);
+        }
+
         [HttpPost(nameof(Create))]
         public ActionResult<BoardTile?> Create(BoardTile boardTile)
         {

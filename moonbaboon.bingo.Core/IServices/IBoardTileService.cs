@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.Models;
+﻿using System.Collections.Generic;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Core.IServices
 {
@@ -7,5 +8,6 @@ namespace moonbaboon.bingo.Core.IServices
         public BoardTile? GetById(string id);
         
         public BoardTile? Create(BoardTile toCreate);
+        public List<BoardTile?> GetByBoardId(string id);
     }
 }
