@@ -51,8 +51,24 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<Friendship> GetFriendRequestsByUserId(string userId)
         {
-            return _friendshipRepository.FindFriendRequests_ByUserId(userId).Result; 
-            throw new System.NotImplementedException();
+            return _friendshipRepository.FindFriendRequests_ByUserId(userId).Result;
+        }
+
+        public Friendship? AcceptFriendRequest(string friendshipId, string acceptingUserId)
+        {
+            var friendship = _friendshipRepository.FindById(friendshipId).Result;
+            if (friendship is {Accepted: true})
+            {
+                //Todo feedback "This friendship is already accepted"
+                return null;
+            }
+            if (friendship?.FriendId2.Id != acceptingUserId)
+            {
+                //Todo feedback "This is not a request for you to accept"
+                return null;
+            }
+            friendship.Accepted = true;
+            return _friendshipRepository.AcceptFriendship(friendshipId).Result;
         }
     };
 }
