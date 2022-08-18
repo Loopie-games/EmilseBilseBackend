@@ -37,6 +37,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Game? NewGame(Lobby lobby)
         {
+            var random = new Random();
             var game = _gameRepository.Create(lobby.Host).Result;
             if (game != null)
             {
@@ -52,9 +53,38 @@ namespace moonbaboon.bingo.Domain.Services
                     var board = _boardRepository.Create(player.User.Id, game.Id).Result;
                     if (board != null)
                     {
+                        List<PendingPlayer> usablePlayers = new();
+                        foreach (var pp in players)
+                        {
+                            if (player.Id != pp.Id)
+                            {
+                                usablePlayers.Add(player);
+                            }   
+                        }
+                        List<Tile> usableTiles = new();
+                        foreach (var tile in tiles)
+                        {
+                            if (tile.User.Id != player.Id)
+                            {
+                                usableTiles.Add(tile);
+                            }
+                        }
+
+                        if (usableTiles.Count < 24)
+                        {
+                            var t =_tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
+                                "filler", player.User.Id).Result;
+                            while (usableTiles.Count < 24)
+                            {
+                                
+                                usableTiles.Add(t);
+                            }
+                        }
                         for (int i = 0; i < 24; i++)
                         {
-                            var boardtile = _boardTileRepository.Create(new BoardTile(board,"b0d4d781-8c4d-47d2-a3a5-2f32b93188d3",i, false)).Result;
+                            var tile = usableTiles[random.Next(0, usableTiles.Count - 1)];
+                            var boardtile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
+                            usableTiles.Remove(tile);
                         }
                     }
                 }

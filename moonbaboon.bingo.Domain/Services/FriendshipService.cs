@@ -40,7 +40,8 @@ namespace moonbaboon.bingo.Domain.Services
         {
             List<Friend> friends = new();
 
-            foreach (var friendship in _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result)
+            var repoFriends = _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result;
+            foreach (var friendship in repoFriends)
             {
                 var f = FriendshipToFriend(friendship, userId);
                 if (f is not null)
