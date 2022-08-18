@@ -1,12 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FriendshipController: ControllerBase
@@ -29,6 +32,38 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<List<Friend>> GetFriendsByUserId(string userId)
         {
             return Ok(_friendshipService.GetFriendsByUserId(userId) );
+        }
+
+        [Authorize]
+        [HttpPost(nameof(SendFriendRequest))]
+        public ActionResult<Friendship?> SendFriendRequest(string toUserId)
+        {
+            return _friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId);
+        }
+
+        [Authorize]
+        [HttpGet(nameof(GetFriendRequests))]
+        public ActionResult<List<Friendship>> GetFriendRequests()
+        {
+            return _friendshipService.GetFriendRequestsByUserId(
+                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        }
+
+        [Authorize]
+        [HttpPut(nameof(AcceptFriendRequest) + "/{friendshipId}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Friendship))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Friend> AcceptFriendRequest(string friendshipId)
+        {
+            try
+            {
+                return _friendshipService.AcceptFriendRequest(friendshipId,
+                                                                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

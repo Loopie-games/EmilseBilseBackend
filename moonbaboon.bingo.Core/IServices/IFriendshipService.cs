@@ -7,5 +7,8 @@ namespace moonbaboon.bingo.Core.IServices
     {
         public List<Friendship> GetAll();
         public List<Friend> GetFriendsByUserId(string userId);
+        public Friendship? SendFriendRequest(string fromUserId, string toUserId);
+        public List<Friendship> GetFriendRequestsByUserId(string userId);
+        public Friend AcceptFriendRequest(string friendshipId, string value);
     }
 }
