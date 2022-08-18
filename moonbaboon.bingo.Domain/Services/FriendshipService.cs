@@ -22,25 +22,36 @@ namespace moonbaboon.bingo.Domain.Services
             return _friendshipRepository.FindAll().Result;  
         }
 
+        public Friend? FriendshipToFriend(Friendship friendship, string userId)
+        {
+            if (friendship.FriendId1.Id == userId)
+            {
+               return new Friend(friendship.Id, friendship.FriendId2, true);
+            }
+            else if(friendship.FriendId2.Id == userId)
+            {
+                return new Friend(friendship.Id, friendship.FriendId1, true);
+            }
+
+            return null;
+        }
+
         public List<Friend> GetFriendsByUserId(string userId)
         {
             List<Friend> friends = new();
 
             foreach (var friendship in _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result)
             {
-                if (friendship.FriendId1.Id == userId)
+                var f = FriendshipToFriend(friendship, userId);
+                if (f is not null)
                 {
-                    friends.Add(new Friend(friendship.Id, friendship.FriendId2, true));
-                }
-                else if(friendship.FriendId2.Id == userId)
-                {
-                    friends.Add(new Friend(friendship.Id, friendship.FriendId1, true));
+                    friends.Add(f);
                 }
             }
             return friends;
         }
 
-        public Friendship? SendFriendRequest(string fromUserId, string toUserId)
+        public Friend? SendFriendRequest(string fromUserId, string toUserId)
         {
             //check is users er identical
             if (fromUserId == toUserId)
@@ -60,12 +71,22 @@ namespace moonbaboon.bingo.Domain.Services
                 //Todo feedback "is already Friends"
                 return null;
             }
-            return _friendshipRepository.Create(fromUserId, toUserId, false).Result;
+            return FriendshipToFriend(_friendshipRepository.Create(fromUserId, toUserId, false).Result, fromUserId);
         }
 
-        public List<Friendship> GetFriendRequestsByUserId(string userId)
+        public List<Friend> GetFriendRequestsByUserId(string userId)
         {
-            return _friendshipRepository.FindFriendRequests_ByUserId(userId).Result;
+            List<Friend> friendRequests = new();
+            foreach (var request in _friendshipRepository.FindFriendRequests_ByUserId(userId).Result)
+            {
+                var f = FriendshipToFriend(request, userId);
+                if (f is not null)
+                {
+                    friendRequests.Add(f);
+                }
+            }
+
+            return friendRequests;
         }
 
         public Friend AcceptFriendRequest(string friendshipId, string acceptingUserId)

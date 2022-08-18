@@ -36,14 +36,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost(nameof(SendFriendRequest))]
-        public ActionResult<Friendship?> SendFriendRequest(string toUserId)
+        public ActionResult<Friend> SendFriendRequest(string toUserId)
         {
             return _friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId);
         }
 
         [Authorize]
         [HttpGet(nameof(GetFriendRequests))]
-        public ActionResult<List<Friendship>> GetFriendRequests()
+        public ActionResult<List<Friend>> GetFriendRequests()
         {
             return _friendshipService.GetFriendRequestsByUserId(
                 HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
