@@ -7,7 +7,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IFriendshipRepository
     {
         public Task<List<Friendship>> FindAll();
-        public Task<List<Friend>> FindAcceptedFriendshipsByUserId(string userId);
+        public Task<List<Friendship>> FindAcceptedFriendshipsByUserId(string userId);
         public Task<bool> ValidateFriendship(string userId1, string userId2);
         public Task<Friendship?> Create(string fromUserId, string toUserId, bool b);
         public Task<List<Friendship>> FindFriendRequests_ByUserId(string userId);

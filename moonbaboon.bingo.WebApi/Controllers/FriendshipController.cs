@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -50,10 +51,19 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPut(nameof(AcceptFriendRequest) + "/{friendshipId}")]
-        public ActionResult<Friendship?> AcceptFriendRequest(string friendshipId)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Friendship))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Friend> AcceptFriendRequest(string friendshipId)
         {
-            return _friendshipService.AcceptFriendRequest(friendshipId,
-                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                return _friendshipService.AcceptFriendRequest(friendshipId,
+                                                                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

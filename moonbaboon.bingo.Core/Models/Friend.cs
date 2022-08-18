@@ -2,14 +2,15 @@
 {
     public class Friend
     {
-        public Friend(string username, string nickname)
+        public Friend(string? id, UserSimple user, bool accepted)
         {
-            Username = username;
-            Nickname = nickname;
+            Id = id;
+            User = user;
+            Accepted = accepted;
         }
 
         public string? Id { get; set; }
-        public string Username { get; set; }
-        public string Nickname { get; set; }
+        public UserSimple User { get; set; }
+        public bool Accepted { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -23,7 +24,20 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<Friend> GetFriendsByUserId(string userId)
         {
-            return _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result;
+            List<Friend> friends = new();
+
+            foreach (var friendship in _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result)
+            {
+                if (friendship.FriendId1.Id == userId)
+                {
+                    friends.Add(new Friend(friendship.Id, friendship.FriendId2, true));
+                }
+                else if(friendship.FriendId2.Id == userId)
+                {
+                    friends.Add(new Friend(friendship.Id, friendship.FriendId1, true));
+                }
+            }
+            return friends;
         }
 
         public Friendship? SendFriendRequest(string fromUserId, string toUserId)
@@ -54,21 +68,24 @@ namespace moonbaboon.bingo.Domain.Services
             return _friendshipRepository.FindFriendRequests_ByUserId(userId).Result;
         }
 
-        public Friendship? AcceptFriendRequest(string friendshipId, string acceptingUserId)
+        public Friend AcceptFriendRequest(string friendshipId, string acceptingUserId)
         {
             var friendship = _friendshipRepository.FindById(friendshipId).Result;
             if (friendship is {Accepted: true})
             {
-                //Todo feedback "This friendship is already accepted"
-                return null;
+                throw new Exception("This friendship is already accepted");
             }
             if (friendship?.FriendId2.Id != acceptingUserId)
             {
-                //Todo feedback "This is not a request for you to accept"
-                return null;
+                throw new Exception("This request is not for you to accept");
             }
             friendship.Accepted = true;
-            return _friendshipRepository.AcceptFriendship(friendshipId).Result;
+            var friendshipUpdated = _friendshipRepository.AcceptFriendship(friendshipId).Result;
+            if (friendshipUpdated is not null)
+            {
+                return new Friend(friendshipUpdated.Id, friendship.FriendId1, friendshipUpdated.Accepted);
+            }
+            throw new Exception("Something went wrong when accepting friendship");
         }
     };
 }
