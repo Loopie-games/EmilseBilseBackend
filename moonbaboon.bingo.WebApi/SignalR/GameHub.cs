@@ -88,8 +88,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
                            var board = _boardService.GetByUserAndGameId(player.User.Id, game.Id);
                            if (board is not null)
                            {
-                               Console.WriteLine(player.User.Username);
-                               Console.WriteLine();
                                await Clients.User(player.User.Id).SendAsync("boardReady", board.Id);
                                await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
                            }

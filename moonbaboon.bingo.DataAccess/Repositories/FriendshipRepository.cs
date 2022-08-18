@@ -52,7 +52,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
                 $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
                 $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Accepted} = 1 " +
-                $"AND ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId}' OR {DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId}') ", 
+                $"AND ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId}' OR {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId}') ", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
