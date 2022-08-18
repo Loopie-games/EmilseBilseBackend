@@ -45,8 +45,11 @@ namespace moonbaboon.bingo.Domain.Services
                 var tiles = new List<Tile>();
                 foreach (var player in players)
                 {
-                    tiles.AddRange(_tileRepository.GetAboutUserById(player.Id).Result);
+                    tiles.AddRange(_tileRepository.GetAboutUserById(player.User.Id).Result);
+                    Console.WriteLine("user: " + player.User.Username +" has " + tiles.Count + " tiles");
                 }
+                
+                
 
                 foreach (var player in players)
                 {
