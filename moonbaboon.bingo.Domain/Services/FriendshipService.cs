@@ -24,5 +24,16 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _friendshipRepository.FindAcceptedFriendshipsByUserId(userId).Result;
         }
+
+        public Friendship? SendFriendRequest(string fromUserId, string toUserId)
+        {
+            //checks if already friends
+            if (_friendshipRepository.ValidateFriendship(fromUserId, toUserId).Result)
+            {
+                //Todo feedback "is already Friends"
+                return null;
+            }
+            return _friendshipRepository.Create(fromUserId, toUserId, false).Result;
+        }
     };
 }
