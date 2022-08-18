@@ -10,6 +10,6 @@ namespace moonbaboon.bingo.Core.IServices
         public Tile? Create(string userId, string action, string addedById);
         public bool DeleteTile(string id);
         public List<Tile> GetAboutUserById(string id);
-        public Tile? NewTile(string tileAboutUserName, string tileAction, string tileAddedByUserId);
+        public Tile NewTile(string tileAboutUserId, string tileAction, string tileAddedByUserId);
     }
 }

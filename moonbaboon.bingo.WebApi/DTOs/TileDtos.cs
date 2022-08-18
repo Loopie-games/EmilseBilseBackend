@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.Models;
+﻿using System.ComponentModel.DataAnnotations;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.DTOs
 {
@@ -45,15 +46,15 @@ namespace moonbaboon.bingo.WebApi.DTOs
     
     public class NewTileDto
     {
-        public NewTileDto(string addedByUserId, string action, string aboutUserName)
+        public NewTileDto(string action, string aboutUserId)
         {
-            AddedByUserId = addedByUserId;
             Action = action;
-            AboutUserName = aboutUserName;
+            AboutUserId = aboutUserId;
         }
-
-        public string AddedByUserId { get; set; }
+        [Required]
         public string Action { get; set; }
-        public string AboutUserName { get; set; }
+        
+        [Required]
+        public string AboutUserId { get; set; }
     }
 }

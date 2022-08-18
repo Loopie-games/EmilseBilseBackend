@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,12 +38,22 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _tileService.GetAboutUserById(id);
         }
         
-
+        [Authorize]
         [HttpPost(nameof(Create))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Tile))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Tile?> Create(NewTileDto newTile)
         {
-            Tile? t = _tileService.NewTile(newTile.AboutUserName, newTile.Action, newTile.AddedByUserId);
-            return t;
+            try
+            {
+                var tile = _tileService.NewTile(newTile.AboutUserId, newTile.Action,
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return CreatedAtAction(nameof(GetById), new {id = tile.Id}, tile);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
         
         

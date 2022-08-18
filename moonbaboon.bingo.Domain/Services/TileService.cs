@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.IServices;
+﻿using System;
+using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
 using System.Collections.Generic;
@@ -43,15 +44,24 @@ namespace moonbaboon.bingo.Domain.Services
             return _tileRepository.GetAboutUserById(id).Result;
         }
 
-        public Tile? NewTile(string tileAboutUserName, string tileAction, string tileAddedByUserId)
+        public Tile NewTile(string tileAboutUserId, string tileAction, string tileAddedByUserId)
         {
-            var user = _userRepository.GetByUsername(tileAboutUserName).Result;
-            var isFriends = _friendshipRepository.ValidateFriendship(user.Id, tileAddedByUserId).Result;
-            if (isFriends)
+            var user = _userRepository.ReadById(tileAboutUserId).Result;
+            if (user?.Id is null)
             {
-                return _tileRepository.Create(user.Id, tileAction, tileAddedByUserId).Result;
+                throw new Exception($"The {nameof(User)} you are trying to add a {nameof(Tile)} to, does not exist");
             }
-            return null;
+            var isFriends = _friendshipRepository.ValidateFriendship(user.Id, tileAddedByUserId).Result;
+            if (!isFriends)
+            {
+                throw new Exception($"You need to be friends to add tiles");
+            }
+            var tile = _tileRepository.Create(user.Id, tileAction, tileAddedByUserId).Result;
+            if (tile is not null)
+            {
+                return tile;
+            }
+            throw new Exception($"Something went wrong when creating the tile");
         }
     }
 }
