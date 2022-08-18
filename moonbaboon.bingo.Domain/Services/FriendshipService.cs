@@ -42,5 +42,11 @@ namespace moonbaboon.bingo.Domain.Services
             }
             return _friendshipRepository.Create(fromUserId, toUserId, false).Result;
         }
+
+        public List<Friendship> GetFriendRequestsByUserId(string userId)
+        {
+            return _friendshipRepository.FindFriendRequests_ByUserId(userId).Result; 
+            throw new System.NotImplementedException();
+        }
     };
 }

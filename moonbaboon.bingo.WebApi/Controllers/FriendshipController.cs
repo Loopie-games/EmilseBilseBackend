@@ -34,10 +34,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [Authorize]
-        [HttpPost(nameof(SendFriendsRequest))]
-        public ActionResult<Friendship?> SendFriendsRequest(string toUserId)
+        [HttpPost(nameof(SendFriendRequest))]
+        public ActionResult<Friendship?> SendFriendRequest(string toUserId)
         {
             return _friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId);
+        }
+
+        [Authorize]
+        [HttpGet(nameof(GetFriendRequests))]
+        public ActionResult<List<Friendship>> GetFriendRequests()
+        {
+            return _friendshipService.GetFriendRequestsByUserId(
+                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
     }
 }
