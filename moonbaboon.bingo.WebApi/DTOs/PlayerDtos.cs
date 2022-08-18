@@ -4,7 +4,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class PendingPlayerDto
     {
-        public PendingPlayerDto(string id, UserDtos.UserSimpleDto user, string lobbyId)
+        public PendingPlayerDto(string id, UserSimple user, string lobbyId)
         {
             Id = id;
             Player = user;
@@ -14,13 +14,13 @@ namespace moonbaboon.bingo.WebApi.DTOs
         public PendingPlayerDto(PendingPlayer pp)
         {
             Id = pp.Id;
-            Player = new UserDtos.UserSimpleDto(pp.User);
+            Player = pp.User;
             LobbyId = pp.Lobby.Id;
         }
 
         public string Id { get; set; }
         
         public string LobbyId { get; set; }
-        public UserDtos.UserSimpleDto Player { get; set; }
+        public UserSimple Player { get; set; }
     }
 }
