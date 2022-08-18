@@ -7,12 +7,6 @@ pipeline {
 
     stages {
 
-        stage ("Starting Dev Pipeline") {
-            steps {
-                sh "echo 'Dev pipeline starting'"
-            }
-        }
-
         stage ("Build Backend") {
             steps {
                 sh "dotnet build ."
