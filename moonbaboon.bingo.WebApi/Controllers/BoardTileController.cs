@@ -34,7 +34,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             foreach (var boardTile in boardTiles)
             {
                 var tile = _tileService.GetById(boardTile.TileId);
-                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, new TileDto(tile), boardTile.Position, boardTile.IsActivated));
+                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
             }
 
             return list;
