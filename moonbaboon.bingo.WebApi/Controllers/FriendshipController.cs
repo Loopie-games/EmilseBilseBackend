@@ -9,7 +9,6 @@ using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FriendshipController: ControllerBase
@@ -34,11 +33,10 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return Ok(_friendshipService.GetFriendsByUserId(userId) );
         }
 
-        
+        [Authorize]
         [HttpPost(nameof(SendFriendsRequest))]
         public ActionResult<Friendship?> SendFriendsRequest(string toUserId)
         {
-            
             return _friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId);
         }
     }

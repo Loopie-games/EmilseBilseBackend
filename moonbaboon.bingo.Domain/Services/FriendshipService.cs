@@ -8,11 +8,12 @@ namespace moonbaboon.bingo.Domain.Services
     public class FriendshipService : IFriendshipService
     {
         private readonly IFriendshipRepository _friendshipRepository;
+        private readonly IUserRepository _userRepository;
 
-        public FriendshipService(IFriendshipRepository friendshipRepository)
+        public FriendshipService(IFriendshipRepository friendshipRepository, IUserRepository userRepository)
         {
             _friendshipRepository = friendshipRepository;
-            
+            _userRepository = userRepository;
         }
         
         public List<Friendship> GetAll()
@@ -27,6 +28,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Friendship? SendFriendRequest(string fromUserId, string toUserId)
         {
+            //check if user exists
+            if (_userRepository.ReadById(toUserId).Result is null)
+            {
+                //Todo feedback "the user you are requesting does not exist"
+                return null;
+            }
             //checks if already friends
             if (_friendshipRepository.ValidateFriendship(fromUserId, toUserId).Result)
             {
