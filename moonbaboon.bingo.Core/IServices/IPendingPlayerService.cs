@@ -5,7 +5,7 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IPendingPlayerService
     {
-        public List<PendingPlayerForUser> GetByLobbyId(string lobbyId);
+        public List<PendingPlayer> GetByLobbyId(string lobbyId);
 
     }
 }

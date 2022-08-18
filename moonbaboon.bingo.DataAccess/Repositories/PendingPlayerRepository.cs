@@ -80,21 +80,32 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return pp;
         }
 
-        public async Task<List<PendingPlayerForUser>> GetByLobbyId(string lobbyId)
+        public async Task<List<PendingPlayer>> GetByLobbyId(string lobbyId)
         {
-            List<PendingPlayerForUser> list = new();
+            List<PendingPlayer> list = new();
             
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname} " +
+                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}," +
+                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
+                $"{DBStrings.LobbyTable}.{DBStrings.Id}, {DBStrings.LobbyTable}.{DBStrings.Host}, {DBStrings.LobbyTable}.{DBStrings.Pin}  " +
                 $"FROM {DBStrings.PendingPlayerTable} " +
                 $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
                 $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} = '{lobbyId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var ent = new PendingPlayerForUser(reader.GetValue(1).ToString(), reader.GetValue(2).ToString())
+                UserSimple player = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                    reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
+                Lobby lobby = new Lobby(reader.GetValue(6).ToString())
+                {
+                    Id = reader.GetValue(5).ToString(),
+                    Pin = reader.GetValue(7).ToString()
+                };
+
+                var ent = new PendingPlayer(player, lobby)
                     {
                         Id = reader.GetValue(0).ToString()
                     };

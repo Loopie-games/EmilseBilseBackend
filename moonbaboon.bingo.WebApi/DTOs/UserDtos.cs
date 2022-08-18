@@ -7,6 +7,26 @@ namespace moonbaboon.bingo.WebApi.DTOs
     public class UserDtos
     {
 
+        public class UserSimpleDto
+        {
+            public UserSimpleDto(string nickname, string username)
+            {
+                Nickname = nickname;
+                Username = username;
+            }
+
+            public UserSimpleDto(UserSimple user)
+            {
+                Username = user.Username;
+                Nickname = user.Nickname;
+                ProfilePicUrl = user.ProfilePicUrl;
+            }
+
+            public string Username { get; set; }
+            public string Nickname { get; set; }
+            public string? ProfilePicUrl { get; set; }
+        }
+
         public class CreateUserDto
         {
             public CreateUserDto(string userName, string nickName, string password, string salt)

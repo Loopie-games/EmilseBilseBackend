@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         
         public Task<PendingPlayer?> GetByUserId(string userId);
 
-        public Task<List<PendingPlayerForUser>> GetByLobbyId(string lobbyId);
+        public Task<List<PendingPlayer>> GetByLobbyId(string lobbyId);
 
         public Task<PendingPlayer?> IsPlayerInLobby(string userId, string lobbyId);
         public Task<bool> DeleteWithLobbyId(string lobbyId);

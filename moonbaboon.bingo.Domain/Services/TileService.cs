@@ -1,10 +1,7 @@
 ﻿using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Domain.Services
 {
@@ -21,9 +18,9 @@ namespace moonbaboon.bingo.Domain.Services
             _friendshipRepository = friendshipRepository;
         }
 
-        public Tile? CreateTile(Tile tileToCreate)
+        public Tile? Create(string userId, string action, string addedById)
         {
-            return _tileRepository.Create(tileToCreate).Result;
+            return _tileRepository.Create(userId, action, addedById).Result;
         }
 
         public List<Tile> GetAll()
@@ -36,28 +33,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _tileRepository.FindById(id).Result;
         }
 
-        public TileForUser? CreateTile_TileForUser(TileNewFromUser tileToCreate)
-        {
-            //getting UserId
-            var aboutUser = _userRepository.GetByUsername(tileToCreate.AboutUserName).Result;
-            if (aboutUser is null || aboutUser.Id is null)
-            {
-                return null;
-            }
-            
-            Console.Out.WriteLine(aboutUser.Id);
-            
-            //validating friendship between users
-            if (!_friendshipRepository.ValidateFriendship(aboutUser.Id, tileToCreate.AddedByUserId).Result)
-            {
-                return null;
-            }
-            return _tileRepository.CreateTile_TileForUser(new Tile(aboutUser.Id, tileToCreate.Action)
-            {
-                AddedById = tileToCreate.AddedByUserId
-            }).Result;
-        }
-
         public bool DeleteTile(string id)
         {
             return _tileRepository.Delete(id).Result;
@@ -68,9 +43,15 @@ namespace moonbaboon.bingo.Domain.Services
             return _tileRepository.GetAboutUserById(id).Result;
         }
 
-        public List<TileForUser> GetAboutUserById_TileForUser(string id)
+        public Tile? NewTile(string tileAboutUserName, string tileAction, string tileAddedByUserId)
         {
-            return _tileRepository.GetAboutUserById_TileForUser(id).Result;
+            var user = _userRepository.GetByUsername(tileAboutUserName).Result;
+            var isFriends = _friendshipRepository.ValidateFriendship(user.Id, tileAddedByUserId).Result;
+            if (isFriends)
+            {
+                return _tileRepository.Create(user.Id, tileAction, tileAddedByUserId).Result;
+            }
+            return null;
         }
     }
 }
