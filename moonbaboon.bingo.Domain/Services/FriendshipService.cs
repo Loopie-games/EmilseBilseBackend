@@ -28,6 +28,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Friendship? SendFriendRequest(string fromUserId, string toUserId)
         {
+            //check is users er identical
+            if (fromUserId == toUserId)
+            {
+                //Todo feedback "you cant send yourself a friendRequest"
+                return null;
+            }
             //check if user exists
             if (_userRepository.ReadById(toUserId).Result is null)
             {
