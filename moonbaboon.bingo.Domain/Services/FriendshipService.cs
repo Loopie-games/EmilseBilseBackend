@@ -63,7 +63,7 @@ namespace moonbaboon.bingo.Domain.Services
             //check if user exists
             if (_userRepository.ReadById(toUserId).Result is null)
             {
-                //Todo feedback "the user you are requesting does not exist"
+                // TODO - feedback "the user you are requesting does not exist"
                 return null;
             }
             //checks if already friends

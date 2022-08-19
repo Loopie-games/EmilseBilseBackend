@@ -46,11 +46,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     tiles.AddRange(_tileRepository.GetAboutUserById(player.User.Id).Result);
-                    Console.WriteLine("user: " + player.User.Username +" has " + tiles.Count + " tiles");
                 }
-                
-                
-
                 foreach (var player in players)
                 {
                     var board = _boardRepository.Create(player.User.Id, game.Id).Result;
@@ -59,15 +55,18 @@ namespace moonbaboon.bingo.Domain.Services
                         List<PendingPlayer> usablePlayers = new();
                         foreach (var pp in players)
                         {
-                            if (player.Id != pp.Id)
+                            if (pp.Id != player.Id)
                             {
-                                usablePlayers.Add(player);
+                                usablePlayers.Add(pp);
                             }   
                         }
+                        
+                        Console.WriteLine(usablePlayers.Count);
+                        
                         List<Tile> usableTiles = new();
                         foreach (var tile in tiles)
                         {
-                            if (tile.User.Id != player.Id)
+                            if (tile.User.Id != player.User.Id)
                             {
                                 usableTiles.Add(tile);
                             }
