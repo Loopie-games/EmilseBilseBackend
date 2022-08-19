@@ -42,11 +42,6 @@ namespace moonbaboon.bingo.Domain.Services
             if (game != null)
             {
                 var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
-                var tiles = new List<Tile>();
-                foreach (var player in players)
-                {
-                    tiles.AddRange(_tileRepository.GetAboutUserById(player.User.Id).Result);
-                }
                 foreach (var player in players)
                 {
                     var board = _boardRepository.Create(player.User.Id, game.Id).Result;
@@ -60,17 +55,8 @@ namespace moonbaboon.bingo.Domain.Services
                                 usablePlayers.Add(pp);
                             }   
                         }
-                        
-                        Console.WriteLine(usablePlayers.Count);
-                        
-                        List<Tile> usableTiles = new();
-                        foreach (var tile in tiles)
-                        {
-                            if (tile.User.Id != player.User.Id)
-                            {
-                                usableTiles.Add(tile);
-                            }
-                        }
+
+                        List<Tile> usableTiles = _tileRepository.GetTilesForBoard(players, player.User.Id).Result;
 
                         if (usableTiles.Count < 24)
                         {

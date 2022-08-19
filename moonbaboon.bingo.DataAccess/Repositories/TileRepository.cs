@@ -137,5 +137,46 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return ent;
         }
+
+        public async Task<List<Tile>> GetTilesForBoard(List<PendingPlayer> pendingPlayers, string userId)
+        {
+            var sqlcommand =
+                $"SELECT t1.Id, t1.Action, " +
+                $"u1.id, u1.username, u1.nickname, u1.ProfilePicURL, " +
+                $"u2.id, u2.username, u2.nickname, u2.ProfilePicURL " +
+                $"FROM(";
+
+                int i = 0;
+            foreach (var player in pendingPlayers)
+            {
+                if (i == 0)
+                {
+                    sqlcommand +=
+                        $"SELECT * FROM BingoTile AS b{i} WHERE b{i}.UserId = '{player.User.Id}' ";
+                }
+                else
+                {
+                    sqlcommand += $"UNION ALL SELECT * FROM BingoTile AS b{i} WHERE b{i}.UserId = '{player.User.Id}' ";
+                }
+
+                i++;
+            }
+            
+            
+            sqlcommand += $") AS t1 JOIN (SELECT bt1.Id FROM BingoTile as bt1 WHERE bt1.UserId !='{userId}' ORDER BY RAND() LIMIT 24) As t2 ON t2.id = t1.id JOIN User as u1 on u1.id = t1.UserId JOIN User as u2 on u2.id = t1.AddedById";
+            
+            List<Tile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(sqlcommand
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                tiles.Add(readerToTile(reader));
+            }
+            await _connection.CloseAsync();
+            return tiles;
+        }
     }
 }

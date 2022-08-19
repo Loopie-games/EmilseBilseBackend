@@ -89,9 +89,9 @@ namespace moonbaboon.bingo.WebApi.SignalR
                            if (board is not null)
                            {
                                await Clients.User(player.User.Id).SendAsync("boardReady", board.Id);
-                               await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
                            }
                        }
+                       await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
                    }
                 }
             }
