@@ -67,7 +67,7 @@ namespace moonbaboon.bingo.Domain.Services
                         List<Tile> usableTiles = new();
                         foreach (var tile in tiles)
                         {
-                            if (tile.User.Id != player.Id)
+                            if (tile.User.Id != player.User.Id)
                             {
                                 usableTiles.Add(tile);
                             }
