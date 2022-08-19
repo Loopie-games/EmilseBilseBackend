@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -39,45 +40,38 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var random = new Random();
             var game = _gameRepository.Create(lobby.Host).Result;
-            if (game != null)
+            //todo throw Error "Game not created"
+            if (game == null) return game;
+            
+            var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
+            
+            foreach (var player in players)
             {
-                var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
-                foreach (var player in players)
+                var board = _boardRepository.Create(player.User.Id, game.Id).Result;
+                
+                //todo throw error
+                if (board == null) continue;
+                List<Tile> usableTiles = _tileRepository.GetTilesForBoard(players, player.User.Id).Result;
+
+                if (usableTiles.Count < 24)
                 {
-                    var board = _boardRepository.Create(player.User.Id, game.Id).Result;
-                    if (board != null)
+                    List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
+                    var t =_tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
+                        "filler", player.User.Id).Result;
+                    
+                    while (usableTiles.Count < 24)
                     {
-                        List<PendingPlayer> usablePlayers = new();
-                        foreach (var pp in players)
-                        {
-                            if (pp.Id != player.Id)
-                            {
-                                usablePlayers.Add(pp);
-                            }   
-                        }
-
-                        List<Tile> usableTiles = _tileRepository.GetTilesForBoard(players, player.User.Id).Result;
-
-                        if (usableTiles.Count < 24)
-                        {
-                            var t =_tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
-                                "filler", player.User.Id).Result;
-                            while (usableTiles.Count < 24)
-                            {
-                                
-                                usableTiles.Add(t);
-                            }
-                        }
-                        for (int i = 0; i < 24; i++)
-                        {
-                            var tile = usableTiles[random.Next(0, usableTiles.Count - 1)];
-                            var boardtile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
-                            usableTiles.Remove(tile);
-                        }
+                        usableTiles.Add(t);
                     }
                 }
+                for (int i = 0; i < 24; i++)
+                {
+                    var tile = usableTiles[random.Next(0, usableTiles.Count - 1)];
+                    var boardtile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
+                    usableTiles.Remove(tile);
+                }
             }
-            
+
             return game;
         }
     }
