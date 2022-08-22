@@ -74,7 +74,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPut(nameof(AcceptFriendRequest) + "/{friendshipId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Friendship))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Friend))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Friend> AcceptFriendRequest(string friendshipId)
         {
