@@ -11,6 +11,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<Tile?> Create(string userId, string action, string addedById);
         public Task<List<Tile>> FindAll();
         public Task<Tile?> FindById(string id);
+        public Task<Tile?> FindFiller(string userId);
         public Task<bool> Delete(string id);
         public Task<List<Tile>> GetAboutUserById(string id);
         public Task<List<Tile>> GetTilesForBoard(string lobbyId, string userId);

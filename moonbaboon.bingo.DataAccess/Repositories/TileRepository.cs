@@ -71,6 +71,30 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tile;
         }
 
+        public async Task<Tile?> FindFiller(string userId)
+        {
+            Tile? tile = null;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
+                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
+                $"FROM `{DBStrings.TileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.TileTable}.{DBStrings.Action} ='filler' AND {DBStrings.TileTable}.{DBStrings.UserId} ='{userId}';"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                tile = readerToTile(reader);
+            }
+
+            await _connection.CloseAsync();
+            return tile;
+        }
+
         public async Task<bool> Delete(string id)
         {
             bool success = false;

@@ -56,12 +56,12 @@ namespace moonbaboon.bingo.Domain.Services
                 if (usableTiles.Count < 24)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var t =_tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
+                    var filler = _tileRepository.FindFiller(player.User.Id).Result ?? 
+                                 _tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
                         "filler", player.User.Id).Result;
-                    
                     while (usableTiles.Count < 24)
                     {
-                        usableTiles.Add(t);
+                        usableTiles.Add(filler);
                     }
                 }
                 for (int i = 0; i < 24; i++)
