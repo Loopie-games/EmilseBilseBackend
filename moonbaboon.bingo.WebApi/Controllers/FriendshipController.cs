@@ -34,6 +34,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return Ok(_friendshipService.GetFriendsByUserId(userId) );
         }
         
+        [Authorize]
         [HttpGet(nameof(SearchUsers) + "/{searchStr}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -53,7 +54,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost(nameof(SendFriendRequest))]
         public ActionResult<Friend> SendFriendRequest(string toUserId)
         {
-            return _friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId);
+            try
+            {
+                return Ok(_friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Authorize]
