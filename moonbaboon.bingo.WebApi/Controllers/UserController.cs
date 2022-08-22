@@ -27,6 +27,23 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return Ok(_userService.GetAll());
         }
+        
+        [HttpGet(nameof(Search) + "/{searchStr}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<List<UserSimple>> Search(string searchStr)
+        {
+            if (searchStr.Length > 2)
+            {
+                return Ok(_userService.Search(searchStr));
+            }
+            else
+            {
+                return BadRequest("use at last 3 characters in your search");
+            }
+            
+            
+        }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]

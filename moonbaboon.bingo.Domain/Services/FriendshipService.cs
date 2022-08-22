@@ -22,6 +22,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _friendshipRepository.FindAll().Result;  
         }
 
+        public List<Friend> SearchUsers(string searchStr, string loggedUserId)
+        {
+            return _friendshipRepository.SearchUsers(searchStr, loggedUserId).Result;
+        }
+
         public Friend? FriendshipToFriend(Friendship friendship, string userId)
         {
             if (friendship.FriendId1.Id == userId)
@@ -57,22 +62,26 @@ namespace moonbaboon.bingo.Domain.Services
             //check is users er identical
             if (fromUserId == toUserId)
             {
-                //Todo feedback "you cant send yourself a friendRequest"
-                return null;
+                throw new Exception("you cant send yourself a friendRequest");
             }
             //check if user exists
             if (_userRepository.ReadById(toUserId).Result is null)
             {
-                // TODO - feedback "the user you are requesting does not exist"
-                return null;
+                throw new Exception("the user you are requesting does not exist");
             }
             //checks if already friends
             if (_friendshipRepository.ValidateFriendship(fromUserId, toUserId).Result)
             {
-                //Todo feedback "is already Friends"
-                return null;
+               throw new Exception("is already Friends");
             }
-            return FriendshipToFriend(_friendshipRepository.Create(fromUserId, toUserId, false).Result, fromUserId);
+
+            var friendship = _friendshipRepository.Create(fromUserId, toUserId, false).Result;
+            if (friendship is null)
+            {
+                throw new Exception("friendship was not created");
+            }
+            
+            return FriendshipToFriend(friendship, fromUserId);
         }
 
         public List<Friend> GetFriendRequestsByUserId(string userId)
