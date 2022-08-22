@@ -22,6 +22,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _friendshipRepository.FindAll().Result;  
         }
 
+        public List<Friend> SearchUsers(string searchStr, string loggedUserId)
+        {
+            return _friendshipRepository.SearchUsers(searchStr, loggedUserId).Result;
+        }
+
         public Friend? FriendshipToFriend(Friendship friendship, string userId)
         {
             if (friendship.FriendId1.Id == userId)

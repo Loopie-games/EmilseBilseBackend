@@ -33,6 +33,21 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return Ok(_friendshipService.GetFriendsByUserId(userId) );
         }
+        
+        [HttpGet(nameof(SearchUsers) + "/{searchStr}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<List<Friend>> SearchUsers(string searchStr)
+        {
+            if (searchStr.Length > 2)
+            {
+                return Ok(_friendshipService.SearchUsers(searchStr, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            }
+            else
+            {
+                return BadRequest("use at last 3 characters in your search");
+            }
+        }
 
         [Authorize]
         [HttpPost(nameof(SendFriendRequest))]
