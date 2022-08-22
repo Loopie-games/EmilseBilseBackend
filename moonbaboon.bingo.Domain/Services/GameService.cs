@@ -74,5 +74,10 @@ namespace moonbaboon.bingo.Domain.Services
 
             return game;
         }
+
+        public List<UserSimple> GetPlayers(string gameId)
+        {
+            return _gameRepository.GetPlayers(gameId).Result;
+        }
     }
 }
