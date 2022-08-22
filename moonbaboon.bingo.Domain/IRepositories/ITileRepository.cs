@@ -13,6 +13,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<Tile?> FindById(string id);
         public Task<bool> Delete(string id);
         public Task<List<Tile>> GetAboutUserById(string id);
-        public Task<List<Tile>> GetTilesForBoard(List<PendingPlayer> pendingPlayers, string userId);
+        public Task<List<Tile>> GetTilesForBoard(string lobbyId, string userId);
     }
 }

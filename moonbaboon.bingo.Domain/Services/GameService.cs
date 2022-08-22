@@ -51,7 +51,7 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 //todo throw error
                 if (board == null) continue;
-                List<Tile> usableTiles = _tileRepository.GetTilesForBoard(players, player.User.Id).Result;
+                List<Tile> usableTiles = _tileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
 
                 if (usableTiles.Count < 24)
                 {
