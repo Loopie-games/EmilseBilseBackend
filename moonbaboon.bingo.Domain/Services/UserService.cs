@@ -20,6 +20,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.FindAll().Result;
         }
 
+        public List<UserSimple> Search(string searchStr)
+        {
+            return _userRepository.Search(searchStr).Result;
+        }
+
         public User? Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
