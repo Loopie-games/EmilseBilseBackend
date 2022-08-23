@@ -58,23 +58,23 @@ namespace moonbaboon.bingo.Domain.Services
                     
                         var i = (24 - usableTiles.Count)/usablePlayers.Count;
                         Console.WriteLine(i);
+                        Tile? filler = null;
                         foreach (var pp in usablePlayers)
                         {
-                            var filler = _tileRepository.FindFiller(pp.User.Id!).Result ?? _tileRepository.Create(pp.User.Id!,
+                            filler = _tileRepository.FindFiller(pp.User.Id!).Result ?? _tileRepository.Create(pp.User.Id!,
                                 "filler", player.User.Id).Result;
                             for (int j = 0; j < i; j++)
                             {
                                usableTiles.Add(filler); 
                             }
-
-                            while (usableTiles.Count < 24)
-                            {
-                                usableTiles.Add(filler);
-                            }
+                        }
+                        while (usableTiles.Count < 24)
+                        {
+                            usableTiles.Add(filler);
                         }
                         
-                    }
-                        for (int i = 0; i < 24; i++)
+                }
+                for (int i = 0; i < 24; i++)
                 {
                     var tile = usableTiles[random.Next(0, usableTiles.Count - 1)];
                     var boardtile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
