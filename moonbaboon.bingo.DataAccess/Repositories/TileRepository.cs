@@ -83,7 +83,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"FROM `{DBStrings.TileTable}` " +
                 $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
                 $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE {DBStrings.TileTable}.{DBStrings.Action} ='filler' AND {DBStrings.TileTable}.{DBStrings.UserId} ='{userId}';"
+                $"WHERE ({DBStrings.TileTable}.{DBStrings.Action} ='filler' AND {DBStrings.TileTable}.{DBStrings.UserId} ='{userId}');"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())

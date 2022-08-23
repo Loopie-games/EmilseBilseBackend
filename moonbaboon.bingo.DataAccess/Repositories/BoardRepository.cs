@@ -79,7 +79,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     Id = reader.GetValue(0).ToString(),
                 };
             }
-
             await _connection.CloseAsync();
             return ent;
         }

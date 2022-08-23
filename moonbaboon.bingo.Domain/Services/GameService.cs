@@ -52,19 +52,29 @@ namespace moonbaboon.bingo.Domain.Services
                 //todo throw error
                 if (board == null) continue;
                 List<Tile> usableTiles = _tileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
-
                 if (usableTiles.Count < 24)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var filler = _tileRepository.FindFiller(player.User.Id).Result ?? 
-                                 _tileRepository.Create(usablePlayers[random.Next(0, usablePlayers.Count - 1)].User.Id,
-                        "filler", player.User.Id).Result;
-                    while (usableTiles.Count < 24)
-                    {
-                        usableTiles.Add(filler);
+                    
+                        var i = (24 - usableTiles.Count)/usablePlayers.Count;
+                        Console.WriteLine(i);
+                        foreach (var pp in usablePlayers)
+                        {
+                            var filler = _tileRepository.FindFiller(pp.User.Id!).Result ?? _tileRepository.Create(pp.User.Id!,
+                                "filler", player.User.Id).Result;
+                            for (int j = 0; j < i; j++)
+                            {
+                               usableTiles.Add(filler); 
+                            }
+
+                            while (usableTiles.Count < 24)
+                            {
+                                usableTiles.Add(filler);
+                            }
+                        }
+                        
                     }
-                }
-                for (int i = 0; i < 24; i++)
+                        for (int i = 0; i < 24; i++)
                 {
                     var tile = usableTiles[random.Next(0, usableTiles.Count - 1)];
                     var boardtile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
