@@ -80,11 +80,18 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 if (lobby.Host == Context.User.FindFirst(ClaimTypes.NameIdentifier).Value)
                 {
-                   var game = _gameService.NewGame(lobby);
-                   if (game?.Id != null)
-                   {
-                       await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
-                   }
+                    try
+                    {
+                        var game = _gameService.NewGame(lobby);
+                        if (game?.Id != null)
+                        {
+                            await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        await Clients.Group(lobby.Id).SendAsync("LobbyError",e.Message);
+                    }
                 }
             }
         }
