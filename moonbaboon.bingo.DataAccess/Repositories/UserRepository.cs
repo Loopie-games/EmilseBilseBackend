@@ -80,7 +80,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return user;
         }
 
-        public async Task<User?> ReadById(string id)
+        /// <summary>
+        /// Finds User with specified id
+        /// </summary>
+        /// <param name="id">unique user Identification</param>
+        /// <returns>A Task containing the user</returns>
+        /// <exception cref="Exception">No user with given id</exception>
+        public async Task<User> ReadById(string id)
         {
             User? user = null;
             await _connection.OpenAsync();
@@ -92,7 +98,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 user = ReaderToUser(reader);
             }
             await _connection.CloseAsync();
-            return user;
+            return user ?? throw new Exception("No user found with id: " + id);
         }
 
         public async Task<User> Create(User user)

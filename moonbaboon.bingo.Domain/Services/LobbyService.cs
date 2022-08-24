@@ -43,20 +43,24 @@ namespace moonbaboon.bingo.Domain.Services
             return lobby;
         }
 
-        public PendingPlayer? JoinLobby(string userId, string pin)
+        public PendingPlayer JoinLobby(string userId, string pin)
         {
             var user = _userRepository.ReadById(userId).Result;
             var lobby = _lobbyRepository.FindByPin(pin).Result;
-            if (lobby?.Id == null || user?.Id == null)
+            if (lobby?.Id == null)
             {
-                return null;
+                throw new Exception("lobby Id is null");
+            }
+            if (user?.Id == null)
+            {
+                throw new Exception("user Id is null");
             }
             var pp = _pendingPlayerRepository.IsPlayerInLobby(userId, lobby.Id).Result;
             if (pp != null)
             {
                 return pp;
             }
-            return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
+            return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result ?? throw new InvalidOperationException("Error Creating PendingPlayer in database");
         }
 
         public bool CloseLobby(string lobbyId, string hostId)

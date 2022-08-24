@@ -9,7 +9,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<List<User>> FindAll();
         public Task<List<UserSimple>> Search(string searchString);
         public Task<User?> Login(string dtoUsername, string dtoPassword);
-        public  Task<User?> ReadById(string id);
+        public  Task<User> ReadById(string id);
         public Task<User> Create(User user);
         public Task<bool> VerifyUsername(string username);
         public Task<string?> GetSalt(string username);
