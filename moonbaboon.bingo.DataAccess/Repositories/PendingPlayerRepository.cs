@@ -11,7 +11,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class PendingPlayerRepository :IPendingPlayerRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
-        public async Task<PendingPlayer?> Create(PendingPlayer toCreate)
+        public async Task<PendingPlayer> Create(PendingPlayer toCreate)
         {
             string uuid = Guid.NewGuid().ToString();
 
@@ -20,29 +20,19 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"INSERT INTO `{DBStrings.PendingPlayerTable}`(`{DBStrings.Id}`, `{DBStrings.UserId}`, `{DBStrings.LobbyId}`) " +
                 $"VALUES ('{uuid}','{toCreate.User.Id}','{toCreate.Lobby.Id}'); " +
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.PendingPlayerTable}.{DBStrings.UserId}, {DBStrings.LobbyTable}.* " +
+                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id} " +
                 $"FROM `{DBStrings.PendingPlayerTable}` " +
-                $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
                 $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.Id} = '{uuid}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 toCreate.Id = reader.GetValue(0).ToString();
-                var lobby = new Lobby(reader.GetValue(3).ToString())
-                {
-                    Id = reader.GetValue(2).ToString(),
-                    Pin = reader.GetValue(4).ToString()
-                };
-
-                toCreate.Lobby = lobby;
             }
-            
             await _connection.CloseAsync();
-
             if (toCreate.Id == null)
             {
-                throw new InvalidDataException($"ERROR: {nameof(PendingPlayer)} not created");
+                throw new Exception($"ERROR: {nameof(PendingPlayer)} not created");
             }
             return toCreate;
         }
@@ -125,7 +115,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
                 $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
                 $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} = '{lobbyId}' " +
-                    $"&& {DBStrings.PendingPlayerTable}.{DBStrings.UserId} = '{userId}'", 
+                $"&& {DBStrings.PendingPlayerTable}.{DBStrings.UserId} = '{userId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
