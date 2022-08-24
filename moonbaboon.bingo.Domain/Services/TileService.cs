@@ -63,5 +63,10 @@ namespace moonbaboon.bingo.Domain.Services
             }
             throw new Exception($"Something went wrong when creating the tile");
         }
+
+        public List<Tile> GetMadeByUserId(string userId)
+        {
+            return _tileRepository.FindMadeByUserId(userId).Result;
+        }
     }
 }
