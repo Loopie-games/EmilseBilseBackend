@@ -189,5 +189,28 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return tiles;
         }
+
+        public async Task<List<Tile>> FindMadeByUserId(string userId)
+        {
+            List<Tile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
+                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
+                $"FROM `{DBStrings.TileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.TileTable}.{DBStrings.AddedById} = '{userId}';"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while(await reader.ReadAsync())
+            {
+                tiles.Add(readerToTile(reader));
+            }
+            await _connection.CloseAsync();
+            return tiles;
+        }
     }
 }

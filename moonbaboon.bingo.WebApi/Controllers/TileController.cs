@@ -38,6 +38,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _tileService.GetAboutUserById(id);
         }
         
+        [HttpGet(nameof(GetMadeByUserId))]
+        public ActionResult<List<Tile>> GetMadeByUserId(string userId)
+        {
+            return _tileService.GetMadeByUserId(userId);
+        }
+        
         [Authorize]
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Tile))]
