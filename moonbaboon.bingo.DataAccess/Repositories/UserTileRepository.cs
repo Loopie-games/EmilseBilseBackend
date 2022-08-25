@@ -86,23 +86,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tile;
         }
 
-        public async Task<bool> Delete(string id)
-        {
-            bool success = false;
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DBStrings.UserTileTable}` WHERE `{DBStrings.Id}`='{id}'", _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
-            {
-                success = reader.GetBoolean(0); //DELETE statement only returns a boolean, so assumption can be made about return-type
-            }
-
-            await _connection.CloseAsync();
-            return success;
-        }
-
         public async Task<List<UserTile>> GetAboutUserById(string id)
         {
             List<UserTile> tiles = new();

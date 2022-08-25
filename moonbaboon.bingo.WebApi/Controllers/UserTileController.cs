@@ -61,13 +61,5 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
-        
-
-        [HttpPost(nameof(Delete))]
-        public ActionResult<bool> Delete(string id)
-        {
-            return _userTileService.DeleteTile(id);
-        }
     }
 }
