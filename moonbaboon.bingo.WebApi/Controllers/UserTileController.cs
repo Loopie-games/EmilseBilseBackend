@@ -54,7 +54,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var tile = _userTileService.NewTile(newTile.AboutUserId, newTile.Action,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                return CreatedAtAction(nameof(GetById), new {id = tile.Tile.Id}, tile);
+                return CreatedAtAction(nameof(GetById), new {id = tile.Id}, tile);
             }
             catch (Exception e)
             {

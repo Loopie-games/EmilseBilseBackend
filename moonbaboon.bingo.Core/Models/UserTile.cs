@@ -5,18 +5,24 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Core.Models
 {
-    public class UserTile
+    public class UserTile: ITile
     {
-        public UserTile(Tile tile, UserSimple user, UserSimple? addedBy)
+        public UserTile(string? id, string action, UserSimple user, UserSimple? addedBy)
         {
-            Tile = tile;
+            Id = id;
+            Action = action;
             User = user;
             AddedBy = addedBy;
         }
 
-        public Tile Tile { get; set; }
+        public string? Id { get; set; }
+        public string Action { get; set; }
+        
         public UserSimple User { get; set; }
 
         public UserSimple? AddedBy { get; set; }
+
+
+        
     }
 }

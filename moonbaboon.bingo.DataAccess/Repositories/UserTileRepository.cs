@@ -21,13 +21,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         private static UserTile ReaderToTile(MySqlDataReader reader)
         {
-            Tile tile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString());
-            
             UserSimple about = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
                 reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
             UserSimple addedBy = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
-            UserTile userTile = new(tile, about, addedBy);
+            UserTile userTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), about, addedBy);
 
             return userTile;
         }
