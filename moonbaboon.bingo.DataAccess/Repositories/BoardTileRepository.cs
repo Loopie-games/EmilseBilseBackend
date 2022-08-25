@@ -15,14 +15,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static string sql_select(string from)
         {
             return
-                $"SELECT BoardTile.Id, BoardTile.Position, BoardTile.IsActivated, " +
-                $"Board.id, Board.GameId, Board.UserId, " +
-                $"User.id, User.username, User.nickname, User.ProfilePicURL, " +
-                $"Tile.Id, Tile.Action " +
+                $"SELECT {DBStrings.BoardTileTable}.{DBStrings.Id}, {DBStrings.BoardTileTable}.{DBStrings.Position}, {DBStrings.BoardTileTable}.{DBStrings.IsActivated}, " +
+                $"{DBStrings.BoardTable}.{DBStrings.Id}, {DBStrings.BoardTable}.{DBStrings.GameId}, {DBStrings.BoardTable}.{DBStrings.UserId}, " +
+                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
+                $"{DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action} " +
                 $"FROM {from} " +
-                $"JOIN Board ON BoardTile.BoardId = Board.id " +
-                $"JOIN User on BoardTile.AboutUserId = User.id " +
-                $"JOIN Tile ON BoardTile.TileId = Tile.Id ";
+                $"JOIN {DBStrings.BoardTable} ON {DBStrings.BoardTileTable}.{DBStrings.BoardId} = {DBStrings.BoardTable}.{DBStrings.Id} " +
+                $"JOIN {DBStrings.UserTable} on {DBStrings.BoardTileTable}.{DBStrings.AboutUserId} = {DBStrings.UserTable}.{DBStrings.Id} " +
+                $"JOIN {DBStrings.TileTable} ON {DBStrings.BoardTileTable}.{DBStrings.TileId} = {DBStrings.TileTable}.{DBStrings.Id} ";
         }
         
         private static BoardTile ReaderToBoardTile(MySqlDataReader reader)

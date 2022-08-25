@@ -67,6 +67,7 @@ namespace moonbaboon.bingo.DataAccess
         //Rows
         public const string BoardId = "BoardId";
         public const string TileId = "TileId";
+        public const string AboutUserId = "AboutUserId";
         public const string Position = "Position";
         public const string IsActivated = "IsActivated";
 
