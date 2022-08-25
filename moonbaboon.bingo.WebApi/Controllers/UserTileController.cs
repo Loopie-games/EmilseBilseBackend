@@ -13,11 +13,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
     //[Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class TileController : ControllerBase
+    public class UserTileController : ControllerBase
     {
         private readonly IUserTileService _userTileService;
 
-        public TileController(IUserTileService userTileService)
+        public UserTileController(IUserTileService userTileService)
         {
             _userTileService = userTileService;
         }
@@ -54,7 +54,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var tile = _userTileService.NewTile(newTile.AboutUserId, newTile.Action,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-                return CreatedAtAction(nameof(GetById), new {id = tile.Id}, tile);
+                return CreatedAtAction(nameof(GetById), new {id = tile.Tile.Id}, tile);
             }
             catch (Exception e)
             {
