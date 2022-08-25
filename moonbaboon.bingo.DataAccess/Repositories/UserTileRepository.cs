@@ -74,7 +74,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 SqlSelect(DBStrings.UserTileTable) + 
-                $"WHERE ({DBStrings.UserTileTable}.{DBStrings.Action} ='filler' AND {DBStrings.UserTileTable}.{DBStrings.UserId} ='{userId}');"
+                $"WHERE ({DBStrings.TileTable}.{DBStrings.Action} ='filler' AND {DBStrings.UserTileTable}.{DBStrings.UserId} ='{userId}');"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
