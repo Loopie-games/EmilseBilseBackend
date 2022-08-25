@@ -81,7 +81,7 @@ namespace moonbaboon.bingo.Domain.Services
                 for (var i = 0; i < 24; i++)
                 {
                     var tile = usableTiles[_random.Next(0, usableTiles.Count - 1)];
-                    var boardTile = _boardTileRepository.Create(new BoardTile(board,tile.Id,i, false)).Result;
+                    var boardTile = _boardTileRepository.Create(new BoardTile(null, board, tile, tile.User, i, false)).Result;
                     usableTiles.Remove(tile);
                 }
             }

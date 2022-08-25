@@ -38,7 +38,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
             foreach (var boardTile in boardTiles)
             {
-                var tile = _userTileService.GetById(boardTile.TileId);
+                var tile = _userTileService.GetById(boardTile.Tile.Id);
                 list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
             }
 
@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
             foreach (var boardTile in boardTiles)
             {
-                var tile = _userTileService.GetById(boardTile.TileId);
+                var tile = _userTileService.GetById(boardTile.Tile.Id);
                 list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
             }
 
