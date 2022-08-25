@@ -2,9 +2,11 @@
 {
     public class Lobby
     {
-        public Lobby(string host)
+        public Lobby(string? id, string host, string? pin)
         {
+            Id = id;
             Host = host;
+            Pin = pin;
         }
 
         public string? Id { get; set; }

@@ -47,20 +47,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
         
         [Authorize]
         [HttpGet(nameof(GetByGameId) + "/{gameId}")]
-        public ActionResult<List<BoardTileDto>> GetByGameId(string gameId)
+        public ActionResult<List<BoardTile>> GetByGameId(string gameId)
         {
             var board = _boardService.GetByUserAndGameId(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                 gameId);
             var boardTiles = _boardTileService.GetByBoardId(board.Id);
-            List<BoardTileDto> list = new();
 
-            foreach (var boardTile in boardTiles)
-            {
-                var tile = _userTileService.GetById(boardTile.Tile.Id);
-                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
-            }
-
-            return list;
+            return boardTiles;
         }
 
         [HttpPost(nameof(Create))]

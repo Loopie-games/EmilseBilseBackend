@@ -2,7 +2,7 @@
 {
     public class BoardTile
     {
-        public BoardTile(string? id, Board board, ITile tile, UserSimple aboutUser, int position, bool isActivated)
+        public BoardTile(string? id, Board board, Tile tile, UserSimple aboutUser, int position, bool isActivated)
         {
             Id = id;
             Board = board;
@@ -14,7 +14,7 @@
 
         public string? Id { get; set; }
         public Board Board { get; set; }
-        public ITile Tile { get; set; }
+        public Tile Tile { get; set; }
         
         public UserSimple AboutUser { get; set;}
         public int Position { get; set; }

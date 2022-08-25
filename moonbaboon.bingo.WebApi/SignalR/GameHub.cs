@@ -83,7 +83,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 {
                     _lobbyService.CloseLobby(lobby.Id!, hostId);
                 }
-                lobby = _lobbyService.Create(new Lobby(hostId));
+                lobby = _lobbyService.Create(hostId);
                 if (lobby?.Id != null)
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
@@ -115,7 +115,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                         try
                         {
                             var game = _gameService.NewGame(lobby);
-                            if (game?.Id != null)
+                            if (game.Id != null)
                             {
                                 await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
                             }

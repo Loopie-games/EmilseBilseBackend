@@ -34,7 +34,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             UserSimple user = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
-            ITile tile = new Tile(reader.GetValue(10).ToString(), reader.GetValue(11).ToString());
+            Tile tile = new Tile(reader.GetValue(10).ToString(), reader.GetValue(11).ToString());
             BoardTile boardTile = new(reader.GetValue(0).ToString(), board, tile, user, Convert.ToInt32(reader.GetValue(1).ToString()), bool.TryParse(reader.GetValue(2).ToString(), out var isActivated));
 
             return boardTile;
@@ -60,20 +60,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;        
         }
 
-        public async Task<BoardTile?> Create(BoardTile toCreate)
+        public async Task<BoardTile> Create(BoardTile toCreate)
         {
             string uuid = Guid.NewGuid().ToString();
             BoardTile? ent = null;
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{DBStrings.BoardTileTable}`(`{DBStrings.Id}`, `{DBStrings.BoardId}`, `{DBStrings.TileId}`, `{DBStrings.Position}`, `{DBStrings.IsActivated}`) " +
-                $"VALUES ('{uuid}','{toCreate.Board.Id}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
-                $"SELECT {DBStrings.BoardTileTable}.{DBStrings.Id}, " +
-                $"{DBStrings.BoardTable}.{DBStrings.Id}, {DBStrings.BoardTable}.{DBStrings.GameId}, {DBStrings.BoardTable}.{DBStrings.UserId}, " +
-                $"{DBStrings.BoardTileTable}.{DBStrings.TileId}, {DBStrings.BoardTileTable}.{DBStrings.Position}, {DBStrings.BoardTileTable}.{DBStrings.IsActivated} " +
-                $"FROM {DBStrings.BoardTileTable} " +
-                $"JOIN {DBStrings.BoardTable} ON {DBStrings.BoardTable}.{DBStrings.Id} = {DBStrings.BoardTileTable}.{DBStrings.BoardId} " +
+                $"INSERT INTO {DBStrings.BoardTileTable} " +
+                $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
+                sql_select(DBStrings.BoardTileTable) +
                 $"WHERE {DBStrings.BoardTileTable}.{DBStrings.Id} = '{uuid}';", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
@@ -98,11 +94,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.BoardTileTable}.{DBStrings.Id}, " +
-                $"{DBStrings.BoardTable}.{DBStrings.Id}, {DBStrings.BoardTable}.{DBStrings.GameId}, {DBStrings.BoardTable}.{DBStrings.UserId}, " +
-                $"{DBStrings.BoardTileTable}.{DBStrings.TileId}, {DBStrings.BoardTileTable}.{DBStrings.Position}, {DBStrings.BoardTileTable}.{DBStrings.IsActivated} " +
-                $"FROM {DBStrings.BoardTileTable} " +
-                $"JOIN {DBStrings.BoardTable} ON {DBStrings.BoardTable}.{DBStrings.Id} = {DBStrings.BoardTileTable}.{DBStrings.BoardId} " +
+                sql_select(DBStrings.BoardTileTable) +
                 $"WHERE {DBStrings.BoardTileTable}.{DBStrings.BoardId} = '{id}';", 
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();

@@ -40,7 +40,9 @@ namespace moonbaboon.bingo.Domain.Services
         //Todo description
         public Game NewGame(Lobby lobby)
         {
-            var game = _gameRepository.Create(lobby.Host).Result;
+            try
+            {
+                var game = _gameRepository.Create(lobby.Host).Result;
             if (game == null) throw new Exception("Game wasn't created");
             
             var players = 
@@ -81,12 +83,18 @@ namespace moonbaboon.bingo.Domain.Services
                 for (var i = 0; i < 24; i++)
                 {
                     var tile = usableTiles[_random.Next(0, usableTiles.Count - 1)];
-                    var boardTile = _boardTileRepository.Create(new BoardTile(null, board, tile, tile.User, i, false)).Result;
+                    var boardTile = _boardTileRepository.Create(new BoardTile(null, board, new Tile(tile.Id, tile.Action), tile.User, i, false)).Result;
                     usableTiles.Remove(tile);
                 }
             }
 
             return game;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public List<UserSimple> GetPlayers(string gameId)
