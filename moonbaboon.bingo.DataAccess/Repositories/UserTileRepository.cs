@@ -11,7 +11,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
-        private string SqlSelect(string from)
+        private static string SqlSelect(string from)
         {
             return $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
                    $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
@@ -128,10 +128,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
+                $"INSERT INTO {DBStrings.TileTable} " +
+                $"VALUES ('{uuid}', '{action}');" +
                 $"INSERT INTO {DBStrings.UserTileTable} " +
-                $"VALUES ('{uuid}','{userId}', '{action}','{addedById}'); " +
+                $"VALUES ('{uuid}','{userId}', '{addedById}'); " +
                 SqlSelect(DBStrings.UserTileTable) + 
-                $"WHERE {DBStrings.UserTileTable}.{DBStrings.Id} = '{uuid}'"
+                $"WHERE {DBStrings.UserTileTable}.{DBStrings.TileId} = '{uuid}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
