@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Core.Models
 {
-    public class Tile
+    public class UserTile
     {
-        public Tile(UserSimple user, string action, UserSimple? addedBy)
+        public UserTile(UserSimple user, string action, UserSimple? addedBy)
         {
             User = user;
             Action = action;

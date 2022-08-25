@@ -14,13 +14,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
     public class BoardTileController: ControllerBase
     {
         private readonly IBoardTileService _boardTileService;
-        private readonly ITileService _tileService;
+        private readonly IUserTileService _userTileService;
         private readonly IBoardService _boardService;
 
-        public BoardTileController(IBoardTileService boardTileService, ITileService tileService, IBoardService boardService)
+        public BoardTileController(IBoardTileService boardTileService, IUserTileService userTileService, IBoardService boardService)
         {
             _boardTileService = boardTileService;
-            _tileService = tileService;
+            _userTileService = userTileService;
             _boardService = boardService;
         }
 
@@ -38,7 +38,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
             foreach (var boardTile in boardTiles)
             {
-                var tile = _tileService.GetById(boardTile.TileId);
+                var tile = _userTileService.GetById(boardTile.TileId);
                 list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
             }
 
@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
             foreach (var boardTile in boardTiles)
             {
-                var tile = _tileService.GetById(boardTile.TileId);
+                var tile = _userTileService.GetById(boardTile.TileId);
                 list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
             }
 

@@ -56,13 +56,13 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 if (board == null) throw new Exception("Board wasn't created for player with username " + player.User.Username);
                 
-                List<Tile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
+                List<UserTile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
                 if (usableTiles.Count < 24)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
 
                     var i = (24 - usableTiles.Count) / usablePlayers.Count;
-                        Tile? filler = null;
+                        UserTile? filler = null;
                         foreach (var pp in usablePlayers)
                         {
                             filler = _userTileRepository.FindFiller(pp.User.Id!).Result ?? _userTileRepository.Create(pp.User.Id!,

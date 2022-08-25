@@ -11,23 +11,23 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
-        public Tile readerToTile(MySqlDataReader reader)
+        public UserTile readerToTile(MySqlDataReader reader)
         {
             UserSimple about = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
                 reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
             UserSimple addedBy = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
-            Tile tile = new Tile(about, reader.GetValue(1).ToString(), addedBy)
+            UserTile userTile = new UserTile(about, reader.GetValue(1).ToString(), addedBy)
             {
                 Id = reader.GetValue(0).ToString()
             };
 
-            return tile;
+            return userTile;
         }
 
-        public async Task<List<Tile>> FindAll()
+        public async Task<List<UserTile>> FindAll()
         {
-            List<Tile> tiles = new();
+            List<UserTile> tiles = new();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
@@ -47,9 +47,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tiles;
         }
 
-        public async Task<Tile?> FindById(string id)
+        public async Task<UserTile?> FindById(string id)
         {
-            Tile? tile = null;
+            UserTile? tile = null;
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
@@ -71,9 +71,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tile;
         }
 
-        public async Task<Tile?> FindFiller(string userId)
+        public async Task<UserTile?> FindFiller(string userId)
         {
-            Tile? tile = null;
+            UserTile? tile = null;
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
@@ -112,9 +112,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return success;
         }
 
-        public async Task<List<Tile>> GetAboutUserById(string id)
+        public async Task<List<UserTile>> GetAboutUserById(string id)
         {
-            List<Tile> tiles = new();
+            List<UserTile> tiles = new();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
@@ -135,9 +135,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tiles;
         }
 
-        public async Task<Tile?> Create(string userId, string action, string addedById)
+        public async Task<UserTile?> Create(string userId, string action, string addedById)
         {
-            Tile? ent = null;
+            UserTile? ent = null;
             var uuid = Guid.NewGuid().ToString();
             await _connection.OpenAsync();
 
@@ -162,7 +162,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        public async Task<List<Tile>> GetTilesForBoard(string lobbyId, string userId)
+        public async Task<List<UserTile>> GetTilesForBoard(string lobbyId, string userId)
         {
             var sqlcommand =
                 $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
@@ -176,7 +176,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"JOIN {DBStrings.UserTable} As U1 ON {DBStrings.UserTileTable}.{DBStrings.UserId} = U1.id " +
                 $"JOIN {DBStrings.UserTable} As U2 ON {DBStrings.UserTileTable}.{DBStrings.AddedById} = U2.id";
             
-            List<Tile> tiles = new();
+            List<UserTile> tiles = new();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(sqlcommand
@@ -190,9 +190,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return tiles;
         }
 
-        public async Task<List<Tile>> FindMadeByUserId(string userId)
+        public async Task<List<UserTile>> FindMadeByUserId(string userId)
         {
-            List<Tile> tiles = new();
+            List<UserTile> tiles = new();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(

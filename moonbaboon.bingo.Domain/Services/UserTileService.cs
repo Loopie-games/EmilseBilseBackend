@@ -6,30 +6,30 @@ using System.Collections.Generic;
 
 namespace moonbaboon.bingo.Domain.Services
 {
-    public class TileService : ITileService
+    public class UserTileService : IUserTileService
     {
         private readonly IUserTileRepository _userTileRepository;
         private readonly IUserRepository _userRepository;
         private readonly IFriendshipRepository _friendshipRepository;
 
-        public TileService(IUserTileRepository userTileRepository, IUserRepository userRepository, IFriendshipRepository friendshipRepository)
+        public UserTileService(IUserTileRepository userTileRepository, IUserRepository userRepository, IFriendshipRepository friendshipRepository)
         {
             _userTileRepository = userTileRepository;
             _userRepository = userRepository;
             _friendshipRepository = friendshipRepository;
         }
 
-        public Tile? Create(string userId, string action, string addedById)
+        public UserTile? Create(string userId, string action, string addedById)
         {
             return _userTileRepository.Create(userId, action, addedById).Result;
         }
 
-        public List<Tile> GetAll()
+        public List<UserTile> GetAll()
         {
             return _userTileRepository.FindAll().Result;
         }
 
-        public Tile? GetById(string id)
+        public UserTile? GetById(string id)
         {
             return _userTileRepository.FindById(id).Result;
         }
@@ -39,17 +39,17 @@ namespace moonbaboon.bingo.Domain.Services
             return _userTileRepository.Delete(id).Result;
         }
 
-        public List<Tile> GetAboutUserById(string id)
+        public List<UserTile> GetAboutUserById(string id)
         {
             return _userTileRepository.GetAboutUserById(id).Result;
         }
 
-        public Tile NewTile(string tileAboutUserId, string tileAction, string tileAddedByUserId)
+        public UserTile NewTile(string tileAboutUserId, string tileAction, string tileAddedByUserId)
         {
             var user = _userRepository.ReadById(tileAboutUserId).Result;
             if (user?.Id is null)
             {
-                throw new Exception($"The {nameof(User)} you are trying to add a {nameof(Tile)} to, does not exist");
+                throw new Exception($"The {nameof(User)} you are trying to add a {nameof(UserTile)} to, does not exist");
             }
             var isFriends = _friendshipRepository.ValidateFriendship(user.Id, tileAddedByUserId).Result;
             if (!isFriends)
@@ -64,7 +64,7 @@ namespace moonbaboon.bingo.Domain.Services
             throw new Exception($"Something went wrong when creating the tile");
         }
 
-        public List<Tile> GetMadeByUserId(string userId)
+        public List<UserTile> GetMadeByUserId(string userId)
         {
             return _userTileRepository.FindMadeByUserId(userId).Result;
         }

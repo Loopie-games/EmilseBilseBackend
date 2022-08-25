@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
 {
     public class ITileServiceTest
     {
-        private readonly Mock<ITileService> _service = new Mock<ITileService>();
+        private readonly Mock<IUserTileService> _service = new Mock<IUserTileService>();
 
         [Fact]
         public void ITileService_IsAvailable()
@@ -23,7 +23,7 @@ namespace moonbaboon.bingo.Domain.Test.IService
         [Fact]
         public void GetAllTiles()
         {
-            List<Tile> fakeTiles = new List<Tile>();
+            List<UserTile> fakeTiles = new List<UserTile>();
             _service.Setup(service => service.GetAll())
                 .Returns(fakeTiles);
             Assert.Equal(fakeTiles, _service.Object.GetAll());
