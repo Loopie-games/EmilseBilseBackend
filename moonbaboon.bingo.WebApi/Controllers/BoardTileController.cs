@@ -31,18 +31,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
         
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
-        public ActionResult<List<BoardTileDto>> GetByBoardId(string id)
+        public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
             var boardTiles = _boardTileService.GetByBoardId(id);
-            List<BoardTileDto> list = new();
+            
 
-            foreach (var boardTile in boardTiles)
-            {
-                var tile = _userTileService.GetById(boardTile.Tile.Id);
-                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
-            }
-
-            return list;
+            return boardTiles;
         }
         
         [Authorize]
