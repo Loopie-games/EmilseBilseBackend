@@ -110,7 +110,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 SqlSelect(DBStrings.UserTileTable) +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
                 $"WHERE {DBStrings.UserTileTable}.{DBStrings.UserId} = '{id}';"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
