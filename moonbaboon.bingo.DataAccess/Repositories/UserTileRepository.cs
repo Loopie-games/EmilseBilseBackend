@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
-    public class UserUserTileRepository : IUserTileRepository
+    public class UserTileRepository : IUserTileRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
