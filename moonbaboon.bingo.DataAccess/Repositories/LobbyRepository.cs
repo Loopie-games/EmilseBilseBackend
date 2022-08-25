@@ -118,11 +118,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        public async Task<Lobby?> FindByPin(string pin)
+        /// <summary>
+        /// Finds the Lobby corresponding to the given Pin
+        /// </summary>
+        /// <param name="pin">Specific pin for lobby</param>
+        /// <returns>Task with the Lobby as Result</returns>
+        /// <exception cref="Exception">If No lobby with given Pin Exists</exception>
+        public async Task<Lobby> FindByPin(string pin)
         {
             Lobby? ent = null;
             await _connection.OpenAsync();
-
             await using var command = new MySqlCommand(
                 $"SELECT * FROM {DBStrings.LobbyTable} " +
                 $"WHERE {DBStrings.LobbyTable}.{DBStrings.Pin} = '{pin}'", 
@@ -140,7 +145,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
             }
             await _connection.CloseAsync();
-            return ent;
+            return ent ?? throw new Exception("No Lobby with given Id");
         }
 
         public async Task<bool> DeleteLobby(string lobbyId)

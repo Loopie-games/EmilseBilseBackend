@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -16,61 +17,90 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly ILobbyService _lobbyService;
         private readonly IPendingPlayerService _pendingPlayerService;
         private readonly IGameService _gameService;
-        private readonly IBoardService _boardService;
-
-
-        public override Task OnConnectedAsync()
-        {
-            //Console.WriteLine(Context.User.Identity.Name);
-            return base.OnConnectedAsync();
-        }
-
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService)
+        
+        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
             _gameService = gameService;
-            _boardService = boardService;
         }
 
-        public async Task JoinLobby(string userId, string pin)
+        /// <summary>
+        /// Send en Error message to the client
+        /// </summary>
+        /// <param name="message">Error Message</param>
+        private async Task SendError(string message)
         {
-            var pp = _lobbyService.JoinLobby(userId, pin);
-            if (pp?.Lobby.Id != null)
+            await Clients.Caller.SendAsync("PopUpError", message);
+        }
+        
+        /// <summary>
+        /// Gets UserId From Authorized user 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>userId</returns>
+        /// <exception cref="Exception">if user is null</exception>
+        /// <exception cref="InvalidOperationException">if user id cant be found</exception>
+        private string GetUserId(HubCallerContext context)
+        {
+            if (context.User== null) throw new Exception("Could not get user from Context");
+            return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("Could not get userId from Context");
+
+        }
+
+        /// <summary>
+        /// Adds Authorized user to lobby and sends updates to clients
+        /// </summary>
+        /// <param name="pin">Pin for lobby</param>
+        /// <exception cref="Exception">If User cant be added.</exception>
+        
+        public async Task JoinLobby(string pin)
+        {
+            try
             {
-                
-                await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id);
+                var pp = _lobbyService.JoinLobby(GetUserId(Context), pin);
+                await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id!);
                 await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
-                List<PendingPlayerDto> playerlist = new();
-                foreach (var player in _pendingPlayerService.GetByLobbyId(pp.Lobby.Id))
-                {
-                    playerlist.Add(new PendingPlayerDto(player));
-                }
-                
-                await Clients.Group(pp.Lobby.Id).SendAsync("lobbyPlayerListUpdate", playerlist);
+                var playerList = _pendingPlayerService.GetByLobbyId(pp.Lobby.Id!).Select(p => new PendingPlayerDto(p)).ToList();
+                await Clients.Group(pp.Lobby.Id!).SendAsync("lobbyPlayerListUpdate", playerList);
+            }
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
             }
         }
+        
+        
 
         public async Task CreateLobby(string hostId)
         {
-            var lobby = _lobbyService.GetByHostId(hostId);
-            if (lobby?.Id != null)
+            try
             {
-                _lobbyService.CloseLobby(lobby.Id, hostId);
-            }
-            lobby = _lobbyService.Create(new Lobby(hostId));
-            if (lobby?.Id != null)
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
-                List<PendingPlayerDto> playerlist = new();
-                foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                var lobby = _lobbyService.GetByHostId(hostId);
+                //if user is already host for a lob
+                if (lobby is not null)
                 {
-                    playerlist.Add(new PendingPlayerDto(player));
+                    _lobbyService.CloseLobby(lobby.Id!, hostId);
                 }
-                await Clients.Caller.SendAsync("receiveLobby", lobby);
-                await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerlist);
+                lobby = _lobbyService.Create(new Lobby(hostId));
+                if (lobby?.Id != null)
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
+                    List<PendingPlayerDto> playerList = new();
+                    foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                    {
+                        playerList.Add(new PendingPlayerDto(player));
+                    }
+                    await Clients.Caller.SendAsync("receiveLobby", lobby);
+                    await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerList);
+                }
             }
-
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
+            }
         }
 
         public async Task StartGame(StartGameDtos sg)
@@ -78,7 +108,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             var lobby = _lobbyService.GetById(sg.LobbyId);
             if (lobby?.Id is not null)
             {
-                if (lobby.Host == Context.User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                if (lobby.Host == GetUserId(Context))
                 {
                     try
                     {
@@ -108,21 +138,13 @@ namespace moonbaboon.bingo.WebApi.SignalR
         {
             if (_lobbyService.LeaveLobby(ll.LobbyId, ll.UserId))
             {
-                List<PendingPlayerDto> playerlist = new();
+                List<PendingPlayerDto> playerList = new();
                 foreach (var player in _pendingPlayerService.GetByLobbyId(ll.LobbyId))
                 {
-                    playerlist.Add(new PendingPlayerDto(player));
+                    playerList.Add(new PendingPlayerDto(player));
                 }
-                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", playerlist);            }
+                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", playerList);            }
         }
 
-    }
-    
-    public class UserIdProvider: IUserIdProvider
-    {
-        public string? GetUserId(HubConnectionContext connection)
-        {
-            return connection.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        }
     }
 }
