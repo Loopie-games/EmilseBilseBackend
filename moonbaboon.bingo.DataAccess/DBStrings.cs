@@ -30,8 +30,8 @@ namespace moonbaboon.bingo.DataAccess
         public const string Salt = "Salt";
         public const string ProfilePic = "ProfilePicURL";
         
-        //Tile
-        public const string TileTable = "BingoTile";
+        //UserTile
+        public const string UserTileTable = "UserTile";
 
         //Rows
         public const string UserId = "UserId";

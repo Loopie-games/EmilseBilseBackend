@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -76,6 +77,29 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 throw new InvalidDataException($"ERROR: {nameof(PendingPlayer)} not created");
             }
             return ent;
+        }
+
+        public async Task<List<UserSimple>> GetPlayers(string gameId)
+        {
+            var list = new List<UserSimple>();
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT User.id, User.username, User.nickname, User.ProfilePicURL " +
+                $"From (SELECT Board.UserId as u1 FROM `Game` " +
+                $"JOIN Board ON Board.GameId = Game.Id " +
+                $"WHERE Game.Id = '{gameId}') As b " +
+                $"JOIN User ON b.u1 = User.id", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var ent = new UserSimple(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                    reader.GetValue(2).ToString(), reader.GetValue(3).ToString());
+                list.Add(ent);
+            }
+            await _connection.CloseAsync();
+            return list;
         }
     }
 }

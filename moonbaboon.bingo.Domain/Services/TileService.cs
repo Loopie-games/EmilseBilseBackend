@@ -1,76 +1,72 @@
-﻿using moonbaboon.bingo.Core.IServices;
+﻿using System;
+using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Domain.Services
 {
     public class TileService : ITileService
     {
-        private readonly ITileRepository _tileRepository;
+        private readonly IUserTileRepository _userTileRepository;
         private readonly IUserRepository _userRepository;
         private readonly IFriendshipRepository _friendshipRepository;
 
-        public TileService(ITileRepository tileRepository, IUserRepository userRepository, IFriendshipRepository friendshipRepository)
+        public TileService(IUserTileRepository userTileRepository, IUserRepository userRepository, IFriendshipRepository friendshipRepository)
         {
-            _tileRepository = tileRepository;
+            _userTileRepository = userTileRepository;
             _userRepository = userRepository;
             _friendshipRepository = friendshipRepository;
         }
 
-        public Tile? CreateTile(Tile tileToCreate)
+        public Tile? Create(string userId, string action, string addedById)
         {
-            return _tileRepository.Create(tileToCreate).Result;
+            return _userTileRepository.Create(userId, action, addedById).Result;
         }
 
         public List<Tile> GetAll()
         {
-            return _tileRepository.FindAll().Result;
+            return _userTileRepository.FindAll().Result;
         }
 
         public Tile? GetById(string id)
         {
-            return _tileRepository.FindById(id).Result;
-        }
-
-        public TileForUser? CreateTile_TileForUser(TileNewFromUser tileToCreate)
-        {
-            //getting UserId
-            var aboutUser = _userRepository.GetByUsername(tileToCreate.AboutUserName).Result;
-            if (aboutUser is null || aboutUser.Id is null)
-            {
-                return null;
-            }
-            
-            Console.Out.WriteLine(aboutUser.Id);
-            
-            //validating friendship between users
-            if (!_friendshipRepository.ValidateFriendship(aboutUser.Id, tileToCreate.AddedByUserId).Result)
-            {
-                return null;
-            }
-            return _tileRepository.CreateTile_TileForUser(new Tile(aboutUser.Id, tileToCreate.Action)
-            {
-                AddedById = tileToCreate.AddedByUserId
-            }).Result;
+            return _userTileRepository.FindById(id).Result;
         }
 
         public bool DeleteTile(string id)
         {
-            return _tileRepository.Delete(id).Result;
+            return _userTileRepository.Delete(id).Result;
         }
 
         public List<Tile> GetAboutUserById(string id)
         {
-            return _tileRepository.GetAboutUserById(id).Result;
+            return _userTileRepository.GetAboutUserById(id).Result;
         }
 
-        public List<TileForUser> GetAboutUserById_TileForUser(string id)
+        public Tile NewTile(string tileAboutUserId, string tileAction, string tileAddedByUserId)
         {
-            return _tileRepository.GetAboutUserById_TileForUser(id).Result;
+            var user = _userRepository.ReadById(tileAboutUserId).Result;
+            if (user?.Id is null)
+            {
+                throw new Exception($"The {nameof(User)} you are trying to add a {nameof(Tile)} to, does not exist");
+            }
+            var isFriends = _friendshipRepository.ValidateFriendship(user.Id, tileAddedByUserId).Result;
+            if (!isFriends)
+            {
+                throw new Exception($"You need to be friends to add tiles");
+            }
+            var tile = _userTileRepository.Create(user.Id, tileAction, tileAddedByUserId).Result;
+            if (tile is not null)
+            {
+                return tile;
+            }
+            throw new Exception($"Something went wrong when creating the tile");
+        }
+
+        public List<Tile> GetMadeByUserId(string userId)
+        {
+            return _userTileRepository.FindMadeByUserId(userId).Result;
         }
     }
 }

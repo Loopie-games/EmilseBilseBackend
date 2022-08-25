@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,24 @@ namespace moonbaboon.bingo.WebApi
                     ValidIssuer = Configuration["JWT:Issuer"],
                     ValidAudience = Configuration["JWT:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Key)
+                };
+                o.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+
+                        // If the request is for our hub...
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                            (path.StartsWithSegments("/game")))
+                        {
+                            // Read the token out of the query string
+                            context.Token = accessToken;
+                            
+                        }
+                        return Task.CompletedTask;
+                    }
                 };
             });
 
@@ -115,13 +134,15 @@ namespace moonbaboon.bingo.WebApi
             });
 
             //Setting up dependency injection
-
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
             
+            //Auth
+            services.AddScoped<IAuthService, AuthService>();
+            
             //Tiles
-            services.AddScoped<ITileRepository, TileRepository>();
+            services.AddScoped<IUserTileRepository, UserUserTileRepository>();
             services.AddScoped<ITileService, TileService>();
             
             //Friendships

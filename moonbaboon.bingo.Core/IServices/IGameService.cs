@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.Models;
+﻿using System.Collections.Generic;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Core.IServices
 {
@@ -6,6 +7,8 @@ namespace moonbaboon.bingo.Core.IServices
     {
         public Game? GetById(string id);
         
-        public Game? Create(string lobbyId, string hostId);
+        public Game? Create(string hostId);
+        public Game? NewGame(Lobby lobby);
+        public List<UserSimple> GetPlayers(string gameId);
     }
 }

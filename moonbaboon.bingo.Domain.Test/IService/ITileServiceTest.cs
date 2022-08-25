@@ -28,6 +28,8 @@ namespace moonbaboon.bingo.Domain.Test.IService
                 .Returns(fakeTiles);
             Assert.Equal(fakeTiles, _service.Object.GetAll());
         }
+        
+        /*
 
         [Fact]
         public void GetTileById_NotNullIfFound()
@@ -61,5 +63,6 @@ namespace moonbaboon.bingo.Domain.Test.IService
                 .Returns(testTile);
             Assert.Equal(testTile, _service.Object.GetById(tileId));
         }
+        */
     }
 }

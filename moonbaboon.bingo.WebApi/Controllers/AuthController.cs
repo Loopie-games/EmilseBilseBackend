@@ -15,14 +15,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-
-        private readonly IUserService _service;
         private readonly IConfiguration _configuration;
+        private readonly IUserService _service;
+        private readonly IAuthService _authService;
 
-        public AuthController(IUserService service, IConfiguration configuration)
+        public AuthController(IUserService service, IConfiguration configuration, IAuthService authService)
         {
             _service = service;
             _configuration = configuration;
+            _authService = authService;
         }
 
         [HttpPost]
@@ -32,21 +33,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
             if (user == null)
                 return BadRequest("User does not exist");
             
-            var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim("UserID", user.Id!)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(10),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
             
-            return Ok(new AuthResponse {UUID = user.Id!, JWT = tokenHandler.WriteToken(token)});
+            return Ok(new AuthResponse {UUID = user.Id!, JWT = _authService.EncodeJwt(user, tokenKey)});
         }
 
         public class AuthResponse

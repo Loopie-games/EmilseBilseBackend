@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Domain.IRepositories
 {
-    public interface ITileRepository
+    public interface IUserTileRepository
     {
-        public Task<Tile?> Create(Tile tileToCreate);
+        public Task<Tile?> Create(string userId, string action, string addedById);
         public Task<List<Tile>> FindAll();
         public Task<Tile?> FindById(string id);
+        public Task<Tile?> FindFiller(string userId);
         public Task<bool> Delete(string id);
         public Task<List<Tile>> GetAboutUserById(string id);
-        public Task<List<TileForUser>> GetAboutUserById_TileForUser(string id);
-        public Task<TileForUser?> CreateTile_TileForUser(Tile tileToCreate);
+        public Task<List<Tile>> GetTilesForBoard(string lobbyId, string userId);
+        public Task<List<Tile>> FindMadeByUserId(string userId);
     }
 }

@@ -18,19 +18,14 @@ namespace moonbaboon.bingo.Domain.Services
             _userRepository = userRepository;
         }
 
-        public LobbyForUser? GetById(string id)
+        public Lobby? GetById(string id)
         {
-            return _lobbyRepository.FindById_ForUser(id).Result;
+            return _lobbyRepository.FindById(id).Result;
         }
 
         public Lobby? GetByHostId(string hostId)
         {
             return _lobbyRepository.FindByHostId(hostId).Result;
-        }
-
-        public Lobby? FindByPin(string pin)
-        {
-            return _lobbyRepository.FindByPin(pin).Result;
         }
 
         public Lobby? Create(Lobby lobbyToCreate)
@@ -43,20 +38,24 @@ namespace moonbaboon.bingo.Domain.Services
             return lobby;
         }
 
-        public PendingPlayer? JoinLobby(string userId, string pin)
+        
+        public PendingPlayer JoinLobby(string userId, string pin)
         {
-            var user = _userRepository.ReadById(userId).Result;
-            var lobby = _lobbyRepository.FindByPin(pin).Result;
-            if (lobby?.Id == null || user?.Id == null)
+            try
             {
-                return null;
+                User user = _userRepository.ReadById(userId).Result;
+                Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
+                var pp = _pendingPlayerRepository.IsPlayerInLobby(userId, lobby.Id!).Result;
+                
+                //if user already is in the lobby the PendingPlayer is returned, else a new is created
+                return pp ?? _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
             }
-            var pp = _pendingPlayerRepository.IsPlayerInLobby(userId, lobby.Id).Result;
-            if (pp != null)
+            catch (Exception e)
             {
-                return pp;
+                Console.WriteLine(e);
+                throw;
             }
-            return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
+            
         }
 
         public bool CloseLobby(string lobbyId, string hostId)

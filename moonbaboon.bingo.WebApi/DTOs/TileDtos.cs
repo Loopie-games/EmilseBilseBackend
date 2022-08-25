@@ -1,18 +1,18 @@
-﻿namespace moonbaboon.bingo.WebApi.DTOs
-{
-    public class CreateResponse
-    {
-        public string Id;
-        public string AddedByUsername;
-        public string Action;
-        public string AboutUsername;
+﻿using System.ComponentModel.DataAnnotations;
 
-        public CreateResponse(string addedByUsername, string action, string aboutUsername, string id)
+namespace moonbaboon.bingo.WebApi.DTOs
+{
+    public class NewTileDto
+    {
+        public NewTileDto(string action, string aboutUserId)
         {
             Action = action;
-            AboutUsername = aboutUsername;
-            Id = id;
-            AddedByUsername = addedByUsername;
+            AboutUserId = aboutUserId;
         }
+        [Required]
+        public string Action { get; set; }
+        
+        [Required]
+        public string AboutUserId { get; set; }
     }
 }

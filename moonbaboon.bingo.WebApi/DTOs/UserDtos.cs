@@ -6,7 +6,6 @@ namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class UserDtos
     {
-
         public class CreateUserDto
         {
             public CreateUserDto(string userName, string nickName, string password, string salt)
@@ -43,17 +42,6 @@ namespace moonbaboon.bingo.WebApi.DTOs
             public string? ProfilePicUrl { get; set; }
         }
 
-        public class LoginResponse
-        {
-            public LoginResponse(bool isValid, string userId)
-            {
-                IsValid = isValid;
-                UserId = userId;
-            }
-            public bool IsValid { get; set; }
-            public string UserId { get; set; }
-        }
-        
         public class LoginDto
         {
             public LoginDto(string username, string password)

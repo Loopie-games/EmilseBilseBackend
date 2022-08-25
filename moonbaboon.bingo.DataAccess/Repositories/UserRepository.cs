@@ -28,6 +28,27 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
+        public async Task<List<UserSimple>> Search(string searchString)
+        {
+            var list = new List<UserSimple>();
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT {DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic} " +
+                $"FROM {DBStrings.UserTable} " +
+                $"WHERE {DBStrings.UserTable}.{DBStrings.Username} " +
+                $"LIKE '%{searchString}%'", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var ent = new UserSimple(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                    reader.GetValue(2).ToString(), reader.GetValue(3).ToString());
+                list.Add(ent);
+            }
+            await _connection.CloseAsync();
+            return list;
+        }
+
         private static User? ReaderToUser(MySqlDataReader reader)
         {
             var ent = new User(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
@@ -59,7 +80,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return user;
         }
 
-        public async Task<User?> ReadById(string id)
+        /// <summary>
+        /// Finds User with specified id
+        /// </summary>
+        /// <param name="id">unique user Identification</param>
+        /// <returns>A Task containing the user</returns>
+        /// <exception cref="Exception">No user with given id</exception>
+        public async Task<User> ReadById(string id)
         {
             User? user = null;
             await _connection.OpenAsync();
@@ -71,7 +98,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 user = ReaderToUser(reader);
             }
             await _connection.CloseAsync();
-            return user;
+            return user ?? throw new Exception("No user found with id: " + id);
         }
 
         public async Task<User> Create(User user)

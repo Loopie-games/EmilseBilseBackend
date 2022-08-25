@@ -32,7 +32,7 @@ namespace moonbaboon.bingo.Core.Models
             ProfilePicUrl = user.ProfilePicUrl;
         }
 
-        public UserSimple(string? id, string username, string? nickname, string? profilePicUrl)
+        public UserSimple(string? id, string username, string nickname, string? profilePicUrl)
         {
             Id = id;
             Username = username;
@@ -42,7 +42,7 @@ namespace moonbaboon.bingo.Core.Models
 
         public string? Id { get; set; }
         public string Username { get; set; }
-        public string? Nickname { get; set; }
+        public string Nickname { get; set; }
         public string? ProfilePicUrl { get; set; }
     }
 }

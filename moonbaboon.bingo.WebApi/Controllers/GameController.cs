@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 
@@ -22,9 +23,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<Game?> Create(string userId, string lobbyId)
+        public ActionResult<Game?> Create(string hostId)
         {
-            return _gameService.Create(lobbyId, userId);
+            return _gameService.Create(hostId);
+        }
+
+        [HttpGet(nameof(GetPlayers) + "/{gameId}")]
+        public ActionResult<List<UserSimple>> GetPlayers(string gameId)
+        {
+            return _gameService.GetPlayers(gameId);
         }
     }
 }
