@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Domain.IRepositories
 {
-    public interface ITileRepository
+    public interface IUserTileRepository
     {
         public Task<Tile?> Create(string userId, string action, string addedById);
         public Task<List<Tile>> FindAll();

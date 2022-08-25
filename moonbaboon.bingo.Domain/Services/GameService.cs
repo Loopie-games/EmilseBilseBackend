@@ -12,17 +12,17 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IGameRepository _gameRepository;
         private readonly IBoardRepository _boardRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
-        private readonly ITileRepository _tileRepository;
+        private readonly IUserTileRepository _userTileRepository;
         private readonly IBoardTileRepository _boardTileRepository;
         
         private readonly Random _random = new();
 
-        public GameService(IGameRepository gameRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, ITileRepository tileRepository, IBoardTileRepository boardTileRepository)
+        public GameService(IGameRepository gameRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository, IBoardTileRepository boardTileRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
             _pendingPlayerRepository = pendingPlayerRepository;
-            _tileRepository = tileRepository;
+            _userTileRepository = userTileRepository;
             _boardTileRepository = boardTileRepository;
         }
 
@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 if (board == null) throw new Exception("Board wasn't created for player with username " + player.User.Username);
                 
-                List<Tile> usableTiles = _tileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
+                List<Tile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
                 if (usableTiles.Count < 24)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
@@ -65,7 +65,7 @@ namespace moonbaboon.bingo.Domain.Services
                         Tile? filler = null;
                         foreach (var pp in usablePlayers)
                         {
-                            filler = _tileRepository.FindFiller(pp.User.Id!).Result ?? _tileRepository.Create(pp.User.Id!,
+                            filler = _userTileRepository.FindFiller(pp.User.Id!).Result ?? _userTileRepository.Create(pp.User.Id!,
                                 "filler", player.User.Id).Result;
                             for (var j = 0; j < i; j++)
                             {

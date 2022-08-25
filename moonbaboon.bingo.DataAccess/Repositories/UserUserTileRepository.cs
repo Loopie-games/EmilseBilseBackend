@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
-    public class TileRepository : ITileRepository
+    public class UserUserTileRepository : IUserTileRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
@@ -31,12 +31,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
@@ -53,13 +53,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE {DBStrings.TileTable}.{DBStrings.Id} ='{id}';"
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.UserTileTable}.{DBStrings.Id} ='{id}';"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -77,13 +77,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE ({DBStrings.TileTable}.{DBStrings.Action} ='filler' AND {DBStrings.TileTable}.{DBStrings.UserId} ='{userId}');"
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE ({DBStrings.UserTileTable}.{DBStrings.Action} ='filler' AND {DBStrings.UserTileTable}.{DBStrings.UserId} ='{userId}');"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -100,7 +100,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             bool success = false;
             await _connection.OpenAsync();
 
-            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DBStrings.TileTable}` WHERE `{DBStrings.Id}`='{id}'", _connection);
+            await using MySqlCommand command = new MySqlCommand($"DELETE FROM `{DBStrings.UserTileTable}` WHERE `{DBStrings.Id}`='{id}'", _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -118,13 +118,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE {DBStrings.TileTable}.{DBStrings.UserId} = '{id}';"
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.UserTileTable}.{DBStrings.UserId} = '{id}';"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
@@ -142,15 +142,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"INSERT INTO {DBStrings.TileTable} " +
+                $"INSERT INTO {DBStrings.UserTileTable} " +
                 $"VALUES ('{uuid}','{userId}', '{action}','{addedById}'); " +
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE {DBStrings.TileTable}.{DBStrings.Id} = '{uuid}'"
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.UserTileTable}.{DBStrings.Id} = '{uuid}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
@@ -165,16 +165,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<Tile>> GetTilesForBoard(string lobbyId, string userId)
         {
             var sqlcommand =
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM (SELECT PendingPlayer.UserId as uId " +
-                $"FROM PendingPlayer " +
-                $"WHERE PendingPlayer.LobbyId = '{lobbyId}' " +
-                $"and PendingPlayer.UserId != '{userId}') As pp " +
-                $"JOIN BingoTile on pp.uId = BingoTile.UserId " +
-                $"JOIN User As U1 ON BingoTile.UserId = U1.id " +
-                $"JOIN User As U2 ON BingoTile.AddedById = U2.id";
+                $"FROM (SELECT {DBStrings.PendingPlayerTable}.{DBStrings.UserId} as uId " +
+                $"FROM {DBStrings.PendingPlayerTable} " +
+                $"WHERE {DBStrings.PendingPlayerTable}.LobbyId = '{lobbyId}' " +
+                $"and {DBStrings.PendingPlayerTable}.{DBStrings.UserId} != '{userId}') As pp " +
+                $"JOIN {DBStrings.UserTileTable} on pp.uId = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} As U1 ON {DBStrings.UserTileTable}.{DBStrings.UserId} = U1.id " +
+                $"JOIN {DBStrings.UserTable} As U2 ON {DBStrings.UserTileTable}.{DBStrings.AddedById} = U2.id";
             
             List<Tile> tiles = new();
             await _connection.OpenAsync();
@@ -196,13 +196,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"SELECT {DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action}, " +
+                $"SELECT {DBStrings.UserTileTable}.{DBStrings.Id}, {DBStrings.UserTileTable}.{DBStrings.Action}, " +
                 $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic},  " +
                 $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM `{DBStrings.TileTable}` " +
-                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.TileTable}.{DBStrings.AddedById} "+ 
-                $"WHERE {DBStrings.TileTable}.{DBStrings.AddedById} = '{userId}';"
+                $"FROM `{DBStrings.UserTileTable}` " +
+                $"JOIN {DBStrings.UserTable} AS U1 ON U1.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.UserId} " +
+                $"JOIN {DBStrings.UserTable} AS U2 ON U2.{DBStrings.Id} = {DBStrings.UserTileTable}.{DBStrings.AddedById} "+ 
+                $"WHERE {DBStrings.UserTileTable}.{DBStrings.AddedById} = '{userId}';"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
