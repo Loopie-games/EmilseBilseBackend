@@ -82,11 +82,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 if (reader.HasRows)
                 {
-                    ent = new Lobby(reader.GetValue(1).ToString())
-                    {
-                        Id = reader.GetValue(0).ToString(),
-                        Pin = reader.GetValue(2).ToString()
-                    };
+                    ent = new Lobby(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                        reader.GetValue(2).ToString());
                 }
             }
             await _connection.CloseAsync();
@@ -100,18 +97,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 $"SELECT * FROM {DBStrings.LobbyTable} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Host} = '{hostId}'", 
+                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Host} = '{hostId}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 if (reader.HasRows)
                 {
-                    ent = new Lobby(reader.GetValue(1).ToString())
-                    {
-                        Id = reader.GetValue(0).ToString(),
-                        Pin = reader.GetValue(2).ToString()
-                    };
+                    ent = new Lobby(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                        reader.GetValue(2).ToString());
                 }
             }
             await _connection.CloseAsync();
@@ -119,53 +113,50 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Finds the Lobby corresponding to the given Pin
-        /// </summary>
-        /// <param name="pin">Specific pin for lobby</param>
-        /// <returns>Task with the Lobby as Result</returns>
-        /// <exception cref="Exception">If No lobby with given Pin Exists</exception>
-        public async Task<Lobby> FindByPin(string pin)
-        {
-            Lobby? ent = null;
-            await _connection.OpenAsync();
-            await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.LobbyTable} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Pin} = '{pin}'", 
-                _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            /// Finds the Lobby corresponding to the given Pin
+            /// </summary>
+            /// <param name="pin">Specific pin for lobby</param>
+            /// <returns>Task with the Lobby as Result</returns>
+            /// <exception cref="Exception">If No lobby with given Pin Exists</exception>
+            public async Task<Lobby> FindByPin(string pin)
             {
-                if (reader.HasRows)
+                Lobby? ent = null;
+                await _connection.OpenAsync();
+                await using var command = new MySqlCommand(
+                    $"SELECT * FROM {DBStrings.LobbyTable} " +
+                    $"WHERE {DBStrings.LobbyTable}.{DBStrings.Pin} = '{pin}'", 
+                    _connection);
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
                 {
-                    ent = new Lobby(reader.GetValue(1).ToString())
+                    if (reader.HasRows)
                     {
-                        Id = reader.GetValue(0).ToString(),
-                        Pin = reader.GetValue(2).ToString()
-                    };
+                        ent = new Lobby(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                            reader.GetValue(2).ToString());
+                    }
                 }
+                await _connection.CloseAsync();
+                return ent ?? throw new Exception("No Lobby with given Id");
             }
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("No Lobby with given Id");
-        }
 
-        public async Task<bool> DeleteLobby(string lobbyId)
-        {
-            bool b = false;
-            await _connection.OpenAsync();
-
-            await using var command = new MySqlCommand(
-                $"DELETE FROM `{DBStrings.LobbyTable}` " +
-                $"WHERE `{DBStrings.Id}`='{lobbyId}'; " +
-                $"SELECT ROW_COUNT()",
-                _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            public async Task<bool> DeleteLobby(string lobbyId)
             {
-                b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
-            }
+                bool b = false;
+                await _connection.OpenAsync();
+
+                await using var command = new MySqlCommand(
+                    $"DELETE FROM `{DBStrings.LobbyTable}` " +
+                    $"WHERE `{DBStrings.Id}`='{lobbyId}'; " +
+                    $"SELECT ROW_COUNT()",
+                    _connection);
+                await using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
+                }
             
-            await _connection.CloseAsync();
-            return b;
-        }
+                await _connection.CloseAsync();
+                return b;
+            }
     }
 }

@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace moonbaboon.bingo.Core.Models
+﻿namespace moonbaboon.bingo.Core.Models
 {
-    public class Tile
+    public class Tile : ITile
     {
-        public Tile(UserSimple user, string action, UserSimple? addedBy)
+        public Tile(string? id, string action)
         {
-            User = user;
+            Id = id;
             Action = action;
-            AddedBy = addedBy;
         }
 
         public string? Id { get; set; }
-        public UserSimple User { get; set; }
         public string Action { get; set; }
-        
-        public UserSimple? AddedBy { get; set; }
     }
 }

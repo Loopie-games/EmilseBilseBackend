@@ -40,7 +40,9 @@ namespace moonbaboon.bingo.Domain.Services
         //Todo description
         public Game NewGame(Lobby lobby)
         {
-            var game = _gameRepository.Create(lobby.Host).Result;
+            try
+            {
+                var game = _gameRepository.Create(lobby.Host).Result;
             if (game == null) throw new Exception("Game wasn't created");
             
             var players = 
@@ -56,13 +58,13 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 if (board == null) throw new Exception("Board wasn't created for player with username " + player.User.Username);
                 
-                List<Tile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
+                List<UserTile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
                 if (usableTiles.Count < 24)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
 
                     var i = (24 - usableTiles.Count) / usablePlayers.Count;
-                        Tile? filler = null;
+                        UserTile? filler = null;
                         foreach (var pp in usablePlayers)
                         {
                             filler = _userTileRepository.FindFiller(pp.User.Id!).Result ?? _userTileRepository.Create(pp.User.Id!,
@@ -81,12 +83,18 @@ namespace moonbaboon.bingo.Domain.Services
                 for (var i = 0; i < 24; i++)
                 {
                     var tile = usableTiles[_random.Next(0, usableTiles.Count - 1)];
-                    var boardTile = _boardTileRepository.Create(new BoardTile(board,tile.Id!,i, false)).Result;
+                    var boardTile = _boardTileRepository.Create(new BoardTile(null, board, new Tile(tile.Id, tile.Action), tile.User, i, false)).Result;
                     usableTiles.Remove(tile);
                 }
             }
 
             return game;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public List<UserSimple> GetPlayers(string gameId)

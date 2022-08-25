@@ -83,7 +83,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 {
                     _lobbyService.CloseLobby(lobby.Id!, hostId);
                 }
-                lobby = _lobbyService.Create(new Lobby(hostId));
+                lobby = _lobbyService.Create(hostId);
                 if (lobby?.Id != null)
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
@@ -105,24 +105,33 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         public async Task StartGame(StartGameDtos sg)
         {
-            var lobby = _lobbyService.GetById(sg.LobbyId);
-            if (lobby?.Id is not null)
+            try
             {
-                if (lobby.Host == GetUserId(Context))
+                var lobby = _lobbyService.GetById(sg.LobbyId);
+                if (lobby?.Id is not null)
                 {
-                    try
+                    if (lobby.Host == GetUserId(Context))
                     {
-                        var game = _gameService.NewGame(lobby);
-                        if (game?.Id != null)
+                        try
                         {
-                            await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
+                            var game = _gameService.NewGame(lobby);
+                            if (game.Id != null)
+                            {
+                                await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            await Clients.Group(lobby.Id).SendAsync("LobbyError", e.Message);
+                            throw;
                         }
                     }
-                    catch (Exception e)
-                    {
-                        await Clients.Group(lobby.Id).SendAsync("LobbyError",e.Message);
-                    }
                 }
+            }
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
             }
         }
 
