@@ -28,11 +28,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindByHostId(hostId).Result;
         }
 
-        public Lobby? FindByPin(string pin)
-        {
-            return _lobbyRepository.FindByPin(pin).Result;
-        }
-
         public Lobby? Create(Lobby lobbyToCreate)
         {
             var lobby = _lobbyRepository.Create(lobbyToCreate).Result;

@@ -10,7 +10,11 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<LobbyForUser?> FindById_ForUser(string id);
         
         public Task<Lobby?> FindById(string id);
-        
+        /// <summary>
+        /// Finds the Lobby corresponding to the given HostId
+        /// </summary>
+        /// <param name="hostId">User Id for the host of the Lobby</param>
+        /// <returns>Task with the Lobby as Result</returns>
         public Task<Lobby?> FindByHostId(string hostId);
         /// <summary>
         /// Finds the Lobby corresponding to the given Pin

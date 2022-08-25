@@ -51,7 +51,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         /// <summary>
         /// Adds Authorized user to lobby and sends updates to clients
         /// </summary>
-        /// <param name="pin"></param>
+        /// <param name="pin">Pin for lobby</param>
         /// <exception cref="Exception">If User cant be added.</exception>
         
         public async Task JoinLobby(string pin)
@@ -70,27 +70,37 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 throw;
             }
         }
+        
+        
 
         public async Task CreateLobby(string hostId)
         {
-            var lobby = _lobbyService.GetByHostId(hostId);
-            if (lobby?.Id != null)
+            try
             {
-                _lobbyService.CloseLobby(lobby.Id, hostId);
-            }
-            lobby = _lobbyService.Create(new Lobby(hostId));
-            if (lobby?.Id != null)
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
-                List<PendingPlayerDto> playerList = new();
-                foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                var lobby = _lobbyService.GetByHostId(hostId);
+                //if user is already host for a lob
+                if (lobby is not null)
                 {
-                    playerList.Add(new PendingPlayerDto(player));
+                    _lobbyService.CloseLobby(lobby.Id!, hostId);
                 }
-                await Clients.Caller.SendAsync("receiveLobby", lobby);
-                await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerList);
+                lobby = _lobbyService.Create(new Lobby(hostId));
+                if (lobby?.Id != null)
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
+                    List<PendingPlayerDto> playerList = new();
+                    foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
+                    {
+                        playerList.Add(new PendingPlayerDto(player));
+                    }
+                    await Clients.Caller.SendAsync("receiveLobby", lobby);
+                    await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerList);
+                }
             }
-
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
+            }
         }
 
         public async Task StartGame(StartGameDtos sg)
