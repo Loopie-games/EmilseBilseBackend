@@ -14,16 +14,20 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
         private readonly IUserTileRepository _userTileRepository;
         private readonly IBoardTileRepository _boardTileRepository;
+        private readonly IPackTileRepository _packTileRepository;
+        private readonly ITilePackRepository _tilePackRepository;
         
         private readonly Random _random = new();
 
-        public GameService(IGameRepository gameRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository, IBoardTileRepository boardTileRepository)
+        public GameService(IGameRepository gameRepository, IBoardRepository boardRepository, IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository, IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository, ITilePackRepository tilePackRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
             _pendingPlayerRepository = pendingPlayerRepository;
             _userTileRepository = userTileRepository;
             _boardTileRepository = boardTileRepository;
+            _packTileRepository = packTileRepository;
+            _tilePackRepository = tilePackRepository;
         }
 
         public Game? GetById(string id)
@@ -51,40 +55,52 @@ namespace moonbaboon.bingo.Domain.Services
             
             foreach (var player in players)
             {
-                var board = _boardRepository.Create(
-                    player.User.Id ?? throw new InvalidOperationException("Cannot create board for user with null ID"), 
-                    game.Id ?? throw new InvalidOperationException("Cannot create board for game with null ID")
-                    ).Result;
-                
-                if (board == null) throw new Exception("Board wasn't created for player with username " + player.User.Username);
-                
-                List<UserTile> usableTiles = _userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result;
-                if (usableTiles.Count < 24)
+                try
                 {
-                    List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
+                    var board = _boardRepository.Create(
+                        player.User.Id ??
+                        throw new InvalidOperationException("Cannot create board for user with null ID"),
+                        game.Id ?? throw new InvalidOperationException("Cannot create board for game with null ID")
+                    ).Result;
 
-                    var i = (24 - usableTiles.Count) / usablePlayers.Count;
-                        UserTile? filler = null;
-                        foreach (var pp in usablePlayers)
+                    if (board == null)
+                        throw new Exception("Board wasn't created for player with username " + player.User.Username);
+                    List<BoardTile> boardTiles = new();
+                    List<UserTile> userTiles = new (_userTileRepository.GetTilesForBoard(lobby.Id, player.User.Id).Result);
+                    var index = 0;
+                    foreach (var tile in userTiles)
+                    {
+                        boardTiles.Add(new BoardTile(null, board, tile, tile.User, index, false));
+                        index++;
+                    }
+                    if (boardTiles.Count < 24)
+                    {
+                        List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
+                        var defaultTiles = _packTileRepository.GetByPackId(_tilePackRepository.FindDefault().Result.Id ?? throw new InvalidOperationException("No default Tilepack"))
+                            .Result;
+                        var defaultTilesTemp = new List<PackTile>(defaultTiles);
+
+                        while (boardTiles.Count < 24)
                         {
-                            filler = _userTileRepository.FindFiller(pp.User.Id!).Result ?? _userTileRepository.Create(pp.User.Id!,
-                                "filler", player.User.Id).Result;
-                            for (var j = 0; j < i; j++)
-                            {
-                               usableTiles.Add(filler!); 
+                            var defaultTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count - 1)];
+                            boardTiles.Add(new BoardTile(null, board,defaultTile, usablePlayers[_random.Next(0, usablePlayers.Count - 1)].User,index,false));
+                            index++;
+                            defaultTilesTemp.Remove(defaultTile);
+                            if (defaultTilesTemp.Count <1)
+                            { 
+                                defaultTilesTemp = new List<PackTile>(defaultTiles);
                             }
                         }
-                        while (usableTiles.Count < 24)
-                        {
-                            usableTiles.Add(filler!);
-                        }
-                        
+                    }
+                    foreach (var boardTile in boardTiles)
+                    {
+                        var bt = _boardTileRepository.Create(boardTile).Result;
+                    }
                 }
-                for (var i = 0; i < 24; i++)
+                catch (Exception e)
                 {
-                    var tile = usableTiles[_random.Next(0, usableTiles.Count - 1)];
-                    var boardTile = _boardTileRepository.Create(new BoardTile(null, board, new Tile(tile.Id, tile.Action), tile.User, i, false)).Result;
-                    usableTiles.Remove(tile);
+                    Console.WriteLine(e);
+                    throw;
                 }
             }
 
