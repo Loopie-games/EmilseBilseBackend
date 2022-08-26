@@ -44,7 +44,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             BoardTile? ent = null;
             await _connection.OpenAsync();
-
             await using MySqlCommand command = new(
                 sql_select(DBStrings.BoardTileTable)+
                 $"WHERE {DBStrings.BoardTileTable}.{DBStrings.Id} = '{id}';",
@@ -55,7 +54,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 ent = ReaderToBoardTile(reader);
 
             }
-
             await _connection.CloseAsync();
             return ent;        
         }
