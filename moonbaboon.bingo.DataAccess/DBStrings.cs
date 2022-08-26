@@ -78,5 +78,6 @@ namespace moonbaboon.bingo.DataAccess
         public const string PackTileTable = "PackTile";
         //Rows
         public const string PackId = "PackId";
+        public const string Name = "Name";
     }
 }

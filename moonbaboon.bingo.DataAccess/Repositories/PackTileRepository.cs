@@ -14,10 +14,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static string sql_select(string from)
         {
             return
-                $"SELECT T.Id, T.Action, TP.Id, TP.Name " +
+                $"SELECT T.{DBStrings.Id}, T.{DBStrings.Action}, TP.{DBStrings.Id}, TP.{DBStrings.Name} " +
                 $"FROM {from} " +
-                $"JOIN Tile AS T ON PackTile.TileId = T.Id " +
-                $"JOIN TilePack AS TP On PackTile.PackId = TP.Id ";
+                $"JOIN {DBStrings.TileTable} AS T ON {DBStrings.PackTileTable}.{DBStrings.TileId} = T.{DBStrings.Id} " +
+                $"JOIN {DBStrings.TilePackTable} AS TP On {DBStrings.PackTileTable}.{DBStrings.PackId} = TP.{DBStrings.Id} ";
         }
         
         private static PackTile ReaderToEnt(MySqlDataReader reader)
