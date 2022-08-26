@@ -71,5 +71,7 @@ namespace moonbaboon.bingo.DataAccess
         public const string Position = "Position";
         public const string IsActivated = "IsActivated";
 
+        //TilePack
+        public const string TilePackTable = "TilePack";
     }
 }
