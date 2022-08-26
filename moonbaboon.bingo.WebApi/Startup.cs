@@ -172,6 +172,10 @@ namespace moonbaboon.bingo.WebApi
             //TilePack
             services.AddScoped<ITilePackRepository, TilePackRepository>();
             services.AddScoped<ITilePackService, TilePackService>();
+            
+            //PackTile
+            services.AddScoped<IPackTileRepository, PackTileRepository>();
+            services.AddScoped<IPackTileService, PackTileService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
