@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -19,7 +20,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             var list = new List<TilePack>();
             await _connection.OpenAsync();
-
             await using var command = new MySqlCommand($"SELECT * FROM `{DBStrings.TilePackTable}`", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -29,6 +29,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return list;
+        }
+
+        public async Task<TilePack> FindDefault()
+        {
+            TilePack? ent = null;
+            await _connection.OpenAsync();
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM {DBStrings.TilePackTable} " +
+                $"WHERE {DBStrings.TilePackTable}.{DBStrings.Name} = 'Default' "
+                , _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ent = ReaderToTilePack(reader);
+                
+            }
+            await _connection.CloseAsync();
+            return ent ?? throw new Exception("no Default Package found");
         }
     }
 }

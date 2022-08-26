@@ -6,5 +6,7 @@ namespace moonbaboon.bingo.Core.IServices
     public interface ITilePackService
     {
         public List<TilePack> GetAll();
+
+        public TilePack GetDefault();
     }
 }

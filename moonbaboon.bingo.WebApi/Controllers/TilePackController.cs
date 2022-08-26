@@ -21,5 +21,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _tilePackService.GetAll();
         }
+
+        [HttpGet(nameof(GetDefault))]
+        public ActionResult<TilePack> GetDefault()
+        {
+            return _tilePackService.GetDefault();
+        }
     }
 }

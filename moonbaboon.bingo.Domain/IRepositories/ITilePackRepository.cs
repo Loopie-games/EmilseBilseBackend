@@ -7,5 +7,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface ITilePackRepository
     {
         public Task<List<TilePack>> FindAll();
+
+        public Task<TilePack> FindDefault();
     }
 }
