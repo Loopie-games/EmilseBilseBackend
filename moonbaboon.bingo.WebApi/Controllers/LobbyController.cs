@@ -46,7 +46,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost]
         public ActionResult<Lobby?> Create(CreateLobbyDto lobby)
         {
-            return _lobbyService.Create(new Lobby(lobby.HostId));
+            return _lobbyService.Create(lobby.HostId);
         }
         
         [HttpDelete(nameof(CloseLobby))]

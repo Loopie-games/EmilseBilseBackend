@@ -28,9 +28,9 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindByHostId(hostId).Result;
         }
 
-        public Lobby? Create(Lobby lobbyToCreate)
+        public Lobby? Create(string lobbyToCreate)
         {
-            var lobby = _lobbyRepository.Create(lobbyToCreate).Result;
+            var lobby = _lobbyRepository.Create(new Lobby(null,lobbyToCreate, null)).Result;
             if (lobby?.Pin != null)
             {
                 var pp = JoinLobby(lobby.Host, lobby.Pin);

@@ -8,7 +8,7 @@ namespace moonbaboon.bingo.Core.IServices
         public Game? GetById(string id);
         
         public Game? Create(string hostId);
-        public Game? NewGame(Lobby lobby);
+        public Game NewGame(Lobby lobby);
         public List<UserSimple> GetPlayers(string gameId);
     }
 }

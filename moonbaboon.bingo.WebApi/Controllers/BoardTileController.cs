@@ -14,13 +14,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
     public class BoardTileController: ControllerBase
     {
         private readonly IBoardTileService _boardTileService;
-        private readonly ITileService _tileService;
+        private readonly IUserTileService _userTileService;
         private readonly IBoardService _boardService;
 
-        public BoardTileController(IBoardTileService boardTileService, ITileService tileService, IBoardService boardService)
+        public BoardTileController(IBoardTileService boardTileService, IUserTileService userTileService, IBoardService boardService)
         {
             _boardTileService = boardTileService;
-            _tileService = tileService;
+            _userTileService = userTileService;
             _boardService = boardService;
         }
 
@@ -31,36 +31,23 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
         
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
-        public ActionResult<List<BoardTileDto>> GetByBoardId(string id)
+        public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
             var boardTiles = _boardTileService.GetByBoardId(id);
-            List<BoardTileDto> list = new();
+            
 
-            foreach (var boardTile in boardTiles)
-            {
-                var tile = _tileService.GetById(boardTile.TileId);
-                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
-            }
-
-            return list;
+            return boardTiles;
         }
         
         [Authorize]
         [HttpGet(nameof(GetByGameId) + "/{gameId}")]
-        public ActionResult<List<BoardTileDto>> GetByGameId(string gameId)
+        public ActionResult<List<BoardTile>> GetByGameId(string gameId)
         {
             var board = _boardService.GetByUserAndGameId(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                 gameId);
             var boardTiles = _boardTileService.GetByBoardId(board.Id);
-            List<BoardTileDto> list = new();
 
-            foreach (var boardTile in boardTiles)
-            {
-                var tile = _tileService.GetById(boardTile.TileId);
-                list.Add(new BoardTileDto(boardTile.Id, boardTile.Board.Id, tile, boardTile.Position, boardTile.IsActivated));
-            }
-
-            return list;
+            return boardTiles;
         }
 
         [HttpPost(nameof(Create))]

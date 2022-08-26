@@ -8,7 +8,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     {
         public Task<BoardTile?> FindById(string id);
 
-        public Task<BoardTile?> Create(BoardTile toCreate);
+        public Task<BoardTile> Create(BoardTile toCreate);
 
         public Task<List<BoardTile>> FindByBoardId(string id);
     }

@@ -14,7 +14,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>Lobby with given hostId if such exists, else null</returns>
         public Lobby? GetByHostId(string hostId);
 
-        public Lobby? Create(Lobby lobbyToCreate);
+        public Lobby? Create(string hostId);
         /// <summary>
         /// Adds the User to the Lobby corresponding to the given pin
         /// </summary>

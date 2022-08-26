@@ -13,46 +13,46 @@ namespace moonbaboon.bingo.WebApi.Controllers
     //[Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class TileController : ControllerBase
+    public class UserTileController : ControllerBase
     {
-        private readonly ITileService _tileService;
+        private readonly IUserTileService _userTileService;
 
-        public TileController(ITileService tileService)
+        public UserTileController(IUserTileService userTileService)
         {
-            _tileService = tileService;
+            _userTileService = userTileService;
         }
 
         [HttpGet]
-        public ActionResult<List<Tile>> GetAll()
+        public ActionResult<List<UserTile>> GetAll()
         {
-            return _tileService.GetAll();
+            return _userTileService.GetAll();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Tile?> GetById(string id) {
-            return _tileService.GetById(id);
+        public ActionResult<UserTile?> GetById(string id) {
+            return _userTileService.GetById(id);
         }
         [HttpGet(nameof(GetAboutUserById))]
-        public ActionResult<List<Tile>> GetAboutUserById(string id)
+        public ActionResult<List<UserTile>> GetAboutUserById(string id)
         {
-            return _tileService.GetAboutUserById(id);
+            return _userTileService.GetAboutUserById(id);
         }
         
         [HttpGet(nameof(GetMadeByUserId))]
-        public ActionResult<List<Tile>> GetMadeByUserId(string userId)
+        public ActionResult<List<UserTile>> GetMadeByUserId(string userId)
         {
-            return _tileService.GetMadeByUserId(userId);
+            return _userTileService.GetMadeByUserId(userId);
         }
         
         [Authorize]
         [HttpPost(nameof(Create))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Tile))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserTile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Tile?> Create(NewTileDto newTile)
+        public ActionResult<UserTile?> Create(NewTileDto newTile)
         {
             try
             {
-                var tile = _tileService.NewTile(newTile.AboutUserId, newTile.Action,
+                var tile = _userTileService.NewTile(newTile.AboutUserId, newTile.Action,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 return CreatedAtAction(nameof(GetById), new {id = tile.Id}, tile);
             }
@@ -60,14 +60,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
-        
-        
-
-        [HttpPost(nameof(Delete))]
-        public ActionResult<bool> Delete(string id)
-        {
-            return _tileService.DeleteTile(id);
         }
     }
 }

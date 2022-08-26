@@ -8,11 +8,7 @@ namespace moonbaboon.bingo.DataAccess
 
         //generally used
         public const string Id = "Id";
-        
-        //booleans
-        public const string False = "0";
-        public const string True = "1";
-        
+
         //Friendship
         public const string FriendshipTable = "Friendship";
 
@@ -30,12 +26,16 @@ namespace moonbaboon.bingo.DataAccess
         public const string Salt = "Salt";
         public const string ProfilePic = "ProfilePicURL";
         
+        //Tile
+        public const string TileTable = "Tile";
+        //Rows
+        public const string Action = "Action";
+        
         //UserTile
         public const string UserTileTable = "UserTile";
 
         //Rows
         public const string UserId = "UserId";
-        public const string Action = "Action";
         public const string AddedById = "AddedById";
         
         //Lobby
@@ -67,6 +67,7 @@ namespace moonbaboon.bingo.DataAccess
         //Rows
         public const string BoardId = "BoardId";
         public const string TileId = "TileId";
+        public const string AboutUserId = "AboutUserId";
         public const string Position = "Position";
         public const string IsActivated = "IsActivated";
 
