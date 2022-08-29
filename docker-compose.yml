@@ -10,3 +10,5 @@ services:
     ports:
       - "${PORT}:80"
       - "${HTTPS}:8072"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENV}
