@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -129,6 +130,8 @@ namespace moonbaboon.bingo.WebApi
                         .WithOrigins("http://localhost:3000")
                         .WithOrigins("http://localhost:9071")
                         .WithOrigins("http://185.51.76.204:9071")
+                        .WithOrigins("https://loopiegame.com")
+                        .WithOrigins("https://api.loopiegame.com")
                         .AllowCredentials();
                 });
             });
@@ -168,6 +171,14 @@ namespace moonbaboon.bingo.WebApi
             //BoardTile
             services.AddScoped<IBoardTileRepository, BoardTileRepository>();
             services.AddScoped<IBoardTileService, BoardTileService>();
+            
+            //TilePack
+            services.AddScoped<ITilePackRepository, TilePackRepository>();
+            services.AddScoped<ITilePackService, TilePackService>();
+            
+            //PackTile
+            services.AddScoped<IPackTileRepository, PackTileRepository>();
+            services.AddScoped<IPackTileService, PackTileService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -184,6 +195,7 @@ namespace moonbaboon.bingo.WebApi
             });
             if (env.IsProduction())
             {
+                app.UseHttpsRedirection();
                 app.UseCors(POLICY_PROD);
             }
             else
@@ -191,7 +203,6 @@ namespace moonbaboon.bingo.WebApi
                 app.UseCors(POLICY_DEV);
             }
             
-
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

@@ -49,7 +49,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        private static User? ReaderToUser(MySqlDataReader reader)
+        private static User ReaderToUser(MySqlDataReader reader)
         {
             var ent = new User(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
                 reader.GetValue(4).ToString())
