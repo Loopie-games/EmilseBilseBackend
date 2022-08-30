@@ -21,9 +21,6 @@ namespace moonbaboon.bingo.WebApi
                 {
                     webBuilder.ConfigureKestrel(o =>
                     {
-                        o.Listen(IPAddress.Loopback, 443, listenOptions => {
-                            listenOptions.UseHttps("",""); 
-                        });
                         o.ConfigureHttpsDefaults(o =>{
                             o.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
                         });
