@@ -14,7 +14,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         
         private static TilePack ReaderToEnt(MySqlDataReader reader)
         {
-            return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString());
+            return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), reader.GetValue(2).ToString());
         }
         
         public async Task<List<TilePack>> FindAll()
@@ -67,7 +67,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent ?? throw new Exception("no tilePackage found with id: " + packId);
         }
 
-        public async Task<TilePack> Create(string name)
+        public async Task<TilePack> Create(TilePack toCreate)
         {
             TilePack? ent = null;
             var uuid = Guid.NewGuid().ToString();
@@ -75,7 +75,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{name}'); " +
+                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}'); " +
                 sql_select(Table) + 
                 $"WHERE {Table}.{DBStrings.Id} = '{uuid}'"
                 , _connection);
@@ -86,7 +86,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
 
             await _connection.CloseAsync();
-            return ent ?? throw new Exception($"Error i creating {Table} with name: " + name);
+            return ent ?? throw new Exception($"Error i creating {Table} with name: " + toCreate.Name);
         }
 
         private static string sql_select(string from)

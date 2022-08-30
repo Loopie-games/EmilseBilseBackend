@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -49,11 +50,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePack))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<TilePack> Create(string name)
+        public ActionResult<TilePack> Create(NewTilePackDto toCreate)
         {
             try
             {
-                var created = _tilePackService.Create(name);
+                var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl));
                 return CreatedAtAction(nameof(GetById), new{id = created.Id}, created);
             }
             catch (Exception e)
