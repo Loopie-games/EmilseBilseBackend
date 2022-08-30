@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Hosting;
@@ -18,13 +19,16 @@ namespace moonbaboon.bingo.WebApi
             return Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
                     webBuilder.ConfigureKestrel(o =>
                     {
+                        o.Listen(IPAddress.Loopback, 443, listenOptions => {
+                            listenOptions.UseHttps("",""); 
+                        });
                         o.ConfigureHttpsDefaults(o =>{
                             o.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
                         });
                     });
+                    webBuilder.UseStartup<Startup>();
                 });
         }
     }
