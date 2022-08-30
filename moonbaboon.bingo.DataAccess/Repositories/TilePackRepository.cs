@@ -48,5 +48,22 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return ent ?? throw new Exception("no Default Package found");
         }
+
+        public async Task<TilePack> FindById(string packId)
+        {
+            TilePack? ent = null;
+            await _connection.OpenAsync();
+            await using var command = new MySqlCommand(
+                $"SELECT * FROM {DBStrings.TilePackTable} " +
+                $"WHERE {DBStrings.TilePackTable}.{DBStrings.Id} = '{packId}' "
+                , _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ent = ReaderToTilePack(reader);
+            }
+            await _connection.CloseAsync();
+            return ent ?? throw new Exception("no tilePackage found with id: " + packId);
+        }
     }
 }
