@@ -82,8 +82,9 @@ namespace moonbaboon.bingo.Domain.Services
 
                         while (boardTiles.Count < 24)
                         {
-                            var defaultTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count - 1)];
-                            boardTiles.Add(new BoardTile(null, board,defaultTile, usablePlayers[_random.Next(0, usablePlayers.Count - 1)].User,index,false));
+                            var defaultTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count)];
+                            var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
+                            boardTiles.Add(new BoardTile(null, board,defaultTile, rp,index,false));
                             index++;
                             defaultTilesTemp.Remove(defaultTile);
                             if (defaultTilesTemp.Count <1)
