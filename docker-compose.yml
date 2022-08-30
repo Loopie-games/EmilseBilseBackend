@@ -12,3 +12,5 @@ services:
       - "${HTTPS}:8072"
     environment:
       - ASPNETCORE_ENVIRONMENT=${ENV}
+    volumes:
+      - /etc/nginx/ssl/:/etc/nginx/ssl/:ro
