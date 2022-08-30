@@ -15,4 +15,19 @@ namespace moonbaboon.bingo.WebApi.DTOs
         [Required]
         public string AboutUserId { get; set; }
     }
+
+    public class NewPackTileDTO
+    {
+        public NewPackTileDTO(string action, string packId)
+        {
+            Action = action;
+            PackId = packId;
+        }
+
+        [Required]
+        public string Action { get; set; }
+        
+        [Required]
+        public string PackId { get; set; }
+    }
 }
