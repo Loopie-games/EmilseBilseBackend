@@ -21,8 +21,9 @@ namespace moonbaboon.bingo.WebApi
                     webBuilder.UseStartup<Startup>();
                     webBuilder.ConfigureKestrel(o =>
                     {
-                        o.ConfigureHttpsDefaults(o =>
-                            o.ClientCertificateMode = ClientCertificateMode.RequireCertificate);
+                        o.ConfigureHttpsDefaults(o =>{
+                            o.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+                        });
                     });
                 });
         }

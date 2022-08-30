@@ -130,8 +130,11 @@ namespace moonbaboon.bingo.WebApi
                         .WithOrigins("http://localhost:3000")
                         .WithOrigins("http://localhost:9071")
                         .WithOrigins("http://185.51.76.204:9071")
+                        .WithOrigins("http://185.51.76.204:443")
                         .WithOrigins("https://loopiegame.com")
                         .WithOrigins("https://api.loopiegame.com")
+                        .WithOrigins("http://loopiegame.com")
+                        .WithOrigins("http://api.loopiegame.com")
                         .AllowCredentials();
                 });
             });
@@ -195,7 +198,6 @@ namespace moonbaboon.bingo.WebApi
             });
             if (env.IsProduction())
             {
-                app.UseHttpsRedirection();
                 app.UseCors(POLICY_PROD);
             }
             else
