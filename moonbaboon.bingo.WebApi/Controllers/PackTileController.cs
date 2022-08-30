@@ -53,7 +53,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<PackTile> Create(NewPackTileDTO toCreate)
+        public ActionResult<PackTile> Create(NewPackTileDto toCreate)
         {
             try
             {

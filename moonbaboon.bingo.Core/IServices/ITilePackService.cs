@@ -8,7 +8,7 @@ namespace moonbaboon.bingo.Core.IServices
         public List<TilePack> GetAll();
         public TilePack GetById(string id);
         public TilePack GetDefault();
-        public TilePack Create(string name);
+        public TilePack Create(TilePack toCreate);
         
     }
 }
