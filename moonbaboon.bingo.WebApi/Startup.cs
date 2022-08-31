@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,15 +20,15 @@ namespace moonbaboon.bingo.WebApi
 {
     public class Startup
     {
-        private static string POLICY_DEV = "dev-cors";
-        private static string POLICY_PROD = "prod-cors";
-        
+        private const string PolicyDev = "dev-cors";
+        private const string PolicyProd = "prod-cors";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -41,7 +40,7 @@ namespace moonbaboon.bingo.WebApi
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o =>
             {
-                var Key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
+                var key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
                 o.SaveToken = true;
                 o.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -51,7 +50,7 @@ namespace moonbaboon.bingo.WebApi
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = Configuration["JWT:Issuer"],
                     ValidAudience = Configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Key)
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
                 o.Events = new JwtBearerEvents
                 {
@@ -74,7 +73,7 @@ namespace moonbaboon.bingo.WebApi
             });
 
             
-            services.AddTransient<MySqlConnection>(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
+            services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
             services.AddSwaggerGen(options =>
             {
@@ -111,7 +110,7 @@ namespace moonbaboon.bingo.WebApi
 
             services.AddCors(options =>
             {
-                options.AddPolicy(POLICY_DEV, policy =>
+                options.AddPolicy(PolicyDev, policy =>
                 {
                     policy
                         .AllowAnyHeader()
@@ -123,7 +122,7 @@ namespace moonbaboon.bingo.WebApi
                         .WithOrigins("http://185.51.76.204:9090")
                         .AllowCredentials();
                 });
-                options.AddPolicy(POLICY_PROD, policy =>
+                options.AddPolicy(PolicyProd, policy =>
                 {
                     policy.AllowAnyHeader()
                         .AllowAnyMethod()
@@ -179,6 +178,9 @@ namespace moonbaboon.bingo.WebApi
             //PackTile
             services.AddScoped<IPackTileRepository, PackTileRepository>();
             services.AddScoped<IPackTileService, PackTileService>();
+            
+            //Admin
+            services.AddScoped<IAdminRepository, AdminRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -196,11 +198,11 @@ namespace moonbaboon.bingo.WebApi
             if (env.IsProduction())
             {
                 app.UseHttpsRedirection();
-                app.UseCors(POLICY_PROD);
+                app.UseCors(PolicyProd);
             }
             else
             {
-                app.UseCors(POLICY_DEV);
+                app.UseCors(PolicyDev);
             }
             
             app.UseRouting();

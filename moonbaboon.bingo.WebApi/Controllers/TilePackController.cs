@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -47,6 +48,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _tilePackService.GetDefault();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePack))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

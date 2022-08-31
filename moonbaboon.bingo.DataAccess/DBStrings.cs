@@ -80,5 +80,9 @@ namespace moonbaboon.bingo.DataAccess
         //Rows
         public const string PackId = "PackId";
         public const string Name = "Name";
+        
+        //Admin
+        public const string AdminTable = "Admin";
+
     }
 }
