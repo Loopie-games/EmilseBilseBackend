@@ -73,11 +73,16 @@ namespace moonbaboon.bingo.DataAccess
 
         //TilePack
         public const string TilePackTable = "TilePack";
+        public const string PicUrl = "PicUrl";
         
         //PackTile
         public const string PackTileTable = "PackTile";
         //Rows
         public const string PackId = "PackId";
         public const string Name = "Name";
+        
+        //Admin
+        public const string AdminTable = "Admin";
+
     }
 }

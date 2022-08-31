@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Win32.SafeHandles;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
@@ -24,6 +25,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
             _service = service;
             _configuration = configuration;
             _authService = authService;
+        }
+
+        [HttpPost(nameof(LoginSwagger))]
+        public ActionResult<AuthResponse> LoginSwagger(UserDtos.LoginDto loginInformation)
+        {
+            var salt = _service.GetSalt(loginInformation.Username);
+            var password = BCrypt.Net.BCrypt.HashPassword(loginInformation.Password, salt);
+            User? user = _service.Login(loginInformation.Username, password);
+            if (user == null)
+                return BadRequest("User does not exist");
+            
+            var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
+            
+            return Ok(new AuthResponse {UUID = user.Id!, JWT = _authService.EncodeJwt(user, tokenKey)});
         }
 
         [HttpPost]

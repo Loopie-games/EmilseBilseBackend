@@ -19,9 +19,19 @@ namespace moonbaboon.bingo.Domain.Services
             return _tilePackRepository.FindAll().Result;
         }
 
+        public TilePack GetById(string id)
+        {
+            return _tilePackRepository.FindById(id).Result;
+        }
+
         public TilePack GetDefault()
         {
             return _tilePackRepository.FindDefault().Result;
+        }
+
+        public TilePack Create(TilePack toCreate)
+        {
+            return _tilePackRepository.Create(toCreate).Result;
         }
     }
 }

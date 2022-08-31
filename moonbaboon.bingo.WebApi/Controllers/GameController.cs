@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -10,28 +13,52 @@ namespace moonbaboon.bingo.WebApi.Controllers
     public class GameController: ControllerBase
     {
         private readonly IGameService _gameService;
+        private readonly IAuthService _authService;
 
-        public GameController(IGameService gameService)
+        public GameController(IGameService gameService, IAuthService authService)
         {
             _gameService = gameService;
-        }
-        
-        [HttpGet("{id}")]
-        public ActionResult<Game?> GetById(string id)
-        {
-            return _gameService.GetById(id);
+            _authService = authService;
         }
 
-        [HttpPost(nameof(Create))]
-        public ActionResult<Game?> Create(string hostId)
-        {
-            return _gameService.Create(hostId);
-        }
-
+        [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]
         public ActionResult<List<UserSimple>> GetPlayers(string gameId)
         {
-            return _gameService.GetPlayers(gameId);
+            try
+            {
+                return _gameService.GetPlayers(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
+
+        #region Not in use - remove Nonaction attribute if needed again
+           
+        [NonAction]
+        [HttpPost(nameof(Create))]
+        public ActionResult<Game?> Create(string hostId)
+        {   
+            return _gameService.Create(hostId);
+        }
+        
+        [NonAction]
+        [HttpGet("{id}")]
+        public ActionResult<Game?> GetById(string id)
+        {
+            try
+            {
+                return _gameService.GetById(id);
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+            
+        #endregion
+        
     }
 }

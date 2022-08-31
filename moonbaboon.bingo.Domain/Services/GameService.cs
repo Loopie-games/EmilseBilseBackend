@@ -82,8 +82,9 @@ namespace moonbaboon.bingo.Domain.Services
 
                         while (boardTiles.Count < 24)
                         {
-                            var defaultTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count - 1)];
-                            boardTiles.Add(new BoardTile(null, board,defaultTile, usablePlayers[_random.Next(0, usablePlayers.Count - 1)].User,index,false));
+                            var defaultTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count)];
+                            var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
+                            boardTiles.Add(new BoardTile(null, board,defaultTile, rp,index,false));
                             index++;
                             defaultTilesTemp.Remove(defaultTile);
                             if (defaultTilesTemp.Count <1)
@@ -112,10 +113,18 @@ namespace moonbaboon.bingo.Domain.Services
                 throw;
             }
         }
-
-        public List<UserSimple> GetPlayers(string gameId)
+        
+        /// <exception cref="Exception">if the user is not on the list</exception>
+        public List<UserSimple> GetPlayers(string gameId, string userId)
         {
-            return _gameRepository.GetPlayers(gameId).Result;
+            var players = _gameRepository.GetPlayers(gameId).Result;
+
+            if (players.Any(u => u.Id == userId))
+            {
+                return players;
+            }
+            
+            throw new Exception("You cannot get player list for a game, that you are not a part of");
         }
     }
 }
