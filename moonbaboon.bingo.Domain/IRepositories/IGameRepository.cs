@@ -9,6 +9,12 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<Game?> FindById(string id);
 
         public Task<Game?> Create(string hostId);
+        
+        /// <summary>
+        /// Gets list of players is in game with given Id
+        /// </summary>
+        /// <param name="gameId">Id specific for game</param>
+        /// <returns>Player list</returns>
         public Task<List<UserSimple>> GetPlayers(string gameId);
     }
 }
