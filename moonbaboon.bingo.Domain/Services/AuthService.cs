@@ -30,7 +30,7 @@ namespace moonbaboon.bingo.Domain.Services
                     {
                         new(ClaimTypes.Name, user.Username),
                         new(ClaimTypes.NameIdentifier, user.Id!, "userId"),
-                        new(ClaimTypes.Role, "Admin")
+                        new(ClaimTypes.Role, nameof(Admin))
                     }),
                     Expires = DateTime.UtcNow.AddDays(30),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),

@@ -113,10 +113,18 @@ namespace moonbaboon.bingo.Domain.Services
                 throw;
             }
         }
-
-        public List<UserSimple> GetPlayers(string gameId)
+        
+        /// <exception cref="Exception">if the user is not on the list</exception>
+        public List<UserSimple> GetPlayers(string gameId, string userId)
         {
-            return _gameRepository.GetPlayers(gameId).Result;
+            var players = _gameRepository.GetPlayers(gameId).Result;
+
+            if (players.Any(u => u.Id == userId))
+            {
+                return players;
+            }
+            
+            throw new Exception("You cannot get player list for a game, that you are not a part of");
         }
     }
 }
