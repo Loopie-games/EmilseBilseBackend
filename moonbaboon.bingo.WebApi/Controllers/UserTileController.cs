@@ -10,7 +10,7 @@ using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    //[Authorize]
+    
     [ApiController]
     [Route("[controller]")]
     public class UserTileController : ControllerBase
