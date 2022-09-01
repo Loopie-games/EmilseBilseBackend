@@ -202,7 +202,7 @@ namespace moonbaboon.bingo.WebApi
             if (env.IsProduction())
             {
 
-                app.UseHttpsRedirection();
+                //app.UseHttpsRedirection();
                 app.UseCors(PolicyProd);
 
             }
