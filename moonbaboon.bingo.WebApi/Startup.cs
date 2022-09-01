@@ -25,6 +25,7 @@ namespace moonbaboon.bingo.WebApi
 
         public Startup(IConfiguration configuration)
         {
+            //test
             Configuration = configuration;
         }
 
