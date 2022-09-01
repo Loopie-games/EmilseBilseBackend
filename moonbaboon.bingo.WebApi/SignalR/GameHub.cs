@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -135,24 +136,39 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task CloseLobby(CloseLobbyDto cl)
+        public async Task CloseLobby(string lobbyId)
         {
-            if (_lobbyService.CloseLobby(cl.LobbyId, cl.HostId))
+            try
             {
-                await Clients.Group(cl.LobbyId).SendAsync("lobbyClosed");
+                if (_lobbyService.CloseLobby(lobbyId, GetUserId(Context)))
+                {
+                    await Clients.Group(lobbyId).SendAsync("lobbyClosed");
+                }
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
+            
         }
 
-        public async Task LeaveLobby(LeaveLobbyDto ll)
+        public async Task LeaveLobby(string lobbyId)
         {
-            if (_lobbyService.LeaveLobby(ll.LobbyId, ll.UserId))
+            try
             {
-                List<PendingPlayerDto> playerList = new();
-                foreach (var player in _pendingPlayerService.GetByLobbyId(ll.LobbyId))
+                if (_lobbyService.LeaveLobby(lobbyId, GetUserId(Context)))
                 {
-                    playerList.Add(new PendingPlayerDto(player));
+                    List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId).Select(player => new PendingPlayerDto(player)).ToList();
+                    await Clients.Group(lobbyId).SendAsync("lobbyPlayerListUpdate", playerList);            
                 }
-                await Clients.Group(ll.LobbyId).SendAsync("lobbyPlayerListUpdate", playerList);            }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
+            
         }
 
     }

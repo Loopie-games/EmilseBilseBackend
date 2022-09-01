@@ -117,8 +117,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 var user = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
                     reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
-                var lobby = new Lobby(reader.GetValue(5).ToString(), reader.GetValue(7).ToString(),
-                    reader.GetValue(8).ToString());
+                var lobby = new Lobby(reader.GetValue(5).ToString(), reader.GetValue(6).ToString(),
+                    reader.GetValue(7).ToString());
 
 
                 pp = new PendingPlayer(user, lobby)
