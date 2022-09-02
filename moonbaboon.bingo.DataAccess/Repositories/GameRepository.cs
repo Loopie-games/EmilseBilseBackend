@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
         private static readonly Random Random = new();
         
-        public async Task<Game?> FindById(string id)
+        public async Task<Game> FindById(string id)
         {   
             Game? ent = null;
             await _connection.OpenAsync();
@@ -38,10 +38,38 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 };
             }
             await _connection.CloseAsync();
+            return ent ?? throw new Exception("No game found with id: " + id);
+        }
+
+        public async Task<Game?> FindByHostId(string userId)
+        {
+            Game? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT {DBStrings.GameTable}.{DBStrings.Id}, " +
+                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
+                $"{DBStrings.GameTable}.{DBStrings.WinnerId} " +
+                $"FROM `{DBStrings.GameTable}` " +
+                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.GameTable}.{DBStrings.HostId} " +
+                $"WHERE {DBStrings.GameTable}.{DBStrings.HostId} = '{userId}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var host = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                    reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
+                ent = new Game(host)
+                {
+                    Id = reader.GetValue(0).ToString(),
+                    WinnerId = reader.GetValue(5).ToString(),
+                };
+            }
+            await _connection.CloseAsync();
             return ent;
         }
 
-        public async Task<Game?> Create(string hostId)
+        public async Task<Game> Create(string hostId)
         {
             string uuid = Guid.NewGuid().ToString();
             Game? ent = null;
@@ -74,7 +102,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             if (ent == null)
             {
-                throw new InvalidDataException($"ERROR: {nameof(PendingPlayer)} not created");
+                throw new InvalidDataException($"ERROR in creating game with host: " + hostId);
             }
             return ent;
         }
@@ -100,6 +128,26 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return list;
+        }
+
+        public async Task<bool> Delete(string gameId)
+        {
+            var b = false;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"DELETE FROM `{DBStrings.GameTable}` " +
+                $"WHERE `{DBStrings.Id}`='{gameId}'; " +
+                $"SELECT ROW_COUNT()",
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
+            }
+            
+            await _connection.CloseAsync();
+            return b;
         }
     }
 }

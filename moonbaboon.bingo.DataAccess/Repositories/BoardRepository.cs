@@ -7,7 +7,7 @@ using MySqlConnector;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
-    public class BoardRepository :IBoardRepository
+    public class BoardRepository : IBoardRepository
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
@@ -18,7 +18,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 $"SELECT * FROM `{DBStrings.BoardTable}` " +
-                $"WHERE `{DBStrings.Id}`='{id}';", 
+                $"WHERE `{DBStrings.Id}`='{id}';",
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -33,11 +33,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        public async Task<Board?> Create(string userId, string gameId)
+        public async Task<Board> Create(string userId, string gameId)
         {
             Board? ent = null;
-            
-            
+
+
             string uuid = Guid.NewGuid().ToString();
 
             await _connection.OpenAsync();
@@ -46,7 +46,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"INSERT INTO `{DBStrings.BoardTable}`(`{DBStrings.Id}`, `{DBStrings.GameId}`, `{DBStrings.UserId}`) " +
                 $"VALUES ('{uuid}','{gameId}','{userId}'); " +
                 $"SELECT * FROM `{DBStrings.BoardTable}` " +
-                $"WHERE `{DBStrings.Id}`='{uuid}';", 
+                $"WHERE `{DBStrings.Id}`='{uuid}';",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -56,10 +56,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     Id = reader.GetValue(0).ToString(),
                 };
             }
-            
+
             await _connection.CloseAsync();
-            
-            return ent;
+
+            return ent ??
+                   throw new Exception("Error in creating board for user: " + userId + " and game id: " + gameId);
         }
 
         public async Task<Board?> FindByUserAndGameId(string userId, string gameId)
@@ -69,7 +70,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 $"SELECT * FROM `{DBStrings.BoardTable}` " +
-                $"WHERE `{DBStrings.UserId}`='{userId}' AND {DBStrings.BoardTable}.{DBStrings.GameId} = '{gameId}';", 
+                $"WHERE `{DBStrings.UserId}`='{userId}' AND {DBStrings.BoardTable}.{DBStrings.GameId} = '{gameId}';",
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -79,6 +80,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     Id = reader.GetValue(0).ToString(),
                 };
             }
+
             await _connection.CloseAsync();
             return ent;
         }

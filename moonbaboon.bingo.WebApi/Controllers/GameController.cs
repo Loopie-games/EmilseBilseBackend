@@ -35,6 +35,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
+        [Authorize]
+        [HttpDelete]
+        public ActionResult<bool> DeleteGame(string gameId)
+        {
+            try
+            {
+                return Ok(_gameService.Delete(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         #region Not in use - remove Nonaction attribute if needed again
            
         [NonAction]
