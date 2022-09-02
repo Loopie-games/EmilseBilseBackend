@@ -71,10 +71,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
 
-        public async Task CreateLobby(string hostId)
+        public async Task CreateLobby()
         {
             try
             {
+                var hostId = GetUserId(Context);
+                
                 var lobby = _lobbyService.GetByHostId(hostId);
                 //if user is already host for a lobby, close the old one
                 if (lobby is not null)
@@ -86,11 +88,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 if (lobby?.Id != null)
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
-                    List<PendingPlayerDto> playerList = new();
-                    foreach (var player in _pendingPlayerService.GetByLobbyId(lobby.Id))
-                    {
-                        playerList.Add(new PendingPlayerDto(player));
-                    }
+                    List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobby.Id)
+                        .Select(player => new PendingPlayerDto(player)).ToList();
 
                     await Clients.Caller.SendAsync("receiveLobby", lobby);
                     await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerList);
