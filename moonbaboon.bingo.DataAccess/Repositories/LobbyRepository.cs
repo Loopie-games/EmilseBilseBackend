@@ -141,7 +141,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             public async Task<bool> DeleteLobby(string lobbyId)
             {
-                bool b = false;
+                var b = false;
                 await _connection.OpenAsync();
 
                 await using var command = new MySqlCommand(

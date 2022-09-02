@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
         private static readonly Random Random = new();
         
-        public async Task<Game?> FindById(string id)
+        public async Task<Game> FindById(string id)
         {   
             Game? ent = null;
             await _connection.OpenAsync();
@@ -38,7 +38,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 };
             }
             await _connection.CloseAsync();
-            return ent;
+            return ent ?? throw new Exception("No game found with id: " + id);
         }
 
         public async Task<Game?> Create(string hostId)
@@ -100,6 +100,26 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
             await _connection.CloseAsync();
             return list;
+        }
+
+        public async Task<bool> Delete(string gameId)
+        {
+            var b = false;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"DELETE FROM `{DBStrings.GameTable}` " +
+                $"WHERE `{DBStrings.Id}`='{gameId}'; " +
+                $"SELECT ROW_COUNT()",
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                b = (Convert.ToInt16(reader.GetValue(0).ToString())>0);
+            }
+            
+            await _connection.CloseAsync();
+            return b;
         }
     }
 }

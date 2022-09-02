@@ -30,7 +30,7 @@ namespace moonbaboon.bingo.Domain.Services
             _tilePackRepository = tilePackRepository;
         }
 
-        public Game? GetById(string id)
+        public Game GetById(string id)
         {
             return _gameRepository.FindById(id).Result;
         }
@@ -125,6 +125,25 @@ namespace moonbaboon.bingo.Domain.Services
             }
             
             throw new Exception("You cannot get player list for a game, that you are not a part of");
+        }
+
+        public bool Delete(string gameId, string hostId)
+        {
+            try
+            {
+                var game = _gameRepository.FindById(gameId).Result;
+
+                if (game.Host.Id == hostId)
+                {
+                    return _gameRepository.Delete(gameId).Result;
+                }
+                throw new Exception("You have to be the host of a game to delete it");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

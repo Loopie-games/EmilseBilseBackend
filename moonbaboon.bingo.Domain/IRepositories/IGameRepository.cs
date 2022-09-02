@@ -6,7 +6,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IGameRepository
     {
-        public Task<Game?> FindById(string id);
+        public Task<Game> FindById(string id);
 
         public Task<Game?> Create(string hostId);
         
@@ -16,5 +16,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="gameId">Id specific for game</param>
         /// <returns>Player list</returns>
         public Task<List<UserSimple>> GetPlayers(string gameId);
+
+        public Task<bool>  Delete(string gameId);
     }
 }

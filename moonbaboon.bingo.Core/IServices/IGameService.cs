@@ -5,7 +5,7 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IGameService
     {
-        public Game? GetById(string id);
+        public Game GetById(string id);
         
         public Game? Create(string hostId);
         public Game NewGame(Lobby lobby);
@@ -18,5 +18,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="userId">Id specific for a User</param>
         /// <returns>List of Players participating in the game</returns>
         public List<UserSimple> GetPlayers(string gameId, string userId);
+
+        public bool Delete(string gameId, string hostId);
     }
 }
