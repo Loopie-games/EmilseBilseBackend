@@ -58,11 +58,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
                 if (board is null)
                 {
-                    await SendError("You are not apart of this game");
+                    await SendError("You are not a part of this game");
                 }
                 else
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+                    await Clients.Caller.SendAsync("gameConnected", board.Id);
                 }
 
             }
@@ -72,6 +73,27 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await SendError(e.Message);
             }
             
+        }
+
+        public async Task WinnerClaim(string gameId)
+        {
+            try
+            {
+                var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
+                if (board is null)
+                {
+                    await SendError("You are not a part of this game");
+                }
+                else
+                {
+                    await Clients.Group(gameId).SendAsync("winnerFound", board);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         #endregion
