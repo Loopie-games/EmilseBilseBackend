@@ -175,6 +175,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 {
                     List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId)
                         .Select(player => new PendingPlayerDto(player)).ToList();
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
                     await Clients.Group(lobbyId).SendAsync("lobbyPlayerListUpdate", playerList);
                 }
             }
