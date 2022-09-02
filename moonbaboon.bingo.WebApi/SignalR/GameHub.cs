@@ -16,12 +16,14 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly ILobbyService _lobbyService;
         private readonly IPendingPlayerService _pendingPlayerService;
         private readonly IGameService _gameService;
+        private readonly IBoardService _boardService;
 
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService)
+        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
             _gameService = gameService;
+            _boardService = boardService;
         }
 
         /// <summary>
@@ -46,6 +48,35 @@ namespace moonbaboon.bingo.WebApi.SignalR
             return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
                    throw new InvalidOperationException("Could not get userId from Context");
         }
+
+        #region Game
+
+        public async Task ConnectToGame(string gameId)
+        {
+            try
+            {
+                var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
+                if (board is null)
+                {
+                    await SendError("You are not apart of this game");
+                }
+                else
+                {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+                }
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
+            
+        }
+
+        #endregion
+
+        #region Lobby
 
         /// <summary>
         /// Adds Authorized user to lobby and sends updates to clients
@@ -153,5 +184,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await SendError(e.Message);
             }
         }
+        #endregion
     }
 }
