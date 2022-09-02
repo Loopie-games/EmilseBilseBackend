@@ -40,7 +40,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         /// <returns>userId</returns>
         /// <exception cref="Exception">if user is null</exception>
         /// <exception cref="InvalidOperationException">if user id cant be found</exception>
-        private string GetUserId(HubCallerContext context)
+        private static string GetUserId(HubCallerContext context)
         {
             if (context.User == null) throw new Exception("Could not get user from Context");
             return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
