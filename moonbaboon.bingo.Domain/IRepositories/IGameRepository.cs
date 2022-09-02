@@ -7,8 +7,15 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IGameRepository
     {
         public Task<Game> FindById(string id);
+        
+        public Task<Game?> FindByHostId(string userId);
 
-        public Task<Game?> Create(string hostId);
+        /// <summary>
+        /// Inserts a new game in database
+        /// </summary>
+        /// <param name="hostId">host of the lobby</param>
+        /// <returns>Game</returns>
+        public Task<Game> Create(string hostId);
         
         /// <summary>
         /// Gets list of players is in game with given Id

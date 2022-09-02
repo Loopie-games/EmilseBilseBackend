@@ -68,7 +68,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        public async Task<Lobby?> FindById(string id)
+        public async Task<Lobby> FindById(string id)
         {
             Lobby? ent = null;
             await _connection.OpenAsync();
@@ -87,7 +87,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
             }
             await _connection.CloseAsync();
-            return ent;
+            return ent ?? throw new Exception("no Lobby found with ID: " + id);
         }
 
         public async Task<Lobby?> FindByHostId(string hostId)

@@ -104,29 +104,15 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task StartGame(StartGameDtos sg)
+        [Authorize]
+        public async Task StartGame(string lobbyId)
         {
             try
             {
-                var lobby = _lobbyService.GetById(sg.LobbyId);
-                if (lobby?.Id is not null)
+                var game = _gameService.NewGame(lobbyId, GetUserId(Context));
+                if (game.Id != null)
                 {
-                    if (lobby.Host == GetUserId(Context))
-                    {
-                        try
-                        {
-                            var game = _gameService.NewGame(lobby);
-                            if (game.Id != null)
-                            {
-                                await Clients.Group(lobby.Id).SendAsync("gameStarting", game.Id);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            await Clients.Group(lobby.Id).SendAsync("LobbyError", e.Message);
-                            throw;
-                        }
-                    }
+                    await Clients.Group(lobbyId).SendAsync("gameStarting", game.Id);
                 }
             }
             catch (Exception e)

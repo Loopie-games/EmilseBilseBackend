@@ -41,7 +41,35 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent ?? throw new Exception("No game found with id: " + id);
         }
 
-        public async Task<Game?> Create(string hostId)
+        public async Task<Game?> FindByHostId(string userId)
+        {
+            Game? ent = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                $"SELECT {DBStrings.GameTable}.{DBStrings.Id}, " +
+                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
+                $"{DBStrings.GameTable}.{DBStrings.WinnerId} " +
+                $"FROM `{DBStrings.GameTable}` " +
+                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.GameTable}.{DBStrings.HostId} " +
+                $"WHERE {DBStrings.GameTable}.{DBStrings.HostId} = '{userId}'", 
+                _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var host = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                    reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
+                ent = new Game(host)
+                {
+                    Id = reader.GetValue(0).ToString(),
+                    WinnerId = reader.GetValue(5).ToString(),
+                };
+            }
+            await _connection.CloseAsync();
+            return ent;
+        }
+
+        public async Task<Game> Create(string hostId)
         {
             string uuid = Guid.NewGuid().ToString();
             Game? ent = null;
@@ -74,7 +102,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             if (ent == null)
             {
-                throw new InvalidDataException($"ERROR: {nameof(PendingPlayer)} not created");
+                throw new InvalidDataException($"ERROR in creating game with host: " + hostId);
             }
             return ent;
         }
