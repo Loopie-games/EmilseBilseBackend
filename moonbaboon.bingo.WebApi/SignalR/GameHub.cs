@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.WebApi.DTOs;
 
@@ -17,13 +18,15 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly IPendingPlayerService _pendingPlayerService;
         private readonly IGameService _gameService;
         private readonly IBoardService _boardService;
+        private readonly IBoardTileService _boardTileService;
 
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService)
+        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService, IBoardTileService boardTileService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
             _gameService = gameService;
             _boardService = boardService;
+            _boardTileService = boardTileService;
         }
 
         /// <summary>
@@ -73,6 +76,21 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await SendError(e.Message);
             }
             
+        }
+
+        public async Task TurnTile(string boardTileId)
+        {
+            try
+            {
+                var tile = _boardTileService.TurnTile(boardTileId, GetUserId(Context));
+                Console.WriteLine(tile.Id  + " " + tile.IsActivated);
+                await Clients.Caller.SendAsync("tileTurned", tile);
+            }
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
+            }
         }
 
         public async Task WinnerClaim(string gameId)

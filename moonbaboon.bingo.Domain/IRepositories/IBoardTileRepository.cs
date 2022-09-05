@@ -6,10 +6,11 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IBoardTileRepository
     {
-        public Task<BoardTile?> FindById(string id);
+        public Task<BoardTile> FindById(string id);
 
         public Task<BoardTile> Create(BoardTile toCreate);
 
         public Task<List<BoardTile>> FindByBoardId(string id);
+        public Task<BoardTile> Update(BoardTile toUpdate);
     }
 }
