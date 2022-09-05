@@ -111,12 +111,14 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 }
                 else
                 {
-                    await Clients.Group(board.GameId).SendAsync("winnerFound", board);
+                    var game = _gameService.GetById(board.GameId);
+                    await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", board);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                await SendError(e.Message);
                 throw;
             }
         }

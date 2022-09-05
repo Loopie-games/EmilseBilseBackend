@@ -20,6 +20,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
             _gameService = gameService;
             _authService = authService;
         }
+        
+        [HttpGet("{id}")]
+        public ActionResult<Game?> GetById(string id)
+        {
+            try
+            { 
+                var game = _gameService.GetById(id);
+                return Ok(game);
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
+        }
 
         [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]
@@ -57,21 +71,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {   
             return _gameService.Create(hostId);
         }
-        
-        [NonAction]
-        [HttpGet("{id}")]
-        public ActionResult<Game?> GetById(string id)
-        {
-            try
-            {
-                return _gameService.GetById(id);
-            }
-            catch (Exception e)
-            {
-                return NotFound(e.Message);
-            }
-        }
-            
+
         #endregion
         
     }
