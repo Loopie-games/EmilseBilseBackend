@@ -111,8 +111,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<BoardTile> Update(BoardTile toUpdate)
         {
             BoardTile? ent = null;
-            
-            Console.WriteLine(Convert.ToInt32(toUpdate.IsActivated));
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(

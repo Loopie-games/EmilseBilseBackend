@@ -33,9 +33,13 @@ namespace moonbaboon.bingo.Domain.Services
         public BoardTile TurnTile(string boardTileId, string userId)
         {
             var boardTile = _boardTileRepository.FindById(boardTileId).Result;
+            if (boardTile.Board.UserId != userId)
+            {
+                throw new Exception("You do not own this board, and can not turn the tiles!");
+            }
             boardTile.IsActivated = !boardTile.IsActivated;
-            Console.WriteLine(boardTile.IsActivated);
-            return _boardTileRepository.Update(boardTile).Result;
+            var tile = _boardTileRepository.Update(boardTile).Result;
+            return tile;
         }
     }
 }
