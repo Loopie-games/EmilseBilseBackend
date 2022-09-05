@@ -100,18 +100,18 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task WinnerClaim(string gameId)
+        public async Task ClaimWin(string boardId)
         {
             try
             {
-                var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
-                if (board is null)
+                var board = _boardService.GetById(boardId);
+                if (board!.UserId != GetUserId(Context))
                 {
-                    await SendError("You are not a part of this game");
+                    await SendError("This is not your board");
                 }
                 else
                 {
-                    await Clients.Group(gameId).SendAsync("winnerFound", board);
+                    await Clients.Group(board.GameId).SendAsync("winnerFound", board);
                 }
             }
             catch (Exception e)
