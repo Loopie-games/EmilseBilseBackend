@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -14,19 +15,27 @@ namespace moonbaboon.bingo.Domain.Services
             _boardTileRepository = boardTileRepository;
         }
 
-        public BoardTile? GetById(string id)
+        public BoardTile GetById(string id)
         {
             return _boardTileRepository.FindById(id).Result;
         }
 
-        public BoardTile? Create(BoardTile toCreate)
+        public BoardTile Create(BoardTile toCreate)
         {
             return _boardTileRepository.Create(toCreate).Result;
         }
 
-        public List<BoardTile?> GetByBoardId(string id)
+        public List<BoardTile> GetByBoardId(string id)
         {
             return _boardTileRepository.FindByBoardId(id).Result;
+        }
+
+        public BoardTile TurnTile(string boardTileId, string userId)
+        {
+            var boardTile = _boardTileRepository.FindById(boardTileId).Result;
+            boardTile.IsActivated = !boardTile.IsActivated;
+            Console.WriteLine(boardTile.IsActivated);
+            return _boardTileRepository.Update(boardTile).Result;
         }
     }
 }
