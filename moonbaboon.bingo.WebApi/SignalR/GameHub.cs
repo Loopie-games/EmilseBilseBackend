@@ -123,6 +123,20 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
+        public async Task ConfirmWin(string boardId)
+        {
+            try
+            {
+                var game = _gameService.ConfirmWin(boardId, GetUserId(Context));
+                await Clients.Group(game.Id).SendAsync("WinnerFound", game);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         #endregion
 
         #region Lobby

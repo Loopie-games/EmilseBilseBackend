@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
 
-        public async Task<Board?> FindById(string id)
+        public async Task<Board> FindById(string id)
         {
             Board? ent = null;
             await _connection.OpenAsync();
@@ -29,7 +29,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
 
             await _connection.CloseAsync();
-            return ent;
+            return ent ?? throw new Exception("no Board found with id: " + id);
         }
 
         public async Task<Board> Create(string userId, string gameId)
