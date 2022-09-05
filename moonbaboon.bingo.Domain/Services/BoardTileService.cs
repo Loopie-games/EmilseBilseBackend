@@ -34,7 +34,6 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var boardTile = _boardTileRepository.FindById(boardTileId).Result;
             boardTile.IsActivated = !boardTile.IsActivated;
-            Console.WriteLine(boardTile.IsActivated);
             return _boardTileRepository.Update(boardTile).Result;
         }
     }
