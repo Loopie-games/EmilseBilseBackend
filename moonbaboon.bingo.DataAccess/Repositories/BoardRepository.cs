@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -36,8 +35,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<Board> Create(string userId, string gameId)
         {
             Board? ent = null;
-
-
+            
             string uuid = Guid.NewGuid().ToString();
 
             await _connection.OpenAsync();
@@ -83,6 +81,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.CloseAsync();
             return ent;
+        }
+
+        public async Task<bool> IsBoardFilled(string boardId)
+        {
+            var b = false;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"SELECT((SELECT COUNT(*) FROM {DBStrings.BoardTileTable} WHERE {DBStrings.BoardTileTable}.{DBStrings.IsActivated} = '1' AND {DBStrings.BoardTileTable}.{DBStrings.BoardId} ='{boardId}') = 24 IS true)",
+                _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                b = reader.GetBoolean(0);
+            }
+
+            await _connection.CloseAsync();
+            return b;
         }
     }
 }
