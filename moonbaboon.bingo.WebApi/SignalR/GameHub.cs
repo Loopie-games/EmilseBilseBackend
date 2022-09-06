@@ -84,13 +84,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 var tile = _boardTileService.TurnTile(boardTileId, GetUserId(Context));
                 var isWon = _boardService.CheckIfBoardFilled(tile.Board.Id);
+                await Clients.Caller.SendAsync("tileTurned", tile);
                 if (isWon)
                 {
                     await Clients.Caller.SendAsync("boardFilled", tile.Board.Id);
-                }
-                else
-                {
-                    await Clients.Caller.SendAsync("tileTurned", tile);
                 }
             }
             catch (Exception e)
