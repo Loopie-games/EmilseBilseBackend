@@ -14,13 +14,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
     public class BoardTileController: ControllerBase
     {
         private readonly IBoardTileService _boardTileService;
-        private readonly IUserTileService _userTileService;
         private readonly IBoardService _boardService;
 
-        public BoardTileController(IBoardTileService boardTileService, IUserTileService userTileService, IBoardService boardService)
+        public BoardTileController(IBoardTileService boardTileService, IBoardService boardService)
         {
             _boardTileService = boardTileService;
-            _userTileService = userTileService;
             _boardService = boardService;
         }
 

@@ -83,14 +83,11 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var tile = _boardTileService.TurnTile(boardTileId, GetUserId(Context));
-                var isWon = _boardService.CheckIfBoardFilled(tile.Board.Id);
+                var isWon = _boardService.IsBoardFilled(tile.Board.Id);
+                await Clients.Caller.SendAsync("tileTurned", tile);
                 if (isWon)
                 {
                     await Clients.Caller.SendAsync("boardFilled", tile.Board.Id);
-                }
-                else
-                {
-                    await Clients.Caller.SendAsync("tileTurned", tile);
                 }
             }
             catch (Exception e)
@@ -119,6 +116,20 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 Console.WriteLine(e);
                 await SendError(e.Message);
+                throw;
+            }
+        }
+
+        public async Task ConfirmWin(string boardId)
+        {
+            try
+            {
+                var game = _gameService.ConfirmWin(boardId, GetUserId(Context));
+                await Clients.Group(game.Id).SendAsync("WinnerFound", game);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 throw;
             }
         }

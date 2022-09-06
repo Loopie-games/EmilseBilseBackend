@@ -114,6 +114,7 @@ namespace moonbaboon.bingo.Domain.Services
                     var unused = boardTiles.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
                         .ToList();
                 }
+
                 return game;
             }
             catch (Exception e)
@@ -157,6 +158,28 @@ namespace moonbaboon.bingo.Domain.Services
                 }
 
                 throw new Exception("You have to be the host of a game to delete it");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public Game ConfirmWin(string boardId, string hostId)
+        {
+            try
+            {
+                var board = _boardRepository.FindById(boardId).Result;
+                var game = _gameRepository.FindById(board.GameId).Result;
+                if (game.Host.Id != hostId)
+                {
+                    throw new Exception("Only the host can Confirm a win");
+                }
+
+                game.WinnerId = board.UserId;
+                return _gameRepository.Update(game).Result;
+
             }
             catch (Exception e)
             {

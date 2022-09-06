@@ -25,5 +25,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<List<UserSimple>> GetPlayers(string gameId);
 
         public Task<bool>  Delete(string gameId);
+        public Task<Game> Update(Game game);
     }
 }
