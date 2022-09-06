@@ -8,6 +8,6 @@ namespace moonbaboon.bingo.Core.IServices
 
         public Board? GetByUserAndGameId(string userId, string gameId);
         public Board? CreateBoard(string userId, string gameId);
-        public bool CheckIfBoardFilled(string? boardId);
+        public bool IsBoardFilled(string? boardId);
     }
 }
