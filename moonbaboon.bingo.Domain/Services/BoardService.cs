@@ -29,7 +29,7 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var game = _gameRepository.FindById(gameId).Result;
 
-            return !string.IsNullOrEmpty(game.WinnerId) ? null : _boardRepository.Create(userId, gameId).Result;
+            return game.Winner is not null ? null : _boardRepository.Create(userId, gameId).Result;
         }
 
         public bool IsBoardFilled(string? boardId)

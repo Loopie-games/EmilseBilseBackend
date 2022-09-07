@@ -17,13 +17,14 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IPackTileRepository _packTileRepository;
         private readonly ITilePackRepository _tilePackRepository;
         private readonly ILobbyRepository _lobbyRepository;
+        private readonly IUserRepository _userRepository;
 
         private readonly Random _random = new();
 
         public GameService(IGameRepository gameRepository, IBoardRepository boardRepository,
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
-            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository)
+            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -33,6 +34,7 @@ namespace moonbaboon.bingo.Domain.Services
             _packTileRepository = packTileRepository;
             _tilePackRepository = tilePackRepository;
             _lobbyRepository = lobbyRepository;
+            _userRepository = userRepository;
         }
 
         public Game GetById(string id)
@@ -176,8 +178,7 @@ namespace moonbaboon.bingo.Domain.Services
                 {
                     throw new Exception("Only the host can Confirm a win");
                 }
-
-                game.WinnerId = board.UserId;
+                game.Winner = new UserSimple(_userRepository.ReadById(board.UserId).Result);
                 return _gameRepository.Update(game).Result;
 
             }

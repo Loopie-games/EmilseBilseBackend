@@ -8,6 +8,6 @@
 
         public string? Id { get; set; }
         public UserSimple Host { get; set; }
-        public string? WinnerId { get; set; }
+        public UserSimple? Winner { get; set; }
     }
 }
