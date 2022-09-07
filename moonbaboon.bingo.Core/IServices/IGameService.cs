@@ -28,6 +28,6 @@ namespace moonbaboon.bingo.Core.IServices
         public List<UserSimple> GetPlayers(string gameId, string userId);
 
         public bool Delete(string gameId, string hostId);
-        Game ConfirmWin(string boardId, string hostId);
+        public Game ConfirmWin(string boardId, string hostId);
     }
 }

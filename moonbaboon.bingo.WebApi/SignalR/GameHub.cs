@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using moonbaboon.bingo.Core.IServices;
+using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.SignalR
@@ -126,12 +127,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var board = _boardService.GetById(boardId);
-                var game = _gameService.ConfirmWin(boardId, GetUserId(Context));
-                await Clients.Group(game.Id).SendAsync("winnerFound", board);
+                Game game = _gameService.ConfirmWin(boardId, GetUserId(Context));
+                await Clients.Group(game.Id).SendAsync("winnerFound", game);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                await SendError(e.Message);
                 throw;
             }
         }
