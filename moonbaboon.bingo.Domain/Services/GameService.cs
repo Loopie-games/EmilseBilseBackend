@@ -168,17 +168,16 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
-        public Game ConfirmWin(string boardId, string hostId)
+        public Game ConfirmWin(string gameId, string hostId)
         {
             try
             {
-                var board = _boardRepository.FindById(boardId).Result;
-                var game = _gameRepository.FindById(board.GameId).Result;
+                var game = _gameRepository.FindById(gameId).Result;
                 if (game.Host.Id != hostId)
                 {
                     throw new Exception("Only the host can Confirm a win");
                 }
-                game.Winner = new UserSimple(_userRepository.ReadById(board.UserId).Result);
+                game.State = State.Ended;
                 return _gameRepository.Update(game).Result;
 
             }
@@ -200,7 +199,31 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 
                 game.State = State.Paused;
+                Console.WriteLine(userId);
                 game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
+
+                return _gameRepository.Update(game).Result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public Game DenyWin(string gameId, string userId)
+        {
+            try
+            {
+                var game = _gameRepository.FindById(gameId).Result;
+                
+                if (game.Host.Id != userId)
+                {
+                    throw new Exception("Only the host can deny wins");
+                }
+                game.State = State.Ongoing;
+                game.Winner = null;
 
                 return _gameRepository.Update(game).Result;
 

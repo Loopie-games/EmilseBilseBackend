@@ -123,12 +123,11 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task ConfirmWin(string boardId)
+        public async Task ConfirmWin(string gameId)
         {
             try
             {
-                var board = _boardService.GetById(boardId);
-                Game game = _gameService.ConfirmWin(boardId, GetUserId(Context));
+                Game game = _gameService.ConfirmWin(gameId, GetUserId(Context));
                 await Clients.Group(game.Id).SendAsync("winnerFound", game);
             }
             catch (Exception e)
@@ -138,12 +137,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task DenyWin(string boardId)
+        public async Task DenyWin(string gameId)
         {
             try
             {
-                var board = _boardService.GetById(boardId);
-                await Clients.Group(board.GameId).SendAsync("resumeGame", board);
+                var game = _gameService.DenyWin(gameId, GetUserId(Context));
+                await Clients.Group(gameId).SendAsync("updateGame", game);
             }
             catch (Exception e)
             {
