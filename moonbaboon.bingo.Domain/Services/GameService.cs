@@ -199,7 +199,6 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 
                 game.State = State.Paused;
-                Console.WriteLine(userId);
                 game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
 
                 return _gameRepository.Update(game).Result;
