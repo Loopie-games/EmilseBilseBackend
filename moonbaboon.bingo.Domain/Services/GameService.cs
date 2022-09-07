@@ -17,13 +17,14 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IPackTileRepository _packTileRepository;
         private readonly ITilePackRepository _tilePackRepository;
         private readonly ILobbyRepository _lobbyRepository;
+        private readonly IUserRepository _userRepository;
 
         private readonly Random _random = new();
 
         public GameService(IGameRepository gameRepository, IBoardRepository boardRepository,
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
-            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository)
+            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -33,6 +34,7 @@ namespace moonbaboon.bingo.Domain.Services
             _packTileRepository = packTileRepository;
             _tilePackRepository = tilePackRepository;
             _lobbyRepository = lobbyRepository;
+            _userRepository = userRepository;
         }
 
         public Game GetById(string id)
@@ -166,18 +168,62 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
-        public Game ConfirmWin(string boardId, string hostId)
+        public Game ConfirmWin(string gameId, string hostId)
         {
             try
             {
-                var board = _boardRepository.FindById(boardId).Result;
-                var game = _gameRepository.FindById(board.GameId).Result;
+                var game = _gameRepository.FindById(gameId).Result;
                 if (game.Host.Id != hostId)
                 {
                     throw new Exception("Only the host can Confirm a win");
                 }
+                game.State = State.Ended;
+                return _gameRepository.Update(game).Result;
 
-                game.WinnerId = board.UserId;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public Game PauseGame(Game game, string userId)
+        {
+            try
+            {
+                if (!_gameRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
+                {
+                    throw new Exception("You cant pause games that you are not apart of");
+                }
+                
+                
+                game.State = State.Paused;
+                game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
+
+                return _gameRepository.Update(game).Result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public Game DenyWin(string gameId, string userId)
+        {
+            try
+            {
+                var game = _gameRepository.FindById(gameId).Result;
+                
+                if (game.Host.Id != userId)
+                {
+                    throw new Exception("Only the host can deny wins");
+                }
+                game.State = State.Ongoing;
+                game.Winner = null;
+
                 return _gameRepository.Update(game).Result;
 
             }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using moonbaboon.bingo.Core.IServices;
+using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.SignalR
@@ -109,7 +110,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 else
                 {
                     var game = _gameService.GetById(board.GameId);
-                    await Clients.Group(game.Id).SendAsync("pauseGame", board);
+                    game = _gameService.PauseGame(game, GetUserId(Context));
+                    await Clients.Group(game.Id).SendAsync("updateGame", game);
                     await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", board);
                 }
             }
@@ -121,24 +123,32 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
-        public async Task ConfirmWin(string boardId)
+        public async Task ConfirmWin(string gameId)
         {
             try
             {
-                var board = _boardService.GetById(boardId);
-                var game = _gameService.ConfirmWin(boardId, GetUserId(Context));
-                await Clients.Group(game.Id).SendAsync("winnerFound", board);
+                Game game = _gameService.ConfirmWin(gameId, GetUserId(Context));
+                await Clients.Group(game.Id).SendAsync("updateGame", game);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                await SendError(e.Message);
                 throw;
             }
         }
 
-        public async Task DenyWin(string boardId)
+        public async Task DenyWin(string gameId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var game = _gameService.DenyWin(gameId, GetUserId(Context));
+                await Clients.Group(gameId).SendAsync("updateGame", game);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
         }
 
         #endregion
