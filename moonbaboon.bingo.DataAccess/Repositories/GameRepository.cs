@@ -20,6 +20,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"SELECT {Table}.{DBStrings.Id}, " +
                 $"Host.{DBStrings.Id}, Host.{DBStrings.Username}, Host.{DBStrings.Nickname}, Host.{DBStrings.ProfilePic}, " +
                 $"Winner.{DBStrings.Id}, Winner.{DBStrings.Username}, Winner.{DBStrings.Nickname}, Winner.{DBStrings.ProfilePic} " +
+                $", {Table}.{DBStrings.State} " +
                 $"FROM `{from}` " +
                 $"JOIN {DBStrings.UserTable} AS Host ON Host.{DBStrings.Id} = {Table}.{DBStrings.HostId} " +
                 $"LEFT JOIN {DBStrings.UserTable} AS Winner ON Winner.{DBStrings.Id} = {Table}.{DBStrings.WinnerId} ";
@@ -35,12 +36,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 winner = new UserSimple(reader.GetValue(5).ToString(), reader.GetValue(6).ToString(),
                     reader.GetValue(7).ToString(), reader.GetValue(8).ToString());
             }
+
+            Game ent = new(reader.GetValue(0).ToString(), host, winner, Enum.Parse<State>(reader.GetValue(9).ToString()));
             
-            Game ent = new(host)
-            {
-                Id = reader.GetValue(0).ToString(),
-                Winner = winner
-            };
             return ent;
         }
 
@@ -157,7 +155,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"UPDATE {Table} SET {Table}.{DBStrings.HostId}='{game.Host.Id}',{Table}.{DBStrings.WinnerId}='{game.Winner.Id}' WHERE {Table}.{DBStrings.Id} = '{game.Id}'; " +
+                $"UPDATE {Table} SET {Table}.{DBStrings.HostId}='{game.Host.Id}',{Table}.{DBStrings.WinnerId}='{game.Winner.Id}',{Table}.{DBStrings.State}='{game.State}' WHERE {Table}.{DBStrings.Id} = '{game.Id}'; " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DBStrings.Id} = '{game.Id}'", 
                 _connection);

@@ -188,5 +188,28 @@ namespace moonbaboon.bingo.Domain.Services
                 throw;
             }
         }
+
+        public Game PauseGame(Game game, string userId)
+        {
+            try
+            {
+                if (!_gameRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
+                {
+                    throw new Exception("You cant pause games that you are not apart of");
+                }
+                
+                
+                game.State = State.Paused;
+                game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
+
+                return _gameRepository.Update(game).Result;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }

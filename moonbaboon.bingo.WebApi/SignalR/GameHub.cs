@@ -110,7 +110,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 else
                 {
                     var game = _gameService.GetById(board.GameId);
-                    await Clients.Group(game.Id).SendAsync("pauseGame", board);
+                    game = _gameService.PauseGame(game, GetUserId(Context));
+                    await Clients.Group(game.Id).SendAsync("updateGame", game);
                     await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", board);
                 }
             }
