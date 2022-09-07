@@ -15,7 +15,7 @@ namespace moonbaboon.bingo.Domain.Services
             _gameRepository = gameRepository;
         }
 
-        public Board? GetById(string id)
+        public Board GetById(string id)
         {
             return _boardRepository.FindById(id).Result;
         }

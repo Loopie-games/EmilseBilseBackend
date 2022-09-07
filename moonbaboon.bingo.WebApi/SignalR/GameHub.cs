@@ -139,7 +139,16 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         public async Task DenyWin(string boardId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var board = _boardService.GetById(boardId);
+                await Clients.Group(board.GameId).SendAsync("resumeGame", board);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
         }
 
         #endregion
