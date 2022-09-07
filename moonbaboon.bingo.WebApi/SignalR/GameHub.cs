@@ -109,6 +109,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 else
                 {
                     var game = _gameService.GetById(board.GameId);
+                    await Clients.Group(game.Id).SendAsync("pauseGame", board);
                     await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", board);
                 }
             }
@@ -124,14 +125,20 @@ namespace moonbaboon.bingo.WebApi.SignalR
         {
             try
             {
+                var board = _boardService.GetById(boardId);
                 var game = _gameService.ConfirmWin(boardId, GetUserId(Context));
-                await Clients.Group(game.Id).SendAsync("WinnerFound", game);
+                await Clients.Group(game.Id).SendAsync("winnerFound", board);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        public async Task DenyWin(string boardId)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
