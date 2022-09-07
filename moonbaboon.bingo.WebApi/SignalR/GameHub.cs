@@ -128,7 +128,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 Game game = _gameService.ConfirmWin(gameId, GetUserId(Context));
-                await Clients.Group(game.Id).SendAsync("winnerFound", game);
+                await Clients.Group(game.Id).SendAsync("updateGame", game);
             }
             catch (Exception e)
             {
