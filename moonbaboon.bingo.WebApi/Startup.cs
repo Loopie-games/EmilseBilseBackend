@@ -179,6 +179,10 @@ namespace moonbaboon.bingo.WebApi
             services.AddScoped<IPackTileRepository, PackTileRepository>();
             services.AddScoped<IPackTileService, PackTileService>();
             
+            //OwnedTilePacks
+            services.AddScoped<IOwnedTilePackRepository, OwnedTilePackRepository>();
+            services.AddScoped<IOwnedTilePackService, OwnedTilePackService>();
+            
             //Admin
             services.AddScoped<IAdminRepository, AdminRepository>();
         }
