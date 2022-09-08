@@ -55,10 +55,15 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         #region Game
 
+        /// <summary>
+        /// Adds connectionId to group for the game
+        /// </summary>
+        /// <param name="gameId">Id for a specific game</param>
         public async Task ConnectToGame(string gameId)
         {
             try
             {
+                
                 var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
                 if (board is null)
                 {
@@ -182,10 +187,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var hostId = GetUserId(Context);
-
                 var lobby = _lobbyService.GetByHostId(hostId);
+                
                 //if user is already host for a lobby, close the old one
-                if (lobby is not null)
+                if (lobby?.Id is not null)
                 {
                     await CloseLobby(lobby.Id);
                 }

@@ -22,7 +22,15 @@ namespace moonbaboon.bingo.Domain.Services
         
         public Board? GetByUserAndGameId(string userId, string gameId)
         {
-            return _boardRepository.FindByUserAndGameId(userId, gameId).Result;
+            try
+            {
+                return _boardRepository.FindByUserAndGameId(userId, gameId).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public Board? CreateBoard(string userId, string gameId)
