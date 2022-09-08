@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class PendingPlayerRepository :IPendingPlayerRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
         public async Task<PendingPlayer> Create(PendingPlayer toCreate)
         {
             string uuid = Guid.NewGuid().ToString();
@@ -18,11 +18,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{DBStrings.PendingPlayerTable}`(`{DBStrings.Id}`, `{DBStrings.UserId}`, `{DBStrings.LobbyId}`) " +
+                $"INSERT INTO `{DbStrings.PendingPlayerTable}`(`{DbStrings.Id}`, `{DbStrings.UserId}`, `{DbStrings.LobbyId}`) " +
                 $"VALUES ('{uuid}','{toCreate.User.Id}','{toCreate.Lobby.Id}'); " +
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id} " +
-                $"FROM `{DBStrings.PendingPlayerTable}` " +
-                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.Id} = '{uuid}'", 
+                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id} " +
+                $"FROM `{DbStrings.PendingPlayerTable}` " +
+                $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.Id} = '{uuid}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -42,11 +42,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             PendingPlayer? pp = null;
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, {DBStrings.LobbyTable}.* " +
-                $"FROM `{DBStrings.PendingPlayerTable}` " +
-                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
-                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.UserId} = '{userId}'", 
+                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, {DbStrings.LobbyTable}.* " +
+                $"FROM `{DbStrings.PendingPlayerTable}` " +
+                $"JOIN {DbStrings.UserTable} ON {DbStrings.UserTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.UserId} " +
+                $"JOIN {DbStrings.LobbyTable} ON {DbStrings.LobbyTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} " +
+                $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.UserId} = '{userId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -73,13 +73,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}," +
-                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
-                $"{DBStrings.LobbyTable}.{DBStrings.Id}, {DBStrings.LobbyTable}.{DBStrings.Host}, {DBStrings.LobbyTable}.{DBStrings.Pin}  " +
-                $"FROM {DBStrings.PendingPlayerTable} " +
-                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
-                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} = '{lobbyId}'", 
+                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id}," +
+                $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
+                $"{DbStrings.LobbyTable}.{DbStrings.Id}, {DbStrings.LobbyTable}.{DbStrings.Host}, {DbStrings.LobbyTable}.{DbStrings.Pin}  " +
+                $"FROM {DbStrings.PendingPlayerTable} " +
+                $"JOIN {DbStrings.UserTable} ON {DbStrings.UserTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.UserId} " +
+                $"JOIN {DbStrings.LobbyTable} ON {DbStrings.LobbyTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} " +
+                $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} = '{lobbyId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -105,12 +105,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             PendingPlayer? pp = null;
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.PendingPlayerTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, {DBStrings.LobbyTable}.* " +
-                $"FROM `{DBStrings.PendingPlayerTable}` " +
-                $"JOIN {DBStrings.UserTable} ON {DBStrings.UserTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.UserId} " +
-                $"JOIN {DBStrings.LobbyTable} ON {DBStrings.LobbyTable}.{DBStrings.Id} = {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} " +
-                $"WHERE {DBStrings.PendingPlayerTable}.{DBStrings.LobbyId} = '{lobbyId}' " +
-                $"&& {DBStrings.PendingPlayerTable}.{DBStrings.UserId} = '{userId}'", 
+                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, {DbStrings.LobbyTable}.* " +
+                $"FROM `{DbStrings.PendingPlayerTable}` " +
+                $"JOIN {DbStrings.UserTable} ON {DbStrings.UserTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.UserId} " +
+                $"JOIN {DbStrings.LobbyTable} ON {DbStrings.LobbyTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} " +
+                $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} = '{lobbyId}' " +
+                $"&& {DbStrings.PendingPlayerTable}.{DbStrings.UserId} = '{userId}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -137,8 +137,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"DELETE FROM `{DBStrings.PendingPlayerTable}` " +
-                $"WHERE `{DBStrings.LobbyId}` = '{lobbyId}'; " +
+                $"DELETE FROM `{DbStrings.PendingPlayerTable}` " +
+                $"WHERE `{DbStrings.LobbyId}` = '{lobbyId}'; " +
                 $"SELECT ROW_COUNT()",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
@@ -157,8 +157,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"DELETE FROM `{DBStrings.PendingPlayerTable}` " +
-                $"WHERE `{DBStrings.Id}` = '{ppId}'; " +
+                $"DELETE FROM `{DbStrings.PendingPlayerTable}` " +
+                $"WHERE `{DbStrings.Id}` = '{ppId}'; " +
                 $"SELECT ROW_COUNT()",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();

@@ -10,20 +10,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class BoardTileRepository : IBoardTileRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
-        private const string Table = DBStrings.BoardTileTable;
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private const string Table = DbStrings.BoardTileTable;
 
         private static string sql_select(string from)
         {
             return
-                $"SELECT {Table}.{DBStrings.Id}, {Table}.{DBStrings.Position}, {Table}.{DBStrings.IsActivated}, " +
-                $"{DBStrings.BoardTable}.{DBStrings.Id}, {DBStrings.BoardTable}.{DBStrings.GameId}, {DBStrings.BoardTable}.{DBStrings.UserId}, " +
-                $"{DBStrings.UserTable}.{DBStrings.Id}, {DBStrings.UserTable}.{DBStrings.Username}, {DBStrings.UserTable}.{DBStrings.Nickname}, {DBStrings.UserTable}.{DBStrings.ProfilePic}, " +
-                $"{DBStrings.TileTable}.{DBStrings.Id}, {DBStrings.TileTable}.{DBStrings.Action} " +
+                $"SELECT {Table}.{DbStrings.Id}, {Table}.{DbStrings.Position}, {Table}.{DbStrings.IsActivated}, " +
+                $"{DbStrings.BoardTable}.{DbStrings.Id}, {DbStrings.BoardTable}.{DbStrings.GameId}, {DbStrings.BoardTable}.{DbStrings.UserId}, " +
+                $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
+                $"{DbStrings.TileTable}.{DbStrings.Id}, {DbStrings.TileTable}.{DbStrings.Action} " +
                 $"FROM {from} " +
-                $"JOIN {DBStrings.BoardTable} ON {Table}.{DBStrings.BoardId} = {DBStrings.BoardTable}.{DBStrings.Id} " +
-                $"JOIN {DBStrings.UserTable} on {Table}.{DBStrings.AboutUserId} = {DBStrings.UserTable}.{DBStrings.Id} " +
-                $"JOIN {DBStrings.TileTable} ON {Table}.{DBStrings.TileId} = {DBStrings.TileTable}.{DBStrings.Id} ";
+                $"JOIN {DbStrings.BoardTable} ON {Table}.{DbStrings.BoardId} = {DbStrings.BoardTable}.{DbStrings.Id} " +
+                $"JOIN {DbStrings.UserTable} on {Table}.{DbStrings.AboutUserId} = {DbStrings.UserTable}.{DbStrings.Id} " +
+                $"JOIN {DbStrings.TileTable} ON {Table}.{DbStrings.TileId} = {DbStrings.TileTable}.{DbStrings.Id} ";
         }
         
         private static BoardTile ReaderToBoardTile(MySqlDataReader reader)
@@ -47,7 +47,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
             await using MySqlCommand command = new(
                 sql_select(Table)+
-                $"WHERE {Table}.{DBStrings.Id} = '{id}';",
+                $"WHERE {Table}.{DbStrings.Id} = '{id}';",
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -69,7 +69,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"INSERT INTO {Table} " +
                 $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.Id} = '{uuid}';", 
+                $"WHERE {Table}.{DbStrings.Id} = '{uuid}';", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -94,7 +94,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.BoardId} = '{id}';", 
+                $"WHERE {Table}.{DbStrings.BoardId} = '{id}';", 
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -115,10 +115,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 $"UPDATE {Table} " +
-                $"SET `{DBStrings.AboutUserId}`='{toUpdate.AboutUser.Id}',`{DBStrings.BoardId}`='{toUpdate.Board.Id}',`{DBStrings.TileId}`='{toUpdate.Tile.Id}',`{DBStrings.Position}`='{toUpdate.Position}',`{DBStrings.IsActivated}`='{Convert.ToInt32(toUpdate.IsActivated)}' " +
-                $"WHERE {DBStrings.Id} = '{toUpdate.Id}';" +
+                $"SET `{DbStrings.AboutUserId}`='{toUpdate.AboutUser.Id}',`{DbStrings.BoardId}`='{toUpdate.Board.Id}',`{DbStrings.TileId}`='{toUpdate.Tile.Id}',`{DbStrings.Position}`='{toUpdate.Position}',`{DbStrings.IsActivated}`='{Convert.ToInt32(toUpdate.IsActivated)}' " +
+                $"WHERE {DbStrings.Id} = '{toUpdate.Id}';" +
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.Id} = '{toUpdate.Id}';", 
+                $"WHERE {Table}.{DbStrings.Id} = '{toUpdate.Id}';", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())

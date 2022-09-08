@@ -9,17 +9,17 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class PackTileRepository: IPackTileRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
-        private const string Table = DBStrings.PackTileTable;
+        private const string Table = DbStrings.PackTileTable;
 
         private static string sql_select(string from)
         {
             return
-                $"SELECT T.{DBStrings.Id}, T.{DBStrings.Action}, TP.{DBStrings.Id}, TP.{DBStrings.Name}, TP.{DBStrings.PicUrl} " +
+                $"SELECT T.{DbStrings.Id}, T.{DbStrings.Action}, TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl} " +
                 $"FROM {from} " +
-                $"JOIN {DBStrings.TileTable} AS T ON {Table}.{DBStrings.TileId} = T.{DBStrings.Id} " +
-                $"JOIN {DBStrings.TilePackTable} AS TP On {Table}.{DBStrings.PackId} = TP.{DBStrings.Id} ";
+                $"JOIN {DbStrings.TileTable} AS T ON {Table}.{DbStrings.TileId} = T.{DbStrings.Id} " +
+                $"JOIN {DbStrings.TilePackTable} AS TP On {Table}.{DbStrings.PackId} = TP.{DbStrings.Id} ";
         }
         
         private static PackTile ReaderToEnt(MySqlDataReader reader)
@@ -37,7 +37,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.PackId} = '{packId}';", 
+                $"WHERE {Table}.{DbStrings.PackId} = '{packId}';", 
                 _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -57,12 +57,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                $"INSERT INTO {DBStrings.TileTable} " +
+                $"INSERT INTO {DbStrings.TileTable} " +
                 $"VALUES ('{uuid}', '{toCreate.Action}');" +
                 $"INSERT INTO {Table} " +
                 $"VALUES ('{uuid}','{toCreate.Pack.Id}'); " +
                 sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.TileId} = '{uuid}'"
+                $"WHERE {Table}.{DbStrings.TileId} = '{uuid}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
@@ -81,7 +81,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.TileId} = '{id}'"
+                $"WHERE {Table}.{DbStrings.TileId} = '{id}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())

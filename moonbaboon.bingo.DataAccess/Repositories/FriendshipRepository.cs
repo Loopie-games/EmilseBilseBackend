@@ -9,7 +9,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class FriendshipRepository: IFriendshipRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
         public async Task<List<Friendship>> FindAll()
         {
@@ -17,12 +17,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2}",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2}",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -45,13 +45,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId}' OR {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId}' ", 
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId}' OR {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId}' ", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -74,14 +74,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Accepted} = 1 " +
-                $"AND ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId}' OR {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId}') ", 
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.Accepted} = 1 " +
+                $"AND ({DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId}' OR {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId}') ", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -104,12 +104,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"WHERE ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId1}' && {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId2}') " +
-                $"OR ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId2}' && {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId1}')",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"WHERE ({DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId1}' && {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId2}') " +
+                $"OR ({DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId2}' && {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId1}')",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -135,10 +135,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Accepted} " +
-                $"FROM `{DBStrings.FriendshipTable}` " +
-                $"WHERE ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId1}' && {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId2}') " +
-                $"OR ({DBStrings.FriendshipTable}.{DBStrings.FriendId1} = '{userId2}' && {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId1}')",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Accepted} " +
+                $"FROM `{DbStrings.FriendshipTable}` " +
+                $"WHERE ({DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId1}' && {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId2}') " +
+                $"OR ({DbStrings.FriendshipTable}.{DbStrings.FriendId1} = '{userId2}' && {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId1}')",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -159,15 +159,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{DBStrings.FriendshipTable}`" +
+                $"INSERT INTO `{DbStrings.FriendshipTable}`" +
                 $"VALUES ('{uuid}','{fromUserId}','{toUserId}','{Convert.ToInt32(b)}'); " +
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Id} = '{uuid}'",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.Id} = '{uuid}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -189,13 +189,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.FriendId2} = '{userId}' AND {DBStrings.FriendshipTable}.{DBStrings.Accepted} = '0'",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.FriendId2} = '{userId}' AND {DbStrings.FriendshipTable}.{DbStrings.Accepted} = '0'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -218,13 +218,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Id} = '{id}'",
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.Id} = '{id}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -246,16 +246,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"UPDATE {DBStrings.FriendshipTable} " +
-                $"SET {DBStrings.FriendshipTable}.{DBStrings.Accepted} ='1' " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Id} = '{friendshipId}'; " +
-                $"SELECT {DBStrings.FriendshipTable}.{DBStrings.Id}, {DBStrings.FriendshipTable}.{DBStrings.Accepted}, " +
-                $"U1.{DBStrings.Id}, U1.{DBStrings.Username}, U1.{DBStrings.Nickname}, U1.{DBStrings.ProfilePic}, " +
-                $"U2.{DBStrings.Id}, U2.{DBStrings.Username}, U2.{DBStrings.Nickname}, U2.{DBStrings.ProfilePic} " +
-                $"FROM {DBStrings.FriendshipTable} " +
-                $"JOIN {DBStrings.UserTable} As U1 ON U1.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId1} " +
-                $"JOIN {DBStrings.UserTable} As U2 ON U2.{DBStrings.Id} = {DBStrings.FriendshipTable}.{DBStrings.FriendId2} " +
-                $"WHERE {DBStrings.FriendshipTable}.{DBStrings.Id} = '{friendshipId}'",
+                $"UPDATE {DbStrings.FriendshipTable} " +
+                $"SET {DbStrings.FriendshipTable}.{DbStrings.Accepted} ='1' " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.Id} = '{friendshipId}'; " +
+                $"SELECT {DbStrings.FriendshipTable}.{DbStrings.Id}, {DbStrings.FriendshipTable}.{DbStrings.Accepted}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic}, " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"FROM {DbStrings.FriendshipTable} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON U1.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId1} " +
+                $"JOIN {DbStrings.UserTable} As U2 ON U2.{DbStrings.Id} = {DbStrings.FriendshipTable}.{DbStrings.FriendId2} " +
+                $"WHERE {DbStrings.FriendshipTable}.{DbStrings.Id} = '{friendshipId}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())

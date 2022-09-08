@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class LobbyRepository : ILobbyRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
         private static readonly Random Random = new();
 
         public async Task<Lobby?> Create(Lobby lobbyToCreate)
@@ -23,9 +23,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{DBStrings.LobbyTable}`(`{DBStrings.Id}`, `{DBStrings.Host}`, `{DBStrings.Pin}`) " +
+                $"INSERT INTO `{DbStrings.LobbyTable}`(`{DbStrings.Id}`, `{DbStrings.Host}`, `{DbStrings.Pin}`) " +
                 $"VALUES ('{uuid}','{lobbyToCreate.Host}','{pin}'); " +
-                $"SELECT * FROM {DBStrings.LobbyTable} WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{uuid}'", 
+                $"SELECT * FROM {DbStrings.LobbyTable} WHERE {DbStrings.LobbyTable}.{DbStrings.Id} = '{uuid}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -50,11 +50,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT {DBStrings.LobbyTable}.{DBStrings.Id}, hostId.{DBStrings.Nickname}, {DBStrings.LobbyTable}.{DBStrings.Pin} " +
-                $"FROM {DBStrings.LobbyTable} " +
-                $"JOIN {DBStrings.UserTable} as hostId " +
-                $"ON hostId.{DBStrings.Id} = {DBStrings.LobbyTable}.{DBStrings.Host} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
+                $"SELECT {DbStrings.LobbyTable}.{DbStrings.Id}, hostId.{DbStrings.Nickname}, {DbStrings.LobbyTable}.{DbStrings.Pin} " +
+                $"FROM {DbStrings.LobbyTable} " +
+                $"JOIN {DbStrings.UserTable} as hostId " +
+                $"ON hostId.{DbStrings.Id} = {DbStrings.LobbyTable}.{DbStrings.Host} " +
+                $"WHERE {DbStrings.LobbyTable}.{DbStrings.Id} = '{id}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -74,8 +74,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.LobbyTable} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Id} = '{id}'", 
+                $"SELECT * FROM {DbStrings.LobbyTable} " +
+                $"WHERE {DbStrings.LobbyTable}.{DbStrings.Id} = '{id}'", 
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -96,8 +96,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.LobbyTable} " +
-                $"WHERE {DBStrings.LobbyTable}.{DBStrings.Host} = '{hostId}'",
+                $"SELECT * FROM {DbStrings.LobbyTable} " +
+                $"WHERE {DbStrings.LobbyTable}.{DbStrings.Host} = '{hostId}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -123,8 +123,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 Lobby? ent = null;
                 await _connection.OpenAsync();
                 await using var command = new MySqlCommand(
-                    $"SELECT * FROM {DBStrings.LobbyTable} " +
-                    $"WHERE {DBStrings.LobbyTable}.{DBStrings.Pin} = '{pin}'", 
+                    $"SELECT * FROM {DbStrings.LobbyTable} " +
+                    $"WHERE {DbStrings.LobbyTable}.{DbStrings.Pin} = '{pin}'", 
                     _connection);
                 await using var reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
@@ -145,8 +145,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 await _connection.OpenAsync();
 
                 await using var command = new MySqlCommand(
-                    $"DELETE FROM `{DBStrings.LobbyTable}` " +
-                    $"WHERE `{DBStrings.Id}`='{lobbyId}'; " +
+                    $"DELETE FROM `{DbStrings.LobbyTable}` " +
+                    $"WHERE `{DbStrings.Id}`='{lobbyId}'; " +
                     $"SELECT ROW_COUNT()",
                     _connection);
                 await using var reader = await command.ExecuteReaderAsync();
