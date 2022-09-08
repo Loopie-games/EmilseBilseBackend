@@ -189,7 +189,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 //if user is already host for a lobby, close the old one
                 if (lobby is not null)
                 {
-                    _lobbyService.CloseLobby(lobby.Id!, hostId);
+                    await CloseLobby(lobby.Id);
                 }
 
                 lobby = _lobbyService.Create(hostId);
