@@ -1,6 +1,8 @@
-﻿namespace moonbaboon.bingo.Domain.Services
+﻿using moonbaboon.bingo.Core.IServices;
+
+namespace moonbaboon.bingo.Domain.Services
 {
-    public class OwnedTilePackService
+    public class OwnedTilePackService: IOwnedTilePackService
     {
         
     }
