@@ -2,15 +2,16 @@
 {
     public class Board
     {
-        public Board(string? id, string userId, string gameId)
+        public Board(string? id, string gameId, string userId)
         {
             Id = id;
-            UserId = userId;
             GameId = gameId;
+            UserId = userId;
         }
 
         public string? Id { get; set; }
-        public string UserId { get; set; }
         public string GameId { get; set; }
+        public string UserId { get; set; }
+        
     }
 }

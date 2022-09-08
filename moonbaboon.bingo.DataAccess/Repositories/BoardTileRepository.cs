@@ -28,10 +28,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         
         private static BoardTile ReaderToBoardTile(MySqlDataReader reader)
         {
-            Board board = new(reader.GetValue(4).ToString(), reader.GetValue(5).ToString())
-            {
-                Id = reader.GetValue(3).ToString()
-            };
+            Board board = new(reader.GetValue(3).ToString(),reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
 
             UserSimple user = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
