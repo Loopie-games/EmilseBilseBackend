@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -19,14 +20,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"SELECT U.{DbStrings.Id}, U.{DbStrings.Username}, U.{DbStrings.Nickname}, U.{DbStrings.ProfilePic}," +
                 $"TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl} " +
                 $"FROM {from} " +
-                $"JOIN {DbStrings.UserTable} AS U ON {Table}.{DbStrings.OwnerId} = T.{DbStrings.Id} " +
+                $"JOIN {DbStrings.UserTable} AS U ON {Table}.{DbStrings.OwnerId} = U.{DbStrings.Id} " +
                 $"JOIN {DbStrings.TilePackTable} AS TP On {Table}.{DbStrings.TilePackId} = TP.{DbStrings.Id} ";
         }
 
-        private static OwnedTilePack ReaderToEnt(IDataRecord reader)
+        private static OwnedTilePack ReaderToEnt(MySqlDataReader reader)
         {
-            UserSimple owner = new(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetString(3));
-            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetString(6));
+            UserSimple owner = new(reader.GetString(0), reader.GetString(1), reader.GetString(2), reader.GetValue(3).ToString());
+            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetValue(6).ToString());
             return new OwnedTilePack(owner, tilePack);
         }
 
