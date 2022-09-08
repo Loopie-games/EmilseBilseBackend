@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,16 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet]
         public ActionResult<List<TilePack>> GetAll()
         {
-            return _tilePackService.GetAll();
+            try
+            {
+                return _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
         
         [HttpGet("{id}")]

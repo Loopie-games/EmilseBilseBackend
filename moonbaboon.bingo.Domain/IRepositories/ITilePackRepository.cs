@@ -7,9 +7,10 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface ITilePackRepository
     {
         public Task<List<TilePack>> FindAll();
-
+        public Task<List<TilePack>> FindAll_LoggedUser(string userId);
         public Task<TilePack> FindDefault();
         public Task<TilePack> FindById(string packId);
         public Task<TilePack> Create(TilePack toCreate);
+        
     }
 }
