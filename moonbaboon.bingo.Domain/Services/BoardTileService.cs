@@ -35,7 +35,6 @@ namespace moonbaboon.bingo.Domain.Services
             try
             {
                 var boardTile = _boardTileRepository.FindById(boardTileId).Result;
-                Console.WriteLine(boardTile.Board.UserId);
                 if (boardTile.Board.UserId != userId)
                 {
                     throw new Exception("You do not own this board, and can not turn the tiles!");
