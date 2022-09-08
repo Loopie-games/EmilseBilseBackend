@@ -63,7 +63,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
         {
             try
             {
-                
                 var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
                 if (board is null)
                 {
@@ -82,6 +81,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
+        /// <summary>
+        /// Turns/(de)Activates the tile
+        /// </summary>
+        /// <param name="boardTileId">id of the tile</param>
         public async Task TurnTile(string boardTileId)
         {
             try
@@ -188,7 +191,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 var hostId = GetUserId(Context);
                 var lobby = _lobbyService.GetByHostId(hostId);
-                
+
                 //if user is already host for a lobby, close the old one
                 if (lobby?.Id is not null)
                 {
