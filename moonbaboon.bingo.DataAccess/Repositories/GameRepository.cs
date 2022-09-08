@@ -10,20 +10,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class GameRepository : IGameRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
-        private const string Table = DBStrings.GameTable;
+        private const string Table = DbStrings.GameTable;
 
         private static string sql_select(string from)
         {
             return
-                $"SELECT {Table}.{DBStrings.Id}, " +
-                $"Host.{DBStrings.Id}, Host.{DBStrings.Username}, Host.{DBStrings.Nickname}, Host.{DBStrings.ProfilePic}, " +
-                $"Winner.{DBStrings.Id}, Winner.{DBStrings.Username}, Winner.{DBStrings.Nickname}, Winner.{DBStrings.ProfilePic} " +
-                $", {Table}.{DBStrings.State} " +
+                $"SELECT {Table}.{DbStrings.Id}, " +
+                $"Host.{DbStrings.Id}, Host.{DbStrings.Username}, Host.{DbStrings.Nickname}, Host.{DbStrings.ProfilePic}, " +
+                $"Winner.{DbStrings.Id}, Winner.{DbStrings.Username}, Winner.{DbStrings.Nickname}, Winner.{DbStrings.ProfilePic} " +
+                $", {Table}.{DbStrings.State} " +
                 $"FROM `{from}` " +
-                $"JOIN {DBStrings.UserTable} AS Host ON Host.{DBStrings.Id} = {Table}.{DBStrings.HostId} " +
-                $"LEFT JOIN {DBStrings.UserTable} AS Winner ON Winner.{DBStrings.Id} = {Table}.{DBStrings.WinnerId} ";
+                $"JOIN {DbStrings.UserTable} AS Host ON Host.{DbStrings.Id} = {Table}.{DbStrings.HostId} " +
+                $"LEFT JOIN {DbStrings.UserTable} AS Winner ON Winner.{DbStrings.Id} = {Table}.{DbStrings.WinnerId} ";
         }
 
         private static Game ReaderToGame(MySqlDataReader reader)
@@ -50,7 +50,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.Id} = '{id}'",
+                $"WHERE {Table}.{DbStrings.Id} = '{id}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -69,7 +69,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.HostId} = '{userId}'",
+                $"WHERE {Table}.{DbStrings.HostId} = '{userId}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -88,10 +88,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"INSERT INTO `{Table}`(`{DBStrings.Id}`, `{DBStrings.HostId}`) " +
+                $"INSERT INTO `{Table}`(`{DbStrings.Id}`, `{DbStrings.HostId}`) " +
                 $"VALUES ('{uuid}','{hostId}'); " +
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.Id} = '{uuid}'",
+                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -140,8 +140,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                $"DELETE FROM `{DBStrings.GameTable}` " +
-                $"WHERE `{DBStrings.Id}`='{gameId}'; " +
+                $"DELETE FROM `{DbStrings.GameTable}` " +
+                $"WHERE `{DbStrings.Id}`='{gameId}'; " +
                 $"SELECT ROW_COUNT()",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
@@ -160,21 +160,21 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             var update =
-                $"UPDATE {Table} SET {Table}.{DBStrings.HostId}='{game.Host.Id}',";
+                $"UPDATE {Table} SET {Table}.{DbStrings.HostId}='{game.Host.Id}',";
 
             if (game.Winner?.Id is not null)
             {
-                update += $"{Table}.{DBStrings.WinnerId}='{game.Winner?.Id}',";
+                update += $"{Table}.{DbStrings.WinnerId}='{game.Winner?.Id}',";
             }
 
-            update += $"{Table}.{DBStrings.State}='{game.State}' " +
-                      $"WHERE {Table}.{DBStrings.Id} = '{game.Id}'; ";
+            update += $"{Table}.{DbStrings.State}='{game.State}' " +
+                      $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'; ";
 
 
             await using var command = new MySqlCommand(
                 update +
                 sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.Id} = '{game.Id}'",
+                $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())

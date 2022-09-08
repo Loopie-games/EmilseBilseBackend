@@ -8,17 +8,17 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class AdminRepository: IAdminRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
-        private const string Table = DBStrings.AdminTable;
+        private const string Table = DbStrings.AdminTable;
 
         private static string sql_select(string from)
         {
             return
-                $"SELECT {Table}.{DBStrings.Id}, " +
-                $"U.{DBStrings.Id}, U.{DBStrings.Username}, U.{DBStrings.Nickname}, U.{DBStrings.ProfilePic} " +
+                $"SELECT {Table}.{DbStrings.Id}, " +
+                $"U.{DbStrings.Id}, U.{DbStrings.Username}, U.{DbStrings.Nickname}, U.{DbStrings.ProfilePic} " +
                 $"FROM {from} " +
-                $"JOIN {DBStrings.UserTable} As U ON U.{DBStrings.Id} = {Table}.{DBStrings.UserId} ";
+                $"JOIN {DbStrings.UserTable} As U ON U.{DbStrings.Id} = {Table}.{DbStrings.UserId} ";
         }
         
         private static Admin ReaderToEnt(MySqlDataReader reader)
@@ -35,7 +35,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.UserId} = '{user.Id}'"
+                $"WHERE {Table}.{DbStrings.UserId} = '{user.Id}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())

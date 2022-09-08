@@ -9,8 +9,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TilePackRepository : ITilePackRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
-        private const string Table = DBStrings.TilePackTable;
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private const string Table = DbStrings.TilePackTable;
         
         private static TilePack ReaderToEnt(MySqlDataReader reader)
         {
@@ -21,7 +21,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             var list = new List<TilePack>();
             await _connection.OpenAsync();
-            await using var command = new MySqlCommand($"SELECT * FROM `{DBStrings.TilePackTable}`", _connection);
+            await using var command = new MySqlCommand($"SELECT * FROM `{DbStrings.TilePackTable}`", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -37,8 +37,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             TilePack? ent = null;
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.TilePackTable} " +
-                $"WHERE {DBStrings.TilePackTable}.{DBStrings.Name} = 'Default' "
+                $"SELECT * FROM {DbStrings.TilePackTable} " +
+                $"WHERE {DbStrings.TilePackTable}.{DbStrings.Name} = 'Default' "
                 , _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -55,8 +55,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             TilePack? ent = null;
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DBStrings.TilePackTable} " +
-                $"WHERE {DBStrings.TilePackTable}.{DBStrings.Id} = '{packId}' "
+                $"SELECT * FROM {DbStrings.TilePackTable} " +
+                $"WHERE {DbStrings.TilePackTable}.{DbStrings.Id} = '{packId}' "
                 , _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -77,7 +77,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"INSERT INTO {Table} " +
                 $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}'); " +
                 sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.Id} = '{uuid}'"
+                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())
