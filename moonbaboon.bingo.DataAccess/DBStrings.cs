@@ -75,6 +75,7 @@
         public const string AboutUserId = "AboutUserId";
         public const string Position = "Position";
         public const string IsActivated = "IsActivated";
+        public const string TileType = "TileType";
 
         //TilePack
         public const string TilePackTable = "TilePack";

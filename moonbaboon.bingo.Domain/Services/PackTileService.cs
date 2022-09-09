@@ -22,10 +22,10 @@ namespace moonbaboon.bingo.Domain.Services
             return _packTileRepository.GetByPackId(packId).Result;
         }
 
-        public PackTile Create(Tile tile, string packId)
+        public PackTile Create(string action, string packId)
         {
             var pack = _tilePackRepository.FindById(packId).Result;
-            return _packTileRepository.Create(new PackTile(null, tile.Action, pack)).Result;
+            return _packTileRepository.Create(new PackTile(null, action, pack)).Result;
         }
 
         public PackTile GetById(string id)
