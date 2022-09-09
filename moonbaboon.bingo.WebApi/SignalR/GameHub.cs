@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
@@ -21,7 +20,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly IBoardService _boardService;
         private readonly IBoardTileService _boardTileService;
 
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService, IBoardService boardService, IBoardTileService boardTileService)
+        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService,
+            IBoardService boardService, IBoardTileService boardTileService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
@@ -55,6 +55,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         #region Game
 
+        /// <summary>
+        /// Adds connectionId to group for the game
+        /// </summary>
+        /// <param name="gameId">Id for a specific game</param>
         public async Task ConnectToGame(string gameId)
         {
             try
@@ -69,16 +73,18 @@ namespace moonbaboon.bingo.WebApi.SignalR
                     await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
                     await Clients.Caller.SendAsync("gameConnected", board.Id);
                 }
-
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 await SendError(e.Message);
             }
-            
         }
 
+        /// <summary>
+        /// Turns/(de)Activates the tile
+        /// </summary>
+        /// <param name="boardTileId">id of the tile</param>
         public async Task TurnTile(string boardTileId)
         {
             try
@@ -184,10 +190,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var hostId = GetUserId(Context);
-                
                 var lobby = _lobbyService.GetByHostId(hostId);
+
                 //if user is already host for a lobby, close the old one
-                if (lobby is not null)
+                if (lobby?.Id is not null)
                 {
                     await CloseLobby(lobby.Id);
                 }
@@ -262,6 +268,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await SendError(e.Message);
             }
         }
+
         #endregion
     }
 }

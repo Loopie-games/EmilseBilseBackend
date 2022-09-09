@@ -6,7 +6,7 @@ using moonbaboon.bingo.Domain.IRepositories;
 
 namespace moonbaboon.bingo.Domain.Services
 {
-    public class BoardTileService: IBoardTileService
+    public class BoardTileService : IBoardTileService
     {
         private readonly IBoardTileRepository _boardTileRepository;
 
@@ -17,7 +17,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardTile GetById(string id)
         {
-            return _boardTileRepository.FindById(id).Result;
+            return _boardTileRepository.ReadById(id).Result;
         }
 
         public BoardTile Create(BoardTile toCreate)
@@ -32,14 +32,24 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardTile TurnTile(string boardTileId, string userId)
         {
-            var boardTile = _boardTileRepository.FindById(boardTileId).Result;
-            if (boardTile.Board.UserId != userId)
+            try
             {
-                throw new Exception("You do not own this board, and can not turn the tiles!");
+                //checks that the user trying to turn the tile is owner of the board, else Error
+                var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
+                if (boardTile.Board.UserId != userId)
+                {
+                    throw new Exception("You do not own this board, and can not turn the tiles!");
+                }
+                
+                boardTile.IsActivated = !boardTile.IsActivated;
+                var tile = _boardTileRepository.Update(boardTile).Result;
+                return tile;
             }
-            boardTile.IsActivated = !boardTile.IsActivated;
-            var tile = _boardTileRepository.Update(boardTile).Result;
-            return tile;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 }

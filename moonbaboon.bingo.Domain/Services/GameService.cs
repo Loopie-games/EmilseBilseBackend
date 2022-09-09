@@ -53,7 +53,7 @@ namespace moonbaboon.bingo.Domain.Services
             {
                 //if user is already host for a game, it is deleted
                 var oldGame = _gameRepository.FindByHostId(userId).Result;
-                if (oldGame is not null)
+                if (oldGame?.Id is not null)
                 {
                     _gameRepository.Delete(oldGame.Id);
                 }
