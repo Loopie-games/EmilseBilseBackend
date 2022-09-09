@@ -10,9 +10,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class BoardTileRepository : IBoardTileRepository
     {
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        //private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
         private const string Table = DbStrings.BoardTileTable;
 
+        private static MySqlConnection GetConnection()
+        {
+            return new MySqlConnection(DbStrings.SqlConnection);
+        }
+        
         private static string sql_select(string from)
         {
             return
@@ -51,20 +56,17 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<BoardTile> ReadById(string id)
         {
             BoardTile? ent = null;
-
-            await _connection.OpenAsync();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await con.OpenAsync();
             await using MySqlCommand command = new(
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{id}';",
-                _connection);
+                con);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToBoardTile(reader);
             }
-
-            await _connection.CloseAsync();
-
             return ent ?? throw new Exception($"no {Table} found with id: " + id);
         }
 
@@ -72,21 +74,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             string uuid = Guid.NewGuid().ToString();
             BoardTile? ent = null;
-            await _connection.OpenAsync();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
 
             await using var command = new MySqlCommand(
                 $"INSERT INTO {Table} " +
                 $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}';",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            while (reader.Read())
             {
                 ent = ReaderToBoardTile(reader);
             }
-
-            await _connection.CloseAsync();
 
             if (ent == null)
             {
@@ -98,6 +99,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<List<BoardTile>> FindByBoardId(string id)
         {
+            await using var _connection = new MySqlConnection(DbStrings.SqlConnection);
             List<BoardTile> list = new();
             await _connection.OpenAsync();
 
@@ -118,8 +120,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<BoardTile> Update(BoardTile toUpdate)
         {
+            await using var connection = new MySqlConnection(DbStrings.SqlConnection);
             BoardTile? ent = null;
-            await _connection.OpenAsync();
+            await connection.OpenAsync();
 
             await using var command = new MySqlCommand(
                 $"UPDATE {Table} " +
@@ -127,14 +130,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.Id} = '{toUpdate.Id}';" +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{toUpdate.Id}';",
-                _connection);
+                connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToBoardTile(reader);
             }
 
-            await _connection.CloseAsync();
+            await connection.CloseAsync();
 
             if (ent == null)
             {

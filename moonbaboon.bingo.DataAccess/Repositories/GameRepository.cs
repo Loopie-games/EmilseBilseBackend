@@ -85,22 +85,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             string uuid = Guid.NewGuid().ToString();
             Game? ent = null;
-            await _connection.OpenAsync();
 
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
             await using var command = new MySqlCommand(
                 $"INSERT INTO `{Table}`(`{DbStrings.Id}`, `{DbStrings.HostId}`) " +
                 $"VALUES ('{uuid}','{hostId}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToGame(reader);
             }
-
-            await _connection.CloseAsync();
-
             if (ent == null)
             {
                 throw new InvalidDataException($"ERROR in creating game with host: " + hostId);
