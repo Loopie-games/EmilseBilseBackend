@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace moonbaboon.bingo.Core.Models
 {
-    public class UserTile: ITile
+    public class UserTile: Tile
     {
-        public UserTile(string? id, string action, UserSimple user, UserSimple addedByUser)
+        public UserTile(string? id, string action, UserSimple user, UserSimple addedByUser) : base(id, action, addedByUser.Username, TileType.UserTile)
         {
             Id = id;
             Action = action;
@@ -19,6 +19,7 @@ namespace moonbaboon.bingo.Core.Models
         public string? Id { get; set; }
         public string Action { get; set; }
         public string AddedBy { get; }
+        public TileType TileType => TileType.UserTile;
 
         public UserSimple User { get; set; }
 

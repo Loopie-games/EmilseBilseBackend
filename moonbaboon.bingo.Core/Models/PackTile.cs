@@ -1,8 +1,8 @@
 ﻿namespace moonbaboon.bingo.Core.Models
 {
-    public class PackTile: ITile
+    public class PackTile: Tile
     {
-        public PackTile(string? id, string action, TilePack pack)
+        public PackTile(string? id, string action, TilePack pack) : base(id, action, pack.Name, TileType.PackTile)
         {
             Id = id;
             Action = action;
@@ -13,6 +13,7 @@
         public string? Id { get; set; }
         public string Action { get; set; }
         public string AddedBy { get; }
+        public TileType TileType => TileType.PackTile;
         public TilePack Pack { get; set; }
     }
 }

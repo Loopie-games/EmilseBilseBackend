@@ -10,32 +10,26 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class BoardTileRepository : IBoardTileRepository
     {
-        //private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
         private const string Table = DbStrings.BoardTileTable;
 
-        private static MySqlConnection GetConnection()
-        {
-            return new MySqlConnection(DbStrings.SqlConnection);
-        }
-        
         private static string sql_select(string from)
         {
             return
                 $"SELECT {Table}.{DbStrings.Id}, {Table}.{DbStrings.Position}, {Table}.{DbStrings.IsActivated}, " +
                 $"{DbStrings.BoardTable}.{DbStrings.Id}, {DbStrings.BoardTable}.{DbStrings.GameId}, {DbStrings.BoardTable}.{DbStrings.UserId}, " +
                 $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
-                $"TOM.TileID, TOM.{DbStrings.Action}, TOM.AddedBy " +
+                $"TOM.Id, TOM.Action, TOM.AddedBy, {Table}.{DbStrings.TileType} " +
                 $"FROM {from} " +
                 $"JOIN {DbStrings.BoardTable} ON {Table}.{DbStrings.BoardId} = {DbStrings.BoardTable}.{DbStrings.Id} " +
                 $"JOIN {DbStrings.UserTable} on {Table}.{DbStrings.AboutUserId} = {DbStrings.UserTable}.{DbStrings.Id} " +
                 $"JOIN (" +
-                    $"SELECT Tile.Id As TileID, Tile.Action, TilePack.Name AS AddedBy " +
-                    $"FROM Tile JOIN PackTile ON Tile.Id = PackTile.TileId " +
-                    $"LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId " +
-                    $"UNION SELECT Tile.Id, Tile.Action, User.username AS AddedBy " +
-                    $"FROM Tile JOIN UserTile ON Tile.Id = UserTile.TileId LEFT " +
-                    $"JOIN User ON UserTile.AddedById = User.id) AS TOM " +
-                $"ON {Table}.{DbStrings.TileId} = TOM.TileID ";
+                $"SELECT Tile.Id As Id, Tile.Action As Action, TilePack.Name AS AddedBy " +
+                $"FROM Tile JOIN PackTile ON Tile.Id = PackTile.TileId " +
+                $"LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId " +
+                $"UNION SELECT Tile.Id, Tile.Action, User.username AS AddedBy " +
+                $"FROM Tile JOIN UserTile ON Tile.Id = UserTile.TileId LEFT " +
+                $"JOIN User ON UserTile.AddedById = User.id) AS TOM " +
+                $"ON {Table}.{DbStrings.TileId} = TOM.ID ";
         }
 
         private static BoardTile ReaderToBoardTile(MySqlDataReader reader)
@@ -45,7 +39,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             UserSimple user =
                 new(reader.GetString(6), reader.GetString(7), reader.GetString(8), 
                     reader.GetValue(9).ToString());
-            ITile tile = new Tile(reader.GetString(10), reader.GetString(11), reader.GetString(12));
+            Tile tile = new(reader.GetString(10),reader.GetString(11), reader.GetString(12),
+                Enum.Parse<TileType>(reader.GetValue(13).ToString()));
             BoardTile boardTile =
                 new(reader.GetString(0), board, tile, user, reader.GetInt32(1),
                     Convert.ToBoolean(reader.GetValue(2).ToString()));
