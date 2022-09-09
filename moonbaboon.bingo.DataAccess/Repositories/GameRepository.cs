@@ -10,8 +10,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class GameRepository : IGameRepository
     {
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
-
         private const string Table = DbStrings.GameTable;
 
         private static string sql_select(string from)
@@ -46,38 +44,38 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<Game> FindById(string id)
         {
             Game? ent = null;
-            await _connection.OpenAsync();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
 
             await using var command = new MySqlCommand(
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{id}'",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToGame(reader);
             }
 
-            await _connection.CloseAsync();
             return ent ?? throw new Exception("No game found with id: " + id);
         }
 
         public async Task<Game?> FindByHostId(string userId)
         {
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
             Game? ent = null;
-            await _connection.OpenAsync();
+            con.Open();
 
             await using var command = new MySqlCommand(
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.HostId} = '{userId}'",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToGame(reader);
             }
 
-            await _connection.CloseAsync();
             return ent;
         }
 
@@ -99,6 +97,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 ent = ReaderToGame(reader);
             }
+
             if (ent == null)
             {
                 throw new InvalidDataException($"ERROR in creating game with host: " + hostId);
@@ -111,7 +110,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<UserSimple>> GetPlayers(string gameId)
         {
             var list = new List<UserSimple>();
-            await _connection.OpenAsync();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
 
             await using var command = new MySqlCommand(
                 $"SELECT User.id, User.username, User.nickname, User.ProfilePicURL " +
@@ -119,7 +119,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"JOIN Board ON Board.GameId = Game.Id " +
                 $"WHERE Game.Id = '{gameId}') As b " +
                 $"JOIN User ON b.u1 = User.id",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -128,34 +128,35 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 list.Add(ent);
             }
 
-            await _connection.CloseAsync();
             return list;
         }
 
         public async Task<bool> Delete(string gameId)
         {
             var b = false;
-            await _connection.OpenAsync();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+
+            con.Open();
 
             await using var command = new MySqlCommand(
                 $"DELETE FROM `{DbStrings.GameTable}` " +
                 $"WHERE `{DbStrings.Id}`='{gameId}'; " +
                 $"SELECT ROW_COUNT()",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 b = (Convert.ToInt16(reader.GetValue(0).ToString()) > 0);
             }
 
-            await _connection.CloseAsync();
             return b;
         }
 
         public async Task<Game> Update(Game game)
         {
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
             Game? ent = null;
-            await _connection.OpenAsync();
+            con.Open();
 
             var update =
                 $"UPDATE {Table} SET {Table}.{DbStrings.HostId}='{game.Host.Id}',";
@@ -173,14 +174,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 update +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'",
-                _connection);
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 ent = ReaderToGame(reader);
             }
-
-            await _connection.CloseAsync();
 
             if (ent == null)
             {
