@@ -57,7 +57,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                var created = _packTileService.Create(new Tile(null, toCreate.Action), toCreate.PackId);
+                var created = _packTileService.Create(toCreate.Action, toCreate.PackId);
                 return CreatedAtAction(nameof(GetById),new{id = created.Id}, created);
             }
             catch (Exception e)

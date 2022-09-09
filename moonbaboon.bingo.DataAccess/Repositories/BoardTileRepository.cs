@@ -19,11 +19,18 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"SELECT {Table}.{DbStrings.Id}, {Table}.{DbStrings.Position}, {Table}.{DbStrings.IsActivated}, " +
                 $"{DbStrings.BoardTable}.{DbStrings.Id}, {DbStrings.BoardTable}.{DbStrings.GameId}, {DbStrings.BoardTable}.{DbStrings.UserId}, " +
                 $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
-                $"{DbStrings.TileTable}.{DbStrings.Id}, {DbStrings.TileTable}.{DbStrings.Action} " +
+                $"TOM.TileID, TOM.{DbStrings.Action}, TOM.AddedBy " +
                 $"FROM {from} " +
                 $"JOIN {DbStrings.BoardTable} ON {Table}.{DbStrings.BoardId} = {DbStrings.BoardTable}.{DbStrings.Id} " +
                 $"JOIN {DbStrings.UserTable} on {Table}.{DbStrings.AboutUserId} = {DbStrings.UserTable}.{DbStrings.Id} " +
-                $"JOIN {DbStrings.TileTable} ON {Table}.{DbStrings.TileId} = {DbStrings.TileTable}.{DbStrings.Id} ";
+                $"JOIN (" +
+                    $"SELECT Tile.Id As TileID, Tile.Action, TilePack.Name AS AddedBy " +
+                    $"FROM Tile JOIN PackTile ON Tile.Id = PackTile.TileId " +
+                    $"LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId " +
+                    $"UNION SELECT Tile.Id, Tile.Action, User.username AS AddedBy " +
+                    $"FROM Tile JOIN UserTile ON Tile.Id = UserTile.TileId LEFT " +
+                    $"JOIN User ON UserTile.AddedById = User.id) AS TOM " +
+                $"ON {Table}.{DbStrings.TileId} = TOM.TileID ";
         }
 
         private static BoardTile ReaderToBoardTile(MySqlDataReader reader)
@@ -33,8 +40,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             UserSimple user =
                 new(reader.GetString(6), reader.GetString(7), reader.GetString(8), 
                     reader.GetValue(9).ToString());
-            Tile tile =
-                new(reader.GetString(10), reader.GetString(11));
+            ITile tile = new Tile(reader.GetString(10), reader.GetString(11), reader.GetString(12));
             BoardTile boardTile =
                 new(reader.GetString(0), board, tile, user, reader.GetInt32(1),
                     Convert.ToBoolean(reader.GetValue(2).ToString()));
