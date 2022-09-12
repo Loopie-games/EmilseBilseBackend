@@ -99,8 +99,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 await SendError(e.Message);
-                throw;
             }
         }
 
