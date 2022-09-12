@@ -9,10 +9,12 @@ namespace moonbaboon.bingo.Domain.Services
     public class BoardTileService : IBoardTileService
     {
         private readonly IBoardTileRepository _boardTileRepository;
+        private readonly IGameRepository _gameRepository;
 
-        public BoardTileService(IBoardTileRepository boardTileRepository)
+        public BoardTileService(IBoardTileRepository boardTileRepository, IGameRepository gameRepository)
         {
             _boardTileRepository = boardTileRepository;
+            _gameRepository = gameRepository;
         }
 
         public BoardTile GetById(string id)
@@ -39,6 +41,12 @@ namespace moonbaboon.bingo.Domain.Services
                 if (boardTile.Board.UserId != userId)
                 {
                     throw new Exception("You do not own this board, and can not turn the tiles!");
+                }
+
+                var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
+                if (game.State != State.Ongoing)
+                {
+                    throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
                 }
                 
                 boardTile.IsActivated = !boardTile.IsActivated;
