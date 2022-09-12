@@ -22,7 +22,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"JOIN {DbStrings.UserTable} AS U ON U.{DbStrings.Id} = {Table}.{DbStrings.UserId} ";
         }
 
-        private static TopPlayer ReaderToTopPlayer(IDataRecord reader)
+        private static TopPlayer ReaderToEnt(IDataRecord reader)
         {
             var user = new UserSimple(reader.GetString(3), reader.GetString(4),
                 reader.GetString(5), reader.GetValue(6).ToString());
@@ -41,7 +41,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (reader.Read())
             {
-                ent = ReaderToTopPlayer(reader);
+                ent = ReaderToEnt(reader);
             }
 
             return ent;
@@ -56,6 +56,29 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
             return ent ?? throw new InvalidDataException($"ERROR in creating {Table} with User: " + toCreate.User.Username);
+        }
+
+        public async Task<List<TopPlayer>> FindTop(string gameId, int limit)
+        {
+            List<TopPlayer> list = new();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
+
+            string sqlCommand =
+                sql_select(Table)+
+                $"WHERE {Table}.{DbStrings.GameId} = '{gameId}' " +
+                $"ORDER BY {DbStrings.TurnedTiles} DESC " +
+                $"Limit {limit};";
+
+            await using var command = new MySqlCommand(sqlCommand, con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (reader.Read())
+            {
+                var ent = ReaderToEnt(reader);
+                list.Add(ent);
+            }
+
+            return list;
         }
     }
 }
