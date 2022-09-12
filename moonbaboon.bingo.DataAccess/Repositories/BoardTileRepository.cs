@@ -74,7 +74,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
+                $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}', '{toCreate.Tile.TileType}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}';",
                 con);
