@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Domain.IRepositories
@@ -15,5 +16,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <returns>the board if it exist, else null</returns>
         public Task<Board?> FindByUserAndGameId(string userId, string gameId);
         public Task<bool> IsBoardFilled(string boardId);
+
+        public Task<List<Board>> FindTopRanking(string gameId, int limit);
     }
 }

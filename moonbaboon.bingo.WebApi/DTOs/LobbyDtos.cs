@@ -44,18 +44,4 @@ namespace moonbaboon.bingo.WebApi.DTOs
 
         
     }
-
-    public class LeaveLobbyDto
-    {
-        public LeaveLobbyDto(string lobbyId, string userId)
-        {
-            LobbyId = lobbyId;
-            UserId = userId;
-        }
-
-        [Required]
-        public string LobbyId { get; set; }
-        [Required]
-        public string UserId { get; set; }
-    }
 }

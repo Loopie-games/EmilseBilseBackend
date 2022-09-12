@@ -18,13 +18,15 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly ITilePackRepository _tilePackRepository;
         private readonly ILobbyRepository _lobbyRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ITopPlayerRepository _topPlayerRepository;
 
         private readonly Random _random = new();
 
         public GameService(IGameRepository gameRepository, IBoardRepository boardRepository,
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
-            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository)
+            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository,
+            ITopPlayerRepository topPlayerRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -35,6 +37,7 @@ namespace moonbaboon.bingo.Domain.Services
             _tilePackRepository = tilePackRepository;
             _lobbyRepository = lobbyRepository;
             _userRepository = userRepository;
+            _topPlayerRepository = topPlayerRepository;
         }
 
         public Game GetById(string id)
@@ -177,9 +180,16 @@ namespace moonbaboon.bingo.Domain.Services
                 {
                     throw new Exception("Only the host can Confirm a win");
                 }
-                game.State = State.Ended;
-                return _gameRepository.Update(game).Result;
 
+                game.State = State.Ended;
+                var topRanked = _boardRepository.FindTopRanking(gameId, 3).Result;
+                foreach (var board in topRanked)
+                {
+                    var user = _userRepository.ReadById(board.UserId).Result;
+                    var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, new UserSimple(user), board.TurnedTiles)).Result;
+                }
+
+                return _gameRepository.Update(game).Result;
             }
             catch (Exception e)
             {
@@ -196,13 +206,12 @@ namespace moonbaboon.bingo.Domain.Services
                 {
                     throw new Exception("You cant pause games that you are not apart of");
                 }
-                
-                
+
+
                 game.State = State.Paused;
                 game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
 
                 return _gameRepository.Update(game).Result;
-
             }
             catch (Exception e)
             {
@@ -216,16 +225,16 @@ namespace moonbaboon.bingo.Domain.Services
             try
             {
                 var game = _gameRepository.FindById(gameId).Result;
-                
+
                 if (game.Host.Id != userId)
                 {
                     throw new Exception("Only the host can deny wins");
                 }
+
                 game.State = State.Ongoing;
                 game.Winner = null;
 
                 return _gameRepository.Update(game).Result;
-
             }
             catch (Exception e)
             {

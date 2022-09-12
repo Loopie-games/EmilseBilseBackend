@@ -109,7 +109,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var board = _boardService.GetById(boardId);
-                if (board!.UserId != GetUserId(Context))
+                if (board.UserId != GetUserId(Context))
                 {
                     await SendError("This is not your board");
                 }
@@ -134,7 +134,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 Game game = _gameService.ConfirmWin(gameId, GetUserId(Context));
-                await Clients.Group(game.Id).SendAsync("updateGame", game);
+                await Clients.Group(gameId).SendAsync("updateGame", game);
             }
             catch (Exception e)
             {

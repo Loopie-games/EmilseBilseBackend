@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -14,13 +15,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static string sql_select(string from)
         {
             return
-                $"SELECT * " +
-                $"FROM {Table} ";
+                $"SELECT *, ( SELECT COUNT(BT.Id) FROM BoardTile AS BT WHERE BT.IsActivated = '1' && BT.BoardId = Board.Id ) AS TT " +
+                $"FROM {from} ";
         }
 
         private Board ReaderToEnt(MySqlDataReader reader)
         {
-            return new Board(reader.GetString(0), reader.GetString(1), reader.GetString(2));
+            return new Board(reader.GetString(0), reader.GetString(1), reader.GetString(2))
+            {
+                TurnedTiles = reader.GetInt32(3)
+            };
         }
 
         public async Task<Board> FindById(string id)
@@ -108,6 +112,29 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.CloseAsync();
             return b;
+        }
+
+        public async Task<List<Board>> FindTopRanking(string gameId, int limit)
+        {
+            var list = new List<Board>();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
+
+            string sqlCommand =
+                sql_select(Table)+
+                $"WHERE Board.GameId = '{gameId}' " +
+                $"ORDER BY TT DESC " +
+                $"Limit {limit};";
+
+            await using var command = new MySqlCommand(sqlCommand, con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (reader.Read())
+            {
+                var ent = ReaderToEnt(reader);
+                list.Add(ent);
+            }
+
+            return list;
         }
     }
 }
