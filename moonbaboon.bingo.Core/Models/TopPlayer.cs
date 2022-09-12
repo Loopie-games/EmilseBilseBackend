@@ -1,18 +1,18 @@
 ﻿namespace moonbaboon.bingo.Core.Models
 {
-    public class Board
+    public class TopPlayer
     {
-        public Board(string? id, string gameId, string userId)
+        public TopPlayer(string? id, string gameId, UserSimple user, int turnedTiles)
         {
             Id = id;
             GameId = gameId;
-            UserId = userId;
+            User = user;
+            TurnedTiles = turnedTiles;
         }
 
         public string? Id { get; set; }
         public string GameId { get; set; }
-        public string UserId { get; set; }
-        
+        public UserSimple User { get; set; }
         public int TurnedTiles { get; set; }
     }
 }

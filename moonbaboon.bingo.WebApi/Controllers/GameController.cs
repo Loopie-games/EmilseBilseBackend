@@ -5,27 +5,26 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class GameController: ControllerBase
+    public class GameController : ControllerBase
     {
         private readonly IGameService _gameService;
-        private readonly IAuthService _authService;
 
-        public GameController(IGameService gameService, IAuthService authService)
+        public GameController(IGameService gameService)
         {
             _gameService = gameService;
-            _authService = authService;
         }
-        
+
         [HttpGet("{id}")]
         public ActionResult<Game?> GetById(string id)
         {
             try
-            { 
+            {
                 var game = _gameService.GetById(id);
                 return Ok(game);
             }
@@ -64,15 +63,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         #region Not in use - remove Nonaction attribute if needed again
-           
+
         [NonAction]
         [HttpPost(nameof(Create))]
         public ActionResult<Game?> Create(string hostId)
-        {   
+        {
             return _gameService.Create(hostId);
         }
 
         #endregion
-        
     }
 }
