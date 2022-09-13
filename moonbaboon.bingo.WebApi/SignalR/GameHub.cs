@@ -160,45 +160,12 @@ namespace moonbaboon.bingo.WebApi.SignalR
         #endregion
 
         #region Lobby
-
-        /// <summary>
-        /// Adds Authorized user to lobby and sends updates to clients
-        /// </summary>
-        /// <param name="pin">Pin for lobby</param>
-        /// <exception cref="Exception">If User cant be added.</exception>
-        public async Task JoinLobby(string pin)
-        {
-            try
-            {
-                var pp = _lobbyService.JoinLobby(GetUserId(Context), pin);
-                await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id!);
-                await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
-                var playerList = _pendingPlayerService.GetByLobbyId(pp.Lobby.Id!).Select(p => new PendingPlayerDto(p))
-                    .ToList();
-                await Clients.Group(pp.Lobby.Id!).SendAsync("lobbyPlayerListUpdate", playerList);
-            }
-            catch (Exception e)
-            {
-                await SendError(e.Message);
-                throw;
-            }
-        }
-
-
         public async Task CreateLobby()
         {
             try
             {
                 var hostId = GetUserId(Context);
-                var lobby = _lobbyService.GetByHostId(hostId);
-
-                //if user is already host for a lobby, close the old one
-                if (lobby?.Id is not null)
-                {
-                    await CloseLobby(lobby.Id);
-                }
-
-                lobby = _lobbyService.Create(hostId);
+                var lobby = _lobbyService.Create(hostId);
                 if (lobby?.Id != null)
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);

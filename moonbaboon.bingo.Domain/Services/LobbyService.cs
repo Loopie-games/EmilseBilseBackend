@@ -18,7 +18,7 @@ namespace moonbaboon.bingo.Domain.Services
             _userRepository = userRepository;
         }
 
-        public Lobby? GetById(string id)
+        public Lobby GetById(string id)
         {
             return _lobbyRepository.FindById(id).Result;
         }
@@ -28,14 +28,17 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindByHostId(hostId).Result;
         }
 
-        public Lobby? Create(string lobbyToCreate)
+        public Lobby? Create(string hostId)
         {
-            var lobby = _lobbyRepository.Create(new Lobby(null,lobbyToCreate, null)).Result;
-            if (lobby?.Pin != null)
+            var lobby = GetByHostId(hostId);
+
+            //if user is already host for a lobby, close the old one
+            if (lobby?.Id is not null)
             {
-                var pp = JoinLobby(lobby.Host, lobby.Pin);
+                CloseLobby(lobby.Id, hostId);
             }
-            return lobby;
+            var lobbyNew = _lobbyRepository.Create(new Lobby(null,hostId, null)).Result;
+            return lobbyNew;
         }
 
         
@@ -61,14 +64,8 @@ namespace moonbaboon.bingo.Domain.Services
         public bool CloseLobby(string lobbyId, string hostId)
         {
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
-            if (lobby?.Host == hostId)
-            {
-                if (_pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result)
-                {
-                    return _lobbyRepository.DeleteLobby(lobbyId).Result;
-                }
-            }
-            return false;
+            if (lobby.Host != hostId) throw new Exception("you Cannot Delete a lobby you are not host for");
+            return _pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result && _lobbyRepository.DeleteLobby(lobbyId).Result;
         }
 
         public bool LeaveLobby(string lobbyId, string userId)
