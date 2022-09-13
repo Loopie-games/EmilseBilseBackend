@@ -150,5 +150,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                                     $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'");
             return ent ?? throw new InvalidDataException($"ERROR in updating game with id: " + game.Id);
         }
+
+        public async Task<List<Game>> GetEnded(string userId)
+        {
+            var list = new List<Game>();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
+
+            await using var command = new MySqlCommand(
+                sql_select(Table) +
+                $"WHERE {Table}.{DbStrings.HostId} = '{userId}' && {Table}.{DbStrings.State} = '{Enum.GetName(State.Ended)}'",
+                con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var ent = ReaderToGame(reader);
+                list.Add(ent);
+            }
+
+            return list;
+        }
     }
 }
