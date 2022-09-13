@@ -44,14 +44,16 @@ namespace moonbaboon.bingo.WebApi.SignalR
         /// <exception cref="Exception">If User cant be added.</exception>
         public async Task JoinLobby(string pin)
         {
+            Console.WriteLine(pin);
             try
             {
                 var pp = _lobbyService.JoinLobby(GetUserId(Context), pin);
                 await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id!);
-                await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
+                await Clients.Caller.SendAsync("receiveLobby", pp.Lobby); /*
                 var playerList = _pendingPlayerService.GetByLobbyId(pp.Lobby.Id!).Select(p => new PendingPlayerDto(p))
                     .ToList();
                 await Clients.Group(pp.Lobby.Id!).SendAsync("lobbyPlayerListUpdate", playerList);
+                */
             }
             catch (Exception e)
             {

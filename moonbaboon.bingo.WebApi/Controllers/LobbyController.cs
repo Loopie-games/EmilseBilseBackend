@@ -47,7 +47,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult<Lobby?> Create()
+        public ActionResult<Lobby> Create()
         {
             return _lobbyService.Create(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
