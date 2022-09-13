@@ -32,5 +32,6 @@ namespace moonbaboon.bingo.Core.IServices
 
         public Game PauseGame(Game game, string userId);
         public Game DenyWin(string gameId, string userId);
+        public List<Game> GetEnded(string userID);
     }
 }

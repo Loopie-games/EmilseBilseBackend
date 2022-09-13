@@ -54,13 +54,6 @@ namespace moonbaboon.bingo.Domain.Services
         {
             try
             {
-                //if user is already host for a game, it is deleted
-                var oldGame = _gameRepository.FindByHostId(userId).Result;
-                if (oldGame?.Id is not null)
-                {
-                    _gameRepository.Delete(oldGame.Id);
-                }
-
                 //Get lobby and throw exception if not provided with correct host id
                 var lobby = _lobbyRepository.FindById(lobbyId).Result;
                 if (lobby.Host != userId)
@@ -235,6 +228,19 @@ namespace moonbaboon.bingo.Domain.Services
                 game.Winner = null;
 
                 return _gameRepository.Update(game).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public List<Game> GetEnded(string userId)
+        {
+            try
+            {
+                return _gameRepository.GetEnded(userId).Result;
             }
             catch (Exception e)
             {

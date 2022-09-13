@@ -35,6 +35,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [Authorize]
+        [HttpGet(nameof(GetEnded))]
+        public ActionResult<List<Game>> GetEnded()
+        {
+            try
+            {
+                return _gameService.GetEnded(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]
         public ActionResult<List<UserSimple>> GetPlayers(string gameId)
         {
