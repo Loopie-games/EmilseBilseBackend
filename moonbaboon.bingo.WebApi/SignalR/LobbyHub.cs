@@ -74,6 +74,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 Console.WriteLine(e);
                 await SendError(e.Message);
+                throw;
             }
         }
 
