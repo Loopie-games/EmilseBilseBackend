@@ -71,9 +71,17 @@ namespace moonbaboon.bingo.Domain.Services
 
         public bool CloseLobby(string lobbyId, string hostId)
         {
-            var lobby = _lobbyRepository.FindById(lobbyId).Result;
-            if (lobby.Host != hostId) throw new Exception("you Cannot Delete a lobby you are not host for");
-            return _pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result && _lobbyRepository.DeleteLobby(lobbyId).Result;
+            try
+            {
+                var lobby = _lobbyRepository.FindById(lobbyId).Result;
+                if (lobby.Host != hostId) throw new Exception("you Cannot Delete a lobby you are not host for");
+                return _pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result && _lobbyRepository.DeleteLobby(lobbyId).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public bool LeaveLobby(string userId)

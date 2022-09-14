@@ -58,23 +58,49 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 throw;
             }
         }
-
-        public async Task LeaveLobby()
+        
+        public async Task CloseLobby(string lobbyId)
         {
             try
             {
-                var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
-                if (lobbyId is not null && _lobbyService.LeaveLobby(GetUserId(Context)))
+                if (_lobbyService.CloseLobby(lobbyId, GetUserId(Context)))
                 {
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
-                    await UpdatePlayerList(lobbyId);
+                    await Clients.Group(lobbyId).SendAsync("lobbyClosed");
                 }
+                
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 await SendError(e.Message);
                 throw;
+            }
+        }
+
+        public async Task LeaveLobby()
+        {
+            try
+            {
+                var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
+                try
+                {
+
+                    if (lobbyId is not null && _lobbyService.LeaveLobby(GetUserId(Context)))
+                    {
+                        await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
+                        await UpdatePlayerList(lobbyId);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    await SendError(e.Message);
+                    throw;
+                }
+            }
+            catch (Exception e)
+            {
+               Console.WriteLine("no lobby"); 
             }
         }
 

@@ -217,7 +217,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
         
-
         #endregion
     }
 }
