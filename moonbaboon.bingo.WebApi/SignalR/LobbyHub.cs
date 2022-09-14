@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -49,16 +50,52 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var pp = _lobbyService.JoinLobby(GetUserId(Context), pin);
                 await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id!);
                 await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
-                var playerList = _pendingPlayerService.GetByLobbyId(pp.Lobby.Id!).Select(p => new PendingPlayerDto(p))
-                    .ToList();
-                Console.WriteLine(playerList.Count);
-                await Clients.Group(pp.Lobby.Id!).SendAsync("playerList", playerList);
+                await UpdatePlayerList(pp.Lobby.Id);
             }
             catch (Exception e)
             {
                 await SendError(e.Message);
                 throw;
             }
+        }
+
+        public async Task LeaveLobby()
+        {
+            try
+            {
+                var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
+                if (lobbyId is not null && _lobbyService.LeaveLobby(GetUserId(Context)))
+                {
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
+                    await UpdatePlayerList(lobbyId);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                await SendError(e.Message);
+            }
+        }
+
+        private async Task UpdatePlayerList(string lobbyId)
+        {
+            List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId)
+                .Select(player => new PendingPlayerDto(player)).ToList();
+            await Clients.Group(lobbyId).SendAsync("playerList", playerList);
+        }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            try
+            {
+                LeaveLobby();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            return base.OnDisconnectedAsync(exception);
         }
     }
 }

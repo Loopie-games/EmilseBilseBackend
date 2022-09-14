@@ -7,5 +7,6 @@ namespace moonbaboon.bingo.Core.IServices
     {
         public List<PendingPlayer> GetByLobbyId(string lobbyId);
 
+        public PendingPlayer GetByUserId(string userId);
     }
 }

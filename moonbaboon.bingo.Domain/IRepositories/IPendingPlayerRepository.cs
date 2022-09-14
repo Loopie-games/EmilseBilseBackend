@@ -13,18 +13,18 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <returns></returns>
         public Task<PendingPlayer> Create(PendingPlayer toCreate);
         
-        public Task<PendingPlayer?> GetByUserId(string userId);
+        public Task<PendingPlayer> GetByUserId(string userId);
 
         public Task<List<PendingPlayer>> GetByLobbyId(string lobbyId);
 
         /// <summary>
-        /// Checks if PendingPlayer with given ids exist in database
+        /// Checks if PendingPlayer with given id exist in database
         /// </summary>
         /// <param name="userId">User id</param>
-        /// <param name="lobbyId">Lobby Id</param>
         /// <returns>Pending player if such exists with given ids, else null</returns>
-        public Task<PendingPlayer?> IsPlayerInLobby(string userId, string lobbyId);
+        public Task<PendingPlayer?> IsPlayerInLobby(string userId);
         public Task<bool> DeleteWithLobbyId(string lobbyId);
         public Task<bool> Delete(string? ppId);
+        public Task<PendingPlayer> Update(PendingPlayer toUpdate);
     }
 }

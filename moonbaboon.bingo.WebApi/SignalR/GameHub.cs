@@ -216,25 +216,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 await SendError(e.Message);
             }
         }
-
-        public async Task LeaveLobby(string lobbyId)
-        {
-            try
-            {
-                if (_lobbyService.LeaveLobby(lobbyId, GetUserId(Context)))
-                {
-                    List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId)
-                        .Select(player => new PendingPlayerDto(player)).ToList();
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
-                    await Clients.Group(lobbyId).SendAsync("lobbyPlayerListUpdate", playerList);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                await SendError(e.Message);
-            }
-        }
+        
 
         #endregion
     }
