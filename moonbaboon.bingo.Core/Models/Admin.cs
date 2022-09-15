@@ -1,14 +1,21 @@
 ﻿namespace moonbaboon.bingo.Core.Models
 {
-    public class Admin
+    public class Admin: UserSimple
     {
-        public Admin(string? id, UserSimple user)
+        public Admin(string? adminId, UserSimple userSimple) : base(userSimple.Id, userSimple.Username, userSimple.Nickname, userSimple.ProfilePicUrl)
         {
-            Id = id;
-            User = user;
+            AdminId = adminId;
+            Id = userSimple.Id;
+            Username = userSimple.Username;
+            Nickname = userSimple.Nickname;
+            ProfilePicUrl = userSimple.ProfilePicUrl;
+            
         }
-
+        public string? AdminId { get; set; }
         public string? Id { get; set; }
-        public UserSimple User { get; set; }
+        public string Username { get; set; }
+        public string Nickname { get; set; }
+        public string? ProfilePicUrl { get; set; }
+        
     }
 }

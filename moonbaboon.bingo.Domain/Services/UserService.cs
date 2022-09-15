@@ -9,10 +9,12 @@ namespace moonbaboon.bingo.Domain.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IAdminRepository _adminRepository;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IAdminRepository adminRepository)
         {
             _userRepository = userRepository;
+            _adminRepository = adminRepository;
         }
 
         public List<User> GetAll()
@@ -30,9 +32,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
 
-        public User? GetById(string id)
+        public UserSimple GetById(string id)
         {
-            return _userRepository.ReadById(id).Result;
+            var u =  _userRepository.ReadById(id).Result;
+            var a = _adminRepository.IsAdmin(u).Result;
+            return a ?? new UserSimple(u);
         }
 
         public User CreateUser(User user)

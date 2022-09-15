@@ -32,7 +32,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             var salt = _service.GetSalt(loginInformation.Username);
             var password = BCrypt.Net.BCrypt.HashPassword(loginInformation.Password, salt);
-            User? user = _service.Login(loginInformation.Username, password);
+            var user = _service.Login(loginInformation.Username, password);
             if (user == null)
                 return BadRequest("User does not exist");
             
@@ -44,7 +44,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost]
         public ActionResult Login(UserDtos.LoginDto loginInformation)
         {
-            User? user = _service.Login(loginInformation.Username, loginInformation.Password);
+            var user = _service.Login(loginInformation.Username, loginInformation.Password);
             if (user == null)
                 return BadRequest("User does not exist");
             
