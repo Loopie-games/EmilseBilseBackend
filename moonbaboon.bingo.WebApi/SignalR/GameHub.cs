@@ -71,7 +71,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 else
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
-                    await Clients.Caller.SendAsync("gameConnected", board.Id);
+                    await Clients.Caller.SendAsync("gameConnected", board);
                 }
             }
             catch (Exception e)
