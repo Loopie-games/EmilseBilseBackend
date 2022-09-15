@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -76,15 +75,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        #region Not in use - remove Nonaction attribute if needed again
-
-        [NonAction]
-        [HttpPost(nameof(Create))]
-        public ActionResult<Game?> Create(string hostId)
+        [Authorize]
+        [HttpPost]
+        public ActionResult<Game> Create(string lobbyId)
         {
-            return _gameService.Create(hostId);
+            return _gameService.NewGame(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
-
-        #endregion
     }
 }

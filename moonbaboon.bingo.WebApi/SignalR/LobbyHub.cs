@@ -11,17 +11,19 @@ using moonbaboon.bingo.WebApi.DTOs;
 namespace moonbaboon.bingo.WebApi.SignalR
 {
     [Authorize]
-    public class LobbyHub: Hub
+    public class LobbyHub : Hub
     {
         private readonly IPendingPlayerService _pendingPlayerService;
         private readonly ILobbyService _lobbyService;
+        private readonly IGameService _gameService;
 
-        public LobbyHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService)
+        public LobbyHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
+            _gameService = gameService;
         }
-        
+
         /// <summary>
         /// Send en Error message to the client
         /// </summary>
@@ -37,7 +39,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             return context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
                    throw new InvalidOperationException("Could not get userId from Context");
         }
-        
+
         /// <summary>
         /// Adds Authorized user to lobby and sends updates to clients
         /// </summary>
@@ -59,6 +61,28 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
         
+        [Authorize]
+        public async Task StartGame(string lobbyId, string gameId)
+        {
+            try
+            {
+                var game = _gameService.GetById(gameId);
+                if (game.Host.Id == GetUserId(Context))
+                {
+                    await Clients.Group(lobbyId).SendAsync("gameStarting", gameId);
+                }
+                else
+                {
+                    await SendError("StartGame has to be called by host");
+                }
+            }
+            catch (Exception e)
+            {
+                await SendError(e.Message);
+                throw;
+            }
+        }
+
         public async Task CloseLobby(string lobbyId)
         {
             try
@@ -67,7 +91,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 {
                     await Clients.Group(lobbyId).SendAsync("lobbyClosed");
                 }
-                
             }
             catch (Exception e)
             {
@@ -84,7 +107,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
                 try
                 {
-
                     if (lobbyId is not null && _lobbyService.LeaveLobby(GetUserId(Context)))
                     {
                         await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
@@ -100,7 +122,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
             catch (Exception e)
             {
-               Console.WriteLine("no lobby"); 
+                Console.WriteLine("no lobby");
             }
         }
 
@@ -122,6 +144,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 Console.WriteLine(e);
                 throw;
             }
+
             return base.OnDisconnectedAsync(exception);
         }
     }
