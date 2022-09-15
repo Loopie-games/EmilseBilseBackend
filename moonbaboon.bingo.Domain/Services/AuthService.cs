@@ -23,7 +23,6 @@ namespace moonbaboon.bingo.Domain.Services
             SecurityTokenDescriptor tokenDescriptor;
             var admin = _adminRepository.IsAdmin(user.Id).Result;
             if (admin is not null)
-            {
                 tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
@@ -36,27 +35,22 @@ namespace moonbaboon.bingo.Domain.Services
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
                         SecurityAlgorithms.HmacSha256Signature)
                 };
-            }
             else
-            {
-              tokenDescriptor = new SecurityTokenDescriptor
-                          {
-                              Subject = new ClaimsIdentity(new Claim[]
-                              {
-                                  new Claim(ClaimTypes.Name, user.Username),
-                                  new Claim(ClaimTypes.NameIdentifier, user.Id!, "userId"),
-                              }),
-                              Expires = DateTime.UtcNow.AddDays(30),
-                              SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
-                                  SecurityAlgorithms.HmacSha256Signature)
-                          };  
-            }
+                tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(new[]
+                    {
+                        new(ClaimTypes.Name, user.Username),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id!, "userId")
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(30),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
+                        SecurityAlgorithms.HmacSha256Signature)
+                };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
         }
-
-        
     }
 }

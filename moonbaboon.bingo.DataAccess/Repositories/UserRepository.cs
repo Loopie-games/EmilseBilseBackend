@@ -13,21 +13,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private const string Table = DbStrings.UserTable;
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic} " +
-                $"FROM {from} ";
-        }
-
-        private static UserSimple ReaderToEnt(MySqlDataReader reader)
-        {
-            var ent =
-                new UserSimple(reader.GetString(0), reader.GetString(1),
-                    reader.GetString(2), reader.GetValue(3).ToString());
-            return ent;
-        }
-
 
         public async Task<List<UserSimple>> Search(string searchString)
         {
@@ -60,17 +45,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     $"WHERE `{DbStrings.Username}` = '{dtoUsername}' AND `{DbStrings.Password}` = '{dtoPassword}';",
                     _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                user = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) user = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
             return user ?? throw new InvalidOperationException("Invalid Login");
         }
 
         /// <summary>
-        /// Finds User with specified id
+        ///     Finds User with specified id
         /// </summary>
         /// <param name="id">unique user Identification</param>
         /// <returns>A Task containing the user</returns>
@@ -85,10 +67,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                                  $"WHERE `{DbStrings.Id}` = '{id}';",
                     _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                user = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) user = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
             return user ?? throw new Exception("No user found with id: " + id);
@@ -118,10 +97,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 sql_select(Table) +
                 $"WHERE `{DbStrings.Id}` = '{uuid}'", _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                ent = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
             return ent ?? throw new InvalidDataException("ERROR: User not created");
@@ -139,12 +115,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
                 if (reader.GetValue(1).ToString()?.ToLower() == username)
-                {
                     b = false;
-                }
-            }
 
             await _connection.CloseAsync();
             return b;
@@ -160,13 +132,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     $"SELECT {DbStrings.UserTable}.{DbStrings.Salt} FROM `{DbStrings.UserTable}` WHERE `{DbStrings.Username}` = '{username}'",
                     _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                ent = reader.GetValue(0).ToString();
-            }
+            while (await reader.ReadAsync()) ent = reader.GetValue(0).ToString();
 
             await _connection.CloseAsync();
             return ent ?? throw new Exception("no user with given username");
+        }
+
+        private static string sql_select(string from)
+        {
+            return
+                $"SELECT {DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic} " +
+                $"FROM {from} ";
+        }
+
+        private static UserSimple ReaderToEnt(MySqlDataReader reader)
+        {
+            var ent =
+                new UserSimple(reader.GetString(0), reader.GetString(1),
+                    reader.GetString(2), reader.GetValue(3).ToString());
+            return ent;
         }
     }
 }

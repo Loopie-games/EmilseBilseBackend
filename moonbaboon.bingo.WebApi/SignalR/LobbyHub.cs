@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using moonbaboon.bingo.Core.IServices;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.SignalR
 {
     [Authorize]
     public class LobbyHub : Hub
     {
-        private readonly IPendingPlayerService _pendingPlayerService;
-        private readonly ILobbyService _lobbyService;
         private readonly IGameService _gameService;
+        private readonly ILobbyService _lobbyService;
+        private readonly IPendingPlayerService _pendingPlayerService;
 
-        public LobbyHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService)
+        public LobbyHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService,
+            IGameService gameService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
@@ -25,7 +23,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         /// <summary>
-        /// Send en Error message to the client
+        ///     Send en Error message to the client
         /// </summary>
         /// <param name="message">Error Message</param>
         private async Task SendError(string message)
@@ -41,7 +39,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         /// <summary>
-        /// Adds Authorized user to lobby and sends updates to clients
+        ///     Adds Authorized user to lobby and sends updates to clients
         /// </summary>
         /// <param name="pin">Pin for lobby</param>
         /// <exception cref="Exception">If User cant be added.</exception>
@@ -60,7 +58,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 throw;
             }
         }
-        
+
         [Authorize]
         public async Task StartGame(string lobbyId, string gameId)
         {
@@ -68,13 +66,9 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 var game = _gameService.GetById(gameId);
                 if (game.Host.Id == GetUserId(Context))
-                {
                     await Clients.Group(lobbyId).SendAsync("gameStarting", gameId);
-                }
                 else
-                {
                     await SendError("StartGame has to be called by host");
-                }
             }
             catch (Exception e)
             {
@@ -88,9 +82,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 if (_lobbyService.CloseLobby(lobbyId, GetUserId(Context)))
-                {
                     await Clients.Group(lobbyId).SendAsync("lobbyClosed");
-                }
             }
             catch (Exception e)
             {

@@ -7,7 +7,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IBoardTileRepository
     {
         /// <summary>
-        /// Searches the database for a boardtile with given id
+        ///     Searches the database for a boardtile with given id
         /// </summary>
         /// <param name="id">BoardTile Id</param>
         /// <returns>BoardTile</returns>

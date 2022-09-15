@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PackTileController:ControllerBase
+    public class PackTileController : ControllerBase
     {
         private readonly IPackTileService _packTileService;
 
@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [HttpGet(nameof(GetByPackId) + "/{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -47,7 +47,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 return NotFound(e.Message);
             }
-            
         }
 
         [HttpPost(nameof(Create))]
@@ -58,13 +57,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var created = _packTileService.Create(toCreate.Action, toCreate.PackId);
-                return CreatedAtAction(nameof(GetById),new{id = created.Id}, created);
+                return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
-            
         }
     }
 }

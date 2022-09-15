@@ -1,5 +1,4 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using moonbaboon.bingo.Core.Models;
+﻿using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Core.IServices
 {

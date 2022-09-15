@@ -13,6 +13,5 @@
         public UserSimple User { get; set; }
         public Lobby Lobby { get; set; }
         public bool IsHost { get; }
-
     }
 }

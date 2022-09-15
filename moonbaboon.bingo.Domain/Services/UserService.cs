@@ -7,8 +7,8 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
         private readonly IAdminRepository _adminRepository;
+        private readonly IUserRepository _userRepository;
 
         public UserService(IUserRepository userRepository, IAdminRepository adminRepository)
         {
@@ -28,7 +28,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public UserSimple GetById(string id)
         {
-            var u =  _userRepository.ReadById(id).Result;
+            var u = _userRepository.ReadById(id).Result;
             var a = _adminRepository.IsAdmin(u.Id).Result;
             return a ?? u;
         }

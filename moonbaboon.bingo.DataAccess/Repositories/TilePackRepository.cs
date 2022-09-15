@@ -9,14 +9,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TilePackRepository : ITilePackRepository
     {
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
         private const string Table = DbStrings.TilePackTable;
-        
-        private static TilePack ReaderToEnt(MySqlDataReader reader)
-        {
-            return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), reader.GetValue(2).ToString());
-        }
-        
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+
         public async Task<List<TilePack>> FindAll()
         {
             var list = new List<TilePack>();
@@ -28,6 +23,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 var ent = ReaderToEnt(reader);
                 list.Add(ent);
             }
+
             await _connection.CloseAsync();
             return list;
         }
@@ -37,10 +33,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             var list = new List<TilePack>();
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                $"SELECT TilePack.Id, TilePack.Name, TilePack.PicUrl, " +
-                $"CASE WHEN OwnedTilePack.OwnerId is Null THEN '0' ELSE '1' END as Owned " +
-                $"FROM TilePack " +
-                $"LEFT JOIN OwnedTilePack ON OwnedTilePack.TilePackId = TilePack.Id && OwnedTilePack.OwnerId = '{userId}' ", 
+                "SELECT TilePack.Id, TilePack.Name, TilePack.PicUrl, " +
+                "CASE WHEN OwnedTilePack.OwnerId is Null THEN '0' ELSE '1' END as Owned " +
+                "FROM TilePack " +
+                $"LEFT JOIN OwnedTilePack ON OwnedTilePack.TilePackId = TilePack.Id && OwnedTilePack.OwnerId = '{userId}' ",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -49,6 +45,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 ent.IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(3)));
                 list.Add(ent);
             }
+
             await _connection.CloseAsync();
             return list;
         }
@@ -62,11 +59,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.TilePackTable}.{DbStrings.Name} = 'Default' "
                 , _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                ent = ReaderToEnt(reader);
-                
-            }
+            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
             await _connection.CloseAsync();
             return ent ?? throw new Exception("no Default Package found");
         }
@@ -80,10 +73,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.TilePackTable}.{DbStrings.Id} = '{packId}' "
                 , _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                ent = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
             await _connection.CloseAsync();
             return ent ?? throw new Exception("no tilePackage found with id: " + packId);
         }
@@ -97,17 +87,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using MySqlCommand command = new(
                 $"INSERT INTO {Table} " +
                 $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}'); " +
-                sql_select(Table) + 
+                sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                ent = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
             return ent ?? throw new Exception($"Error i creating {Table} with name: " + toCreate.Name);
+        }
+
+        private static TilePack ReaderToEnt(MySqlDataReader reader)
+        {
+            return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
+                reader.GetValue(2).ToString());
         }
 
         private static string sql_select(string from)

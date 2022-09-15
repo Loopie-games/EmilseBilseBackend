@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.DataAccess.Repositories;
@@ -62,10 +62,8 @@ namespace moonbaboon.bingo.WebApi
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
                             (path.StartsWithSegments("/game") || path.StartsWithSegments("/lobby")))
-                        {
                             // Read the token out of the query string
                             context.Token = accessToken;
-                        }
 
                         return Task.CompletedTask;
                     }
@@ -78,7 +76,7 @@ namespace moonbaboon.bingo.WebApi
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new OpenApiInfo {Title = "EmilseBilseBingo.WebApi", Version = "v1"});
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
                     In = ParameterLocation.Header,
@@ -86,7 +84,7 @@ namespace moonbaboon.bingo.WebApi
                     Scheme = "Bearer"
                 });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -98,7 +96,7 @@ namespace moonbaboon.bingo.WebApi
                             },
                             Scheme = "oauth2",
                             Name = "Bearer",
-                            In = ParameterLocation.Header,
+                            In = ParameterLocation.Header
                         },
                         new List<string>()
                     }

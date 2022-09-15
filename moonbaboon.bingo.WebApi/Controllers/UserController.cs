@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -27,10 +26,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<List<UserSimple>> Search(string searchStr)
         {
-            if (searchStr.Length > 2)
-            {
-                return Ok(_userService.Search(searchStr));
-            }
+            if (searchStr.Length > 2) return Ok(_userService.Search(searchStr));
             return BadRequest("use at last 3 characters in your search");
         }
 
@@ -84,9 +80,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 if (!_userService.VerifyUsername(user.Username))
-                {
                     return BadRequest($"Username '{user.Username}' is already in use.");
-                }
 
                 var u = _userService.CreateUser(user);
                 return CreatedAtAction(nameof(GetById), new {id = u.Id}, u);
@@ -96,7 +90,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-            
         }
 
         [HttpGet(nameof(GetSalt) + "/{username}")]

@@ -5,10 +5,11 @@ using moonbaboon.bingo.Domain.IRepositories;
 
 namespace moonbaboon.bingo.Domain.Services
 {
-    public class BoardService: IBoardService
+    public class BoardService : IBoardService
     {
         private readonly IBoardRepository _boardRepository;
         private readonly IGameRepository _gameRepository;
+
         public BoardService(IBoardRepository boardRepository, IGameRepository gameRepository)
         {
             _boardRepository = boardRepository;
@@ -19,7 +20,7 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _boardRepository.FindById(id).Result;
         }
-        
+
         public Board? GetByUserAndGameId(string userId, string gameId)
         {
             try
@@ -42,7 +43,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public bool IsBoardFilled(string? boardId)
         {
-           return _boardRepository.IsBoardFilled(boardId).Result;
+            return _boardRepository.IsBoardFilled(boardId).Result;
         }
     }
 }

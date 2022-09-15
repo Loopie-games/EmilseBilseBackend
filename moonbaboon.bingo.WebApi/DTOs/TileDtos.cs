@@ -9,11 +9,10 @@ namespace moonbaboon.bingo.WebApi.DTOs
             Action = action;
             AboutUserId = aboutUserId;
         }
-        [Required]
-        public string Action { get; set; }
-        
-        [Required]
-        public string AboutUserId { get; set; }
+
+        [Required] public string Action { get; set; }
+
+        [Required] public string AboutUserId { get; set; }
     }
 
     public class NewPackTileDto
@@ -24,11 +23,9 @@ namespace moonbaboon.bingo.WebApi.DTOs
             PackId = packId;
         }
 
-        [Required]
-        public string Action { get; set; }
-        
-        [Required]
-        public string PackId { get; set; }
+        [Required] public string Action { get; set; }
+
+        [Required] public string PackId { get; set; }
     }
 
     public class NewTilePackDto
@@ -38,10 +35,9 @@ namespace moonbaboon.bingo.WebApi.DTOs
             Name = name;
             PicUrl = picUrl;
         }
-        
-        [Required]
-        public string Name { get; set; }
-        
+
+        [Required] public string Name { get; set; }
+
         public string? PicUrl { get; set; }
     }
 }

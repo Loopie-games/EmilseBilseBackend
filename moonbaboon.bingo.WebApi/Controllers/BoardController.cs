@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -11,9 +10,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class BoardController : ControllerBase
     {
-
         private readonly IBoardService _boardService;
-        
+
         public BoardController(IBoardService boardService)
         {
             _boardService = boardService;
@@ -24,7 +22,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _boardService.GetById(id);
         }
-        
+
         [Authorize]
         [HttpGet(nameof(GetByGameId) + "/{gameId}")]
         public ActionResult<Board?> GetByGameId(string gameId)

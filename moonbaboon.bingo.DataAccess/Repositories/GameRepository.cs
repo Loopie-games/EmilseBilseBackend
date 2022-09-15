@@ -13,51 +13,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private const string Table = DbStrings.GameTable;
 
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {Table}.{DbStrings.Id}, " +
-                $"Host.{DbStrings.Id}, Host.{DbStrings.Username}, Host.{DbStrings.Nickname}, Host.{DbStrings.ProfilePic}, " +
-                $"Winner.{DbStrings.Id}, Winner.{DbStrings.Username}, Winner.{DbStrings.Nickname}, Winner.{DbStrings.ProfilePic} " +
-                $", {Table}.{DbStrings.State} " +
-                $"FROM `{from}` " +
-                $"JOIN {DbStrings.UserTable} AS Host ON Host.{DbStrings.Id} = {Table}.{DbStrings.HostId} " +
-                $"LEFT JOIN {DbStrings.UserTable} AS Winner ON Winner.{DbStrings.Id} = {Table}.{DbStrings.WinnerId} ";
-        }
-
-        private static Game ReaderToGame(IDataRecord reader)
-        {
-            var host = new UserSimple(reader.GetString(1), reader.GetString(2),
-                reader.GetString(3), reader.GetValue(4).ToString());
-            UserSimple? winner = null;
-            if (!string.IsNullOrEmpty(reader.GetValue(5).ToString()))
-            {
-                winner = new UserSimple(reader.GetValue(5).ToString(), reader.GetString(6),
-                    reader.GetString(7), reader.GetValue(8).ToString());
-            }
-
-            Game ent = new(reader.GetValue(0).ToString(), host, winner,
-                Enum.Parse<State>(reader.GetValue(9).ToString()));
-
-            return ent;
-        }
-
-        private static async Task<Game?> GameEnt(string sqlCommand)
-        {
-            Game? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
-
-            await using var command = new MySqlCommand(sqlCommand, con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                ent = ReaderToGame(reader);
-            }
-
-            return ent;
-        }
-
         public async Task<Game> FindById(string id)
         {
             var ent =
@@ -83,7 +38,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"VALUES ('{uuid}','{hostId}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
-            return ent ?? throw new InvalidDataException($"ERROR in creating game with host: " + hostId);
+            return ent ?? throw new InvalidDataException("ERROR in creating game with host: " + hostId);
         }
 
         //Todo move to other repo?
@@ -94,11 +49,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             con.Open();
 
             await using var command = new MySqlCommand(
-                $"SELECT User.id, User.username, User.nickname, User.ProfilePicURL " +
-                $"From (SELECT Board.UserId as u1 FROM `Game` " +
-                $"JOIN Board ON Board.GameId = Game.Id " +
+                "SELECT User.id, User.username, User.nickname, User.ProfilePicURL " +
+                "From (SELECT Board.UserId as u1 FROM `Game` " +
+                "JOIN Board ON Board.GameId = Game.Id " +
                 $"WHERE Game.Id = '{gameId}') As b " +
-                $"JOIN User ON b.u1 = User.id",
+                "JOIN User ON b.u1 = User.id",
                 con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
@@ -121,13 +76,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"DELETE FROM `{DbStrings.GameTable}` " +
                 $"WHERE `{DbStrings.Id}`='{gameId}'; " +
-                $"SELECT ROW_COUNT()",
+                "SELECT ROW_COUNT()",
                 con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                b = (Convert.ToInt16(reader.GetValue(0).ToString()) > 0);
-            }
+            while (await reader.ReadAsync()) b = Convert.ToInt16(reader.GetValue(0).ToString()) > 0;
 
             return b;
         }
@@ -137,10 +89,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             var update =
                 $"UPDATE {Table} SET {Table}.{DbStrings.HostId}='{game.Host.Id}',";
 
-            if (game.Winner?.Id is not null)
-            {
-                update += $"{Table}.{DbStrings.WinnerId}='{game.Winner?.Id}',";
-            }
+            if (game.Winner?.Id is not null) update += $"{Table}.{DbStrings.WinnerId}='{game.Winner?.Id}',";
 
             update += $"{Table}.{DbStrings.State}='{game.State}' " +
                       $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'; ";
@@ -148,7 +97,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             var ent = await GameEnt(update +
                                     sql_select(Table) +
                                     $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'");
-            return ent ?? throw new InvalidDataException($"ERROR in updating game with id: " + game.Id);
+            return ent ?? throw new InvalidDataException("ERROR in updating game with id: " + game.Id);
         }
 
         public async Task<List<Game>> GetEnded(string userId)
@@ -169,6 +118,46 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             }
 
             return list;
+        }
+
+        private static string sql_select(string from)
+        {
+            return
+                $"SELECT {Table}.{DbStrings.Id}, " +
+                $"Host.{DbStrings.Id}, Host.{DbStrings.Username}, Host.{DbStrings.Nickname}, Host.{DbStrings.ProfilePic}, " +
+                $"Winner.{DbStrings.Id}, Winner.{DbStrings.Username}, Winner.{DbStrings.Nickname}, Winner.{DbStrings.ProfilePic} " +
+                $", {Table}.{DbStrings.State} " +
+                $"FROM `{from}` " +
+                $"JOIN {DbStrings.UserTable} AS Host ON Host.{DbStrings.Id} = {Table}.{DbStrings.HostId} " +
+                $"LEFT JOIN {DbStrings.UserTable} AS Winner ON Winner.{DbStrings.Id} = {Table}.{DbStrings.WinnerId} ";
+        }
+
+        private static Game ReaderToGame(IDataRecord reader)
+        {
+            var host = new UserSimple(reader.GetString(1), reader.GetString(2),
+                reader.GetString(3), reader.GetValue(4).ToString());
+            UserSimple? winner = null;
+            if (!string.IsNullOrEmpty(reader.GetValue(5).ToString()))
+                winner = new UserSimple(reader.GetValue(5).ToString(), reader.GetString(6),
+                    reader.GetString(7), reader.GetValue(8).ToString());
+
+            Game ent = new(reader.GetValue(0).ToString(), host, winner,
+                Enum.Parse<State>(reader.GetValue(9).ToString()));
+
+            return ent;
+        }
+
+        private static async Task<Game?> GameEnt(string sqlCommand)
+        {
+            Game? ent = null;
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
+
+            await using var command = new MySqlCommand(sqlCommand, con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (reader.Read()) ent = ReaderToGame(reader);
+
+            return ent;
         }
     }
 }
