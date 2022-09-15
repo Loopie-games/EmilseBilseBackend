@@ -46,7 +46,7 @@ namespace moonbaboon.bingo.Domain.Services
         {
             try
             {
-                User user = _userRepository.ReadById(userId).Result;
+                var user = _userRepository.ReadById(userId).Result;
                 Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
                 var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
                 if (pp is not null && pp.Lobby.Id == lobby.Id)
@@ -59,7 +59,7 @@ namespace moonbaboon.bingo.Domain.Services
                 }
                 
                 //if user already is in the lobby the PendingPlayer is returned, else a new is created
-                return _pendingPlayerRepository.Create(new PendingPlayer(new UserSimple(user), lobby)).Result;
+                return _pendingPlayerRepository.Create(new PendingPlayer(user, lobby)).Result;
             }
             catch (Exception e)
             {

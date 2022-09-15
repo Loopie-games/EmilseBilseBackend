@@ -179,7 +179,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var board in topRanked)
                 {
                     var user = _userRepository.ReadById(board.UserId).Result;
-                    var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, new UserSimple(user), board.TurnedTiles)).Result;
+                    var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles)).Result;
                 }
 
                 return _gameRepository.Update(game).Result;
@@ -202,7 +202,7 @@ namespace moonbaboon.bingo.Domain.Services
 
 
                 game.State = State.Paused;
-                game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
+                game.Winner = _userRepository.ReadById(userId).Result;
 
                 return _gameRepository.Update(game).Result;
             }

@@ -28,14 +28,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return new Admin(reader.GetValue(0).ToString(), user);
         }
         
-        public async Task<Admin?> IsAdmin(User user)
+        public async Task<Admin?> IsAdmin(string userId)
         {
             Admin? ent = null;
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
                 sql_select(Table) + 
-                $"WHERE {Table}.{DbStrings.UserId} = '{user.Id}'"
+                $"WHERE {Table}.{DbStrings.UserId} = '{userId}'"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while(await reader.ReadAsync())

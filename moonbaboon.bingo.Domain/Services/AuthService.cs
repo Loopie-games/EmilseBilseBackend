@@ -17,11 +17,11 @@ namespace moonbaboon.bingo.Domain.Services
             _adminRepository = adminRepository;
         }
 
-        public string EncodeJwt(User user, byte[] tokenKey)
+        public string EncodeJwt(UserSimple user, byte[] tokenKey)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityTokenDescriptor tokenDescriptor;
-            var admin = _adminRepository.IsAdmin(user).Result;
+            var admin = _adminRepository.IsAdmin(user.Id).Result;
             if (admin is not null)
             {
                 tokenDescriptor = new SecurityTokenDescriptor

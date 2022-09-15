@@ -5,6 +5,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IAdminRepository
     {
-        public Task<Admin?> IsAdmin(User user);
+        public Task<Admin?> IsAdmin(string userId);
     }
 }

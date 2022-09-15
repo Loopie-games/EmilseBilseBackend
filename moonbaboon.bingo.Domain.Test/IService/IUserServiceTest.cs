@@ -15,14 +15,5 @@ namespace moonbaboon.bingo.Domain.Test.IService
         {
             Assert.NotNull(_service.Object);
         }
-
-        [Fact]
-        public void GetAllUsers()
-        {
-            var fakeList = new List<User>();
-            _service.Setup(s => s.GetAll())
-                .Returns(fakeList);
-            Assert.Equal(fakeList, _service.Object.GetAll());
-        }
     }
 }

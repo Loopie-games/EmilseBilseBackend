@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -17,17 +16,12 @@ namespace moonbaboon.bingo.Domain.Services
             _adminRepository = adminRepository;
         }
 
-        public List<User> GetAll()
-        {
-            return _userRepository.FindAll().Result;
-        }
-
         public List<UserSimple> Search(string searchStr)
         {
             return _userRepository.Search(searchStr).Result;
         }
 
-        public User? Login(string dtoUsername, string dtoPassword)
+        public UserSimple Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
@@ -35,11 +29,11 @@ namespace moonbaboon.bingo.Domain.Services
         public UserSimple GetById(string id)
         {
             var u =  _userRepository.ReadById(id).Result;
-            var a = _adminRepository.IsAdmin(u).Result;
-            return a ?? new UserSimple(u);
+            var a = _adminRepository.IsAdmin(u.Id).Result;
+            return a ?? u;
         }
 
-        public User CreateUser(User user)
+        public UserSimple CreateUser(User user)
         {
             return _userRepository.Create(user).Result;
         }
@@ -49,7 +43,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.VerifyUsername(username).Result;
         }
 
-        public string? GetSalt(string username)
+        public string GetSalt(string username)
         {
             return _userRepository.GetSalt(username).Result;
         }
