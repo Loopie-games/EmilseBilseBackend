@@ -71,7 +71,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 else
                 {
                     await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
-                    await Clients.Caller.SendAsync("gameConnected", board.Id);
+                    await Clients.Caller.SendAsync("gameConnected", board);
                 }
             }
             catch (Exception e)
@@ -158,117 +158,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         #endregion
-
-        #region Lobby
-
-        /// <summary>
-        /// Adds Authorized user to lobby and sends updates to clients
-        /// </summary>
-        /// <param name="pin">Pin for lobby</param>
-        /// <exception cref="Exception">If User cant be added.</exception>
-        public async Task JoinLobby(string pin)
-        {
-            try
-            {
-                var pp = _lobbyService.JoinLobby(GetUserId(Context), pin);
-                await Groups.AddToGroupAsync(Context.ConnectionId, pp.Lobby.Id!);
-                await Clients.Caller.SendAsync("receiveLobby", pp.Lobby);
-                var playerList = _pendingPlayerService.GetByLobbyId(pp.Lobby.Id!).Select(p => new PendingPlayerDto(p))
-                    .ToList();
-                await Clients.Group(pp.Lobby.Id!).SendAsync("lobbyPlayerListUpdate", playerList);
-            }
-            catch (Exception e)
-            {
-                await SendError(e.Message);
-                throw;
-            }
-        }
-
-
-        public async Task CreateLobby()
-        {
-            try
-            {
-                var hostId = GetUserId(Context);
-                var lobby = _lobbyService.GetByHostId(hostId);
-
-                //if user is already host for a lobby, close the old one
-                if (lobby?.Id is not null)
-                {
-                    await CloseLobby(lobby.Id);
-                }
-
-                lobby = _lobbyService.Create(hostId);
-                if (lobby?.Id != null)
-                {
-                    await Groups.AddToGroupAsync(Context.ConnectionId, lobby.Id);
-                    List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobby.Id)
-                        .Select(player => new PendingPlayerDto(player)).ToList();
-
-                    await Clients.Caller.SendAsync("receiveLobby", lobby);
-                    await Clients.Group(lobby.Id).SendAsync("lobbyPlayerListUpdate", playerList);
-                }
-            }
-            catch (Exception e)
-            {
-                await SendError(e.Message);
-                throw;
-            }
-        }
-
-        [Authorize]
-        public async Task StartGame(string lobbyId)
-        {
-            try
-            {
-                var game = _gameService.NewGame(lobbyId, GetUserId(Context));
-                if (game.Id != null)
-                {
-                    await Clients.Group(lobbyId).SendAsync("gameStarting", game.Id);
-                }
-            }
-            catch (Exception e)
-            {
-                await SendError(e.Message);
-                throw;
-            }
-        }
-
-        public async Task CloseLobby(string lobbyId)
-        {
-            try
-            {
-                if (_lobbyService.CloseLobby(lobbyId, GetUserId(Context)))
-                {
-                    await Clients.Group(lobbyId).SendAsync("lobbyClosed");
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                await SendError(e.Message);
-            }
-        }
-
-        public async Task LeaveLobby(string lobbyId)
-        {
-            try
-            {
-                if (_lobbyService.LeaveLobby(lobbyId, GetUserId(Context)))
-                {
-                    List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId)
-                        .Select(player => new PendingPlayerDto(player)).ToList();
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
-                    await Clients.Group(lobbyId).SendAsync("lobbyPlayerListUpdate", playerList);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                await SendError(e.Message);
-            }
-        }
-
-        #endregion
+        
     }
 }

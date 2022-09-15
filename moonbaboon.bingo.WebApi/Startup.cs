@@ -61,18 +61,18 @@ namespace moonbaboon.bingo.WebApi
                         // If the request is for our hub...
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/game")))
+                            (path.StartsWithSegments("/game") || path.StartsWithSegments("/lobby")))
                         {
                             // Read the token out of the query string
                             context.Token = accessToken;
-                            
                         }
+
                         return Task.CompletedTask;
                     }
                 };
             });
 
-            
+
             services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
             services.AddSwaggerGen(options =>
@@ -85,7 +85,7 @@ namespace moonbaboon.bingo.WebApi
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer"
                 });
-                
+
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
@@ -99,7 +99,6 @@ namespace moonbaboon.bingo.WebApi
                             Scheme = "oauth2",
                             Name = "Bearer",
                             In = ParameterLocation.Header,
-
                         },
                         new List<string>()
                     }
@@ -139,54 +138,54 @@ namespace moonbaboon.bingo.WebApi
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
-            
+
             //Auth
             services.AddScoped<IAuthService, AuthService>();
-            
+
             //Tiles
             services.AddScoped<IUserTileRepository, UserTileRepository>();
             services.AddScoped<IUserTileService, UserTileService>();
-            
+
             //Friendships
             services.AddScoped<IFriendshipRepository, FriendshipRepository>();
             services.AddScoped<IFriendshipService, FriendshipService>();
-            
+
             //Lobby
             services.AddScoped<ILobbyRepository, LobbyRepository>();
             services.AddScoped<ILobbyService, LobbyService>();
-            
+
             //PendingPlayer
             services.AddScoped<IPendingPlayerRepository, PendingPlayerRepository>();
             services.AddScoped<IPendingPlayerService, PendingPlayerService>();
-            
+
             //Game
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
-            
+
             //Board
             services.AddScoped<IBoardRepository, BoardRepository>();
             services.AddScoped<IBoardService, BoardService>();
-            
+
             //BoardTile
             services.AddScoped<IBoardTileRepository, BoardTileRepository>();
             services.AddScoped<IBoardTileService, BoardTileService>();
-            
+
             //TopPlayer
             services.AddScoped<ITopPlayerRepository, TopPlayerRepository>();
             services.AddScoped<ITopPlayerService, TopPlayerService>();
-            
+
             //TilePack
             services.AddScoped<ITilePackRepository, TilePackRepository>();
             services.AddScoped<ITilePackService, TilePackService>();
-            
+
             //PackTile
             services.AddScoped<IPackTileRepository, PackTileRepository>();
             services.AddScoped<IPackTileService, PackTileService>();
-            
+
             //OwnedTilePacks
             services.AddScoped<IOwnedTilePackRepository, OwnedTilePackRepository>();
             services.AddScoped<IOwnedTilePackService, OwnedTilePackService>();
-            
+
             //Admin
             services.AddScoped<IAdminRepository, AdminRepository>();
         }
@@ -199,10 +198,7 @@ namespace moonbaboon.bingo.WebApi
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
             if (env.IsProduction())
             {
                 app.UseHttpsRedirection();
@@ -212,7 +208,7 @@ namespace moonbaboon.bingo.WebApi
             {
                 app.UseCors(PolicyDev);
             }
-            
+
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -220,6 +216,7 @@ namespace moonbaboon.bingo.WebApi
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<GameHub>("/game");
+                endpoints.MapHub<LobbyHub>("/lobby");
             });
         }
     }

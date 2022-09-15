@@ -28,12 +28,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _boardTileService.GetById(id);
         }
         
+        
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
         public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
             var boardTiles = _boardTileService.GetByBoardId(id);
-            
-
             return boardTiles;
         }
         

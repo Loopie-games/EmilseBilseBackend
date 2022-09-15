@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -43,16 +45,17 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _pendingPlayerService.GetByLobbyId(lobbyId);
         }
 
+        [Authorize]
         [HttpPost]
-        public ActionResult<Lobby?> Create(CreateLobbyDto lobby)
+        public ActionResult<Lobby> Create()
         {
-            return _lobbyService.Create(lobby.HostId);
+            return _lobbyService.Create(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
-        
+        [Authorize]
         [HttpDelete(nameof(CloseLobby))]
-        public ActionResult<bool> CloseLobby(CloseLobbyDto cl)
+        public ActionResult<bool> CloseLobby(string lobbyId)
         {
-            return _lobbyService.CloseLobby(cl.LobbyId, cl.HostId);
+            return _lobbyService.CloseLobby(lobbyId,HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         }
     }
 }
