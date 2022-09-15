@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net.Mime;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
     {
 
         private readonly IUserService _userService;
-
         public UserController(IUserService userService)
         {
             _userService = userService;
@@ -44,6 +44,23 @@ namespace moonbaboon.bingo.WebApi.Controllers
             
             
         }
+
+        [Authorize]
+        [HttpGet(nameof(GetLogged))]
+        public ActionResult<UserSimple> GetLogged()
+        {
+            try
+            {
+                return _userService.GetById(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+            
+        }
+        
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]

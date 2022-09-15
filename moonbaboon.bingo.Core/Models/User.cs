@@ -10,7 +10,6 @@ namespace moonbaboon.bingo.Core.Models
             Password = password;
             Salt = salt;
             Nickname = nickname;
-            
         }
 
         public string? Id { get; set; }
@@ -18,7 +17,6 @@ namespace moonbaboon.bingo.Core.Models
         public string Password { get; set; }
         public string Salt { get; set; }
         public string Nickname { get; set; }
-
         public string? ProfilePicUrl { get; set; }
     }
 
