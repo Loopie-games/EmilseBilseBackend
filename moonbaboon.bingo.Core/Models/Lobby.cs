@@ -12,7 +12,7 @@
         public string? Id { get; set; }
 
         public string Host { get; set; }
-        
+
         public string? Pin { get; set; }
     }
 
@@ -28,7 +28,7 @@
         public string Id { get; set; }
 
         public string HostNickname { get; set; }
-        
+
         public string Pin { get; set; }
     }
 }

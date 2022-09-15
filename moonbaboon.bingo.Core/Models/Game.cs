@@ -1,6 +1,7 @@
 ﻿namespace moonbaboon.bingo.Core.Models
 {
-    public class Game{
+    public class Game
+    {
         public Game(string? id, UserSimple host, UserSimple? winner, State state)
         {
             Id = id;
@@ -12,12 +13,14 @@
         public string? Id { get; set; }
         public UserSimple Host { get; set; }
         public UserSimple? Winner { get; set; }
-        
+
         public State State { get; set; }
     }
 
     public enum State
     {
-        Ongoing, Paused, Ended
+        Ongoing,
+        Paused,
+        Ended
     }
 }

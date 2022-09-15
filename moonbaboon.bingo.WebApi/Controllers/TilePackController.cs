@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TilePackController:ControllerBase
+    public class TilePackController : ControllerBase
     {
         private readonly ITilePackService _tilePackService;
 
@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             _tilePackService = tilePackService;
         }
-        
+
         [HttpGet]
         public ActionResult<List<TilePack>> GetAll()
         {
@@ -33,9 +33,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
-        
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -49,8 +48,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 return NotFound(e.Message);
             }
-            
-        } 
+        }
 
         [HttpGet(nameof(GetDefault))]
         public ActionResult<TilePack> GetDefault()
@@ -67,15 +65,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl));
-                return CreatedAtAction(nameof(GetById), new{id = created.Id}, created);
+                return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
-            
         }
     }
 }

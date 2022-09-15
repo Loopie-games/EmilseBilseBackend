@@ -11,9 +11,9 @@ namespace moonbaboon.bingo.WebApi.SignalR
     [Authorize]
     public class GameHub : Hub
     {
-        private readonly IGameService _gameService;
         private readonly IBoardService _boardService;
         private readonly IBoardTileService _boardTileService;
+        private readonly IGameService _gameService;
 
         public GameHub(IGameService gameService,
             IBoardService boardService, IBoardTileService boardTileService)
@@ -24,7 +24,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         /// <summary>
-        /// Send en Error message to the client
+        ///     Send en Error message to the client
         /// </summary>
         /// <param name="message">Error Message</param>
         private async Task SendError(string message)
@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         /// <summary>
-        /// Gets UserId From Authorized user 
+        ///     Gets UserId From Authorized user
         /// </summary>
         /// <param name="context"></param>
         /// <returns>userId</returns>
@@ -49,7 +49,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         #region Game
 
         /// <summary>
-        /// Adds connectionId to group for the game
+        ///     Adds connectionId to group for the game
         /// </summary>
         /// <param name="gameId">Id for a specific game</param>
         public async Task ConnectToGame(string gameId)
@@ -75,7 +75,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         /// <summary>
-        /// Turns/(de)Activates the tile
+        ///     Turns/(de)Activates the tile
         /// </summary>
         /// <param name="boardTileId">id of the tile</param>
         public async Task TurnTile(string boardTileId)
@@ -85,10 +85,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var tile = _boardTileService.TurnTile(boardTileId, GetUserId(Context));
                 var isWon = _boardService.IsBoardFilled(tile.Board.Id);
                 await Clients.Caller.SendAsync("tileTurned", tile);
-                if (isWon)
-                {
-                    await Clients.Caller.SendAsync("boardFilled", tile.Board.Id);
-                }
+                if (isWon) await Clients.Caller.SendAsync("boardFilled", tile.Board.Id);
             }
             catch (Exception e)
             {
@@ -151,6 +148,5 @@ namespace moonbaboon.bingo.WebApi.SignalR
         }
 
         #endregion
-        
     }
 }

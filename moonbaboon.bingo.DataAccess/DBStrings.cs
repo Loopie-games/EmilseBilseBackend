@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace moonbaboon.bingo.DataAccess
+﻿namespace moonbaboon.bingo.DataAccess
 {
     public static class DbStrings
     {
@@ -70,6 +68,7 @@ namespace moonbaboon.bingo.DataAccess
 
         //BoardTile
         public const string BoardTileTable = "BoardTile";
+
         //Rows
         public const string BoardId = "BoardId";
         public const string TileId = "TileId";
@@ -77,9 +76,10 @@ namespace moonbaboon.bingo.DataAccess
         public const string Position = "Position";
         public const string IsActivated = "IsActivated";
         public const string TileType = "TileType";
-        
+
         //TopPlayer
         public const string TopPlayerTable = "TopPlayer";
+
         //Rows
         public const string TurnedTiles = "TurnedTiles";
 

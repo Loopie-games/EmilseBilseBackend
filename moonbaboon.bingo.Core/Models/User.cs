@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace moonbaboon.bingo.Core.Models
+﻿namespace moonbaboon.bingo.Core.Models
 {
     public class User
     {
@@ -22,14 +20,6 @@ namespace moonbaboon.bingo.Core.Models
 
     public class UserSimple
     {
-        public UserSimple(User user)
-        {
-            Id = user.Id;
-            Username = user.Username;
-            Nickname = user.Nickname;
-            ProfilePicUrl = user.ProfilePicUrl;
-        }
-
         public UserSimple(string? id, string username, string nickname, string? profilePicUrl)
         {
             Id = id;

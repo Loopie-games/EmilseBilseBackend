@@ -13,6 +13,41 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private const string Table = DbStrings.TopPlayerTable;
 
+        public async Task<TopPlayer> Create(TopPlayer toCreate)
+        {
+            string uuid = Guid.NewGuid().ToString();
+            var ent = await Ent(
+                $"INSERT INTO `{Table}` " +
+                $"VALUES ('{uuid}','{toCreate.GameId}','{toCreate.User.Id}','{toCreate.TurnedTiles}'); " +
+                sql_select(Table) +
+                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
+            return ent ??
+                   throw new InvalidDataException($"ERROR in creating {Table} with User: " + toCreate.User.Username);
+        }
+
+        public async Task<List<TopPlayer>> FindTop(string gameId, int limit)
+        {
+            List<TopPlayer> list = new();
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            con.Open();
+
+            string sqlCommand =
+                sql_select(Table) +
+                $"WHERE {Table}.{DbStrings.GameId} = '{gameId}' " +
+                $"ORDER BY {DbStrings.TurnedTiles} DESC " +
+                $"Limit {limit};";
+
+            await using var command = new MySqlCommand(sqlCommand, con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (reader.Read())
+            {
+                var ent = ReaderToEnt(reader);
+                list.Add(ent);
+            }
+
+            return list;
+        }
+
         private static string sql_select(string from)
         {
             return
@@ -39,46 +74,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(sqlCommand, con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                ent = ReaderToEnt(reader);
-            }
+            while (reader.Read()) ent = ReaderToEnt(reader);
 
             return ent;
-        }
-        
-        public async Task<TopPlayer> Create(TopPlayer toCreate)
-        {
-            string uuid = Guid.NewGuid().ToString();
-            var ent = await Ent(
-                $"INSERT INTO `{Table}` " +
-                $"VALUES ('{uuid}','{toCreate.GameId}','{toCreate.User.Id}','{toCreate.TurnedTiles}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
-            return ent ?? throw new InvalidDataException($"ERROR in creating {Table} with User: " + toCreate.User.Username);
-        }
-
-        public async Task<List<TopPlayer>> FindTop(string gameId, int limit)
-        {
-            List<TopPlayer> list = new();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
-
-            string sqlCommand =
-                sql_select(Table)+
-                $"WHERE {Table}.{DbStrings.GameId} = '{gameId}' " +
-                $"ORDER BY {DbStrings.TurnedTiles} DESC " +
-                $"Limit {limit};";
-
-            await using var command = new MySqlCommand(sqlCommand, con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
-            }
-
-            return list;
         }
     }
 }

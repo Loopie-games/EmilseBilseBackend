@@ -10,7 +10,6 @@ using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    
     [ApiController]
     [Route("[controller]")]
     public class UserTileController : ControllerBase
@@ -29,21 +28,23 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<UserTile?> GetById(string id) {
+        public ActionResult<UserTile?> GetById(string id)
+        {
             return _userTileService.GetById(id);
         }
+
         [HttpGet(nameof(GetAboutUserById))]
         public ActionResult<List<UserTile>> GetAboutUserById(string id)
         {
             return _userTileService.GetAboutUserById(id);
         }
-        
+
         [HttpGet(nameof(GetMadeByUserId))]
         public ActionResult<List<UserTile>> GetMadeByUserId(string userId)
         {
             return _userTileService.GetMadeByUserId(userId);
         }
-        
+
         [Authorize]
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserTile))]

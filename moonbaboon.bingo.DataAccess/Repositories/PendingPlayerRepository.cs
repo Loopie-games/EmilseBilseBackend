@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -10,33 +9,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class PendingPlayerRepository : IPendingPlayerRepository
     {
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
-
         private const string Table = DbStrings.PendingPlayerTable;
-
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id}, " +
-                $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
-                $"{DbStrings.LobbyTable}.* " +
-                $"FROM {from} " +
-                $"JOIN {DbStrings.UserTable} ON {DbStrings.UserTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.UserId} " +
-                $"JOIN {DbStrings.LobbyTable} ON {DbStrings.LobbyTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} ";
-        }
-
-        private static PendingPlayer ReaderToEnt(MySqlDataReader reader)
-        {
-            var user = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
-                reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
-            var lobby = new Lobby(reader.GetValue(5).ToString(), reader.GetValue(6).ToString(),
-                reader.GetValue(7).ToString());
-
-            return new PendingPlayer(user, lobby)
-            {
-                Id = reader.GetValue(0).ToString(),
-            };
-        }
+        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
         public async Task<PendingPlayer> Create(PendingPlayer toCreate)
         {
@@ -50,16 +24,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.Id} = '{uuid}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                toCreate.Id = reader.GetValue(0).ToString();
-            }
+            while (await reader.ReadAsync()) toCreate.Id = reader.GetValue(0).ToString();
 
             await _connection.CloseAsync();
-            if (toCreate.Id == null)
-            {
-                throw new Exception($"ERROR: {nameof(PendingPlayer)} not created");
-            }
+            if (toCreate.Id == null) throw new Exception($"ERROR: {nameof(PendingPlayer)} not created");
 
             return toCreate;
         }
@@ -76,10 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.UserId} = '{userId}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                pp = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) pp = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
             return pp ?? throw new Exception($"no {Table} found with User-id: {userId}");
@@ -102,7 +67,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                UserSimple player = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                UserSimple player = new(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
                     reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
                 var lobby = new Lobby(reader.GetValue(5).ToString(), reader.GetValue(6).ToString(),
                     reader.GetValue(7).ToString());
@@ -141,7 +106,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 pp = new PendingPlayer(user, lobby)
                 {
-                    Id = reader.GetValue(0).ToString(),
+                    Id = reader.GetValue(0).ToString()
                 };
             }
 
@@ -157,13 +122,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"DELETE FROM `{DbStrings.PendingPlayerTable}` " +
                 $"WHERE `{DbStrings.LobbyId}` = '{lobbyId}'; " +
-                $"SELECT ROW_COUNT()",
+                "SELECT ROW_COUNT()",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                b = (Convert.ToInt16(reader.GetValue(0).ToString()) >= 0);
-            }
+            while (await reader.ReadAsync()) b = Convert.ToInt16(reader.GetValue(0).ToString()) >= 0;
 
             await _connection.CloseAsync();
             return b;
@@ -177,13 +139,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var command = new MySqlCommand(
                 $"DELETE FROM `{DbStrings.PendingPlayerTable}` " +
                 $"WHERE `{DbStrings.Id}` = '{ppId}'; " +
-                $"SELECT ROW_COUNT()",
+                "SELECT ROW_COUNT()",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                b = (Convert.ToInt16(reader.GetValue(0).ToString()) >= 0);
-            }
+            while (await reader.ReadAsync()) b = Convert.ToInt16(reader.GetValue(0).ToString()) >= 0;
 
             await _connection.CloseAsync();
             return b;
@@ -199,14 +158,35 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"WHERE {DbStrings.PendingPlayerTable}.{DbStrings.Id} = '{toUpdate.Id}'",
                 _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                pp = ReaderToEnt(reader);
-            }
+            while (await reader.ReadAsync()) pp = ReaderToEnt(reader);
 
             await _connection.CloseAsync();
 
             return pp ?? throw new Exception($"ERROR: {nameof(PendingPlayer)} with id: [{toUpdate.Id}] not updated");
+        }
+
+        private static string sql_select(string from)
+        {
+            return
+                $"SELECT {DbStrings.PendingPlayerTable}.{DbStrings.Id}, " +
+                $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
+                $"{DbStrings.LobbyTable}.* " +
+                $"FROM {from} " +
+                $"JOIN {DbStrings.UserTable} ON {DbStrings.UserTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.UserId} " +
+                $"JOIN {DbStrings.LobbyTable} ON {DbStrings.LobbyTable}.{DbStrings.Id} = {DbStrings.PendingPlayerTable}.{DbStrings.LobbyId} ";
+        }
+
+        private static PendingPlayer ReaderToEnt(MySqlDataReader reader)
+        {
+            var user = new UserSimple(reader.GetValue(1).ToString(), reader.GetValue(2).ToString(),
+                reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
+            var lobby = new Lobby(reader.GetValue(5).ToString(), reader.GetValue(6).ToString(),
+                reader.GetValue(7).ToString());
+
+            return new PendingPlayer(user, lobby)
+            {
+                Id = reader.GetValue(0).ToString()
+            };
         }
     }
 }

@@ -39,14 +39,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<List<Friend>> SearchUsers(string searchStr)
         {
             if (searchStr.Length > 2)
-            {
                 return Ok(_friendshipService.SearchUsers(searchStr,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
-            }
-            else
-            {
-                return BadRequest("use at last 3 characters in your search");
-            }
+            return BadRequest("use at last 3 characters in your search");
         }
 
         [Authorize]

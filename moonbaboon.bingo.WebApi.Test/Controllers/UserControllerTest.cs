@@ -11,14 +11,14 @@ namespace moonbaboon.bingo.WebApi.Test.Controllers
 {
     public class UserControllerTest
     {
-        private readonly Mock<IUserService> _userService = new Mock<IUserService>();
         private readonly UserController _userController;
+        private readonly Mock<IUserService> _userService = new();
 
         public UserControllerTest()
         {
             _userController = new UserController(_userService.Object);
         }
-        
+
         [Fact]
         public void UserController_IsOfTypeControllerBase()
         {
@@ -27,11 +27,11 @@ namespace moonbaboon.bingo.WebApi.Test.Controllers
 
         private static Attribute? GetAttributeTypeFromName(string name)
         {
-           return typeof(UserController)
+            return typeof(UserController)
                 .GetTypeInfo().GetCustomAttributes()
                 .FirstOrDefault(a => a.GetType().Name.Equals(name));
         }
-        
+
         [Fact]
         public void UserController_UsesApiControllerAttribute()
         {
@@ -43,7 +43,7 @@ namespace moonbaboon.bingo.WebApi.Test.Controllers
         {
             Assert.NotNull(GetAttributeTypeFromName("RouteAttribute"));
         }
-        
+
         private static MethodInfo? GetMethodInfoFromName(string name)
         {
             return typeof(UserController)

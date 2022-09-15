@@ -15,7 +15,7 @@
         public string? Id { get; set; }
         public Board Board { get; set; }
         public Tile Tile { get; set; }
-        public UserSimple AboutUser { get; set;}
+        public UserSimple AboutUser { get; set; }
         public int Position { get; set; }
         public bool IsActivated { get; set; }
     }

@@ -9,18 +9,18 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class GameService : IGameService
     {
-        private readonly IGameRepository _gameRepository;
         private readonly IBoardRepository _boardRepository;
-        private readonly IPendingPlayerRepository _pendingPlayerRepository;
-        private readonly IUserTileRepository _userTileRepository;
         private readonly IBoardTileRepository _boardTileRepository;
-        private readonly IPackTileRepository _packTileRepository;
-        private readonly ITilePackRepository _tilePackRepository;
+        private readonly IGameRepository _gameRepository;
         private readonly ILobbyRepository _lobbyRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly ITopPlayerRepository _topPlayerRepository;
+        private readonly IPackTileRepository _packTileRepository;
+        private readonly IPendingPlayerRepository _pendingPlayerRepository;
 
         private readonly Random _random = new();
+        private readonly ITilePackRepository _tilePackRepository;
+        private readonly ITopPlayerRepository _topPlayerRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserTileRepository _userTileRepository;
 
         public GameService(IGameRepository gameRepository, IBoardRepository boardRepository,
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
@@ -56,10 +56,7 @@ namespace moonbaboon.bingo.Domain.Services
             {
                 //Get lobby and throw exception if not provided with correct host id
                 var lobby = _lobbyRepository.FindById(lobbyId).Result;
-                if (lobby.Host != userId)
-                {
-                    throw new Exception("only the host of the lobby can start the game");
-                }
+                if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
 
                 var game = _gameRepository.Create(userId).Result;
                 var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
@@ -88,10 +85,7 @@ namespace moonbaboon.bingo.Domain.Services
                         while (boardTiles.Count < 24)
                         {
                             //Make sure there is enough default tiles
-                            if (defaultTilesTemp.Count < 1)
-                            {
-                                defaultTilesTemp = new List<PackTile>(defaultTiles);
-                            }
+                            if (defaultTilesTemp.Count < 1) defaultTilesTemp = new List<PackTile>(defaultTiles);
 
                             //find random player
                             var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
@@ -122,24 +116,13 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
-        private List<PackTile> GetDefaultTiles()
-        {
-            return _packTileRepository
-                .GetByPackId(_tilePackRepository.FindDefault().Result.Id ??
-                             throw new InvalidOperationException("No default Tilepack"))
-                .Result;
-        }
-
 
         /// <exception cref="Exception">if the user is not on the list</exception>
         public List<UserSimple> GetPlayers(string gameId, string userId)
         {
             var players = _gameRepository.GetPlayers(gameId).Result;
 
-            if (players.Any(u => u.Id == userId))
-            {
-                return players;
-            }
+            if (players.Any(u => u.Id == userId)) return players;
 
             throw new Exception("You cannot get player list for a game, that you are not a part of");
         }
@@ -150,10 +133,7 @@ namespace moonbaboon.bingo.Domain.Services
             {
                 var game = _gameRepository.FindById(gameId).Result;
 
-                if (game.Host.Id == hostId)
-                {
-                    return _gameRepository.Delete(gameId).Result;
-                }
+                if (game.Host.Id == hostId) return _gameRepository.Delete(gameId).Result;
 
                 throw new Exception("You have to be the host of a game to delete it");
             }
@@ -169,17 +149,15 @@ namespace moonbaboon.bingo.Domain.Services
             try
             {
                 var game = _gameRepository.FindById(gameId).Result;
-                if (game.Host.Id != hostId)
-                {
-                    throw new Exception("Only the host can Confirm a win");
-                }
+                if (game.Host.Id != hostId) throw new Exception("Only the host can Confirm a win");
 
                 game.State = State.Ended;
                 var topRanked = _boardRepository.FindTopRanking(gameId, 3).Result;
                 foreach (var board in topRanked)
                 {
                     var user = _userRepository.ReadById(board.UserId).Result;
-                    var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, new UserSimple(user), board.TurnedTiles)).Result;
+                    var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles))
+                        .Result;
                 }
 
                 return _gameRepository.Update(game).Result;
@@ -196,13 +174,11 @@ namespace moonbaboon.bingo.Domain.Services
             try
             {
                 if (!_gameRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
-                {
                     throw new Exception("You cant pause games that you are not apart of");
-                }
 
 
                 game.State = State.Paused;
-                game.Winner = new UserSimple(_userRepository.ReadById(userId).Result);
+                game.Winner = _userRepository.ReadById(userId).Result;
 
                 return _gameRepository.Update(game).Result;
             }
@@ -219,10 +195,7 @@ namespace moonbaboon.bingo.Domain.Services
             {
                 var game = _gameRepository.FindById(gameId).Result;
 
-                if (game.Host.Id != userId)
-                {
-                    throw new Exception("Only the host can deny wins");
-                }
+                if (game.Host.Id != userId) throw new Exception("Only the host can deny wins");
 
                 game.State = State.Ongoing;
                 game.Winner = null;
@@ -247,6 +220,14 @@ namespace moonbaboon.bingo.Domain.Services
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        private List<PackTile> GetDefaultTiles()
+        {
+            return _packTileRepository
+                .GetByPackId(_tilePackRepository.FindDefault().Result.Id ??
+                             throw new InvalidOperationException("No default Tilepack"))
+                .Result;
         }
     }
 }

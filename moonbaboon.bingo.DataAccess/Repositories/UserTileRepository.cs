@@ -1,15 +1,135 @@
-﻿using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.Domain.IRepositories;
-using MySqlConnector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain.IRepositories;
+using MySqlConnector;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class UserTileRepository : IUserTileRepository
     {
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+
+        public async Task<List<UserTile>> FindAll()
+        {
+            List<UserTile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(SqlSelect($"{DbStrings.UserTileTable}"), _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tiles.Add(ReaderToUserTile(reader));
+            await _connection.CloseAsync();
+            return tiles;
+        }
+
+        public async Task<UserTile?> FindById(string id)
+        {
+            UserTile? tile = null;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                SqlSelect($"{DbStrings.UserTileTable}") +
+                $"WHERE {DbStrings.UserTileTable}.{DbStrings.TileId} ='{id}';"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tile = ReaderToUserTile(reader);
+
+            await _connection.CloseAsync();
+            return tile;
+        }
+
+        public async Task<UserTile?> FindFiller(string userId)
+        {
+            UserTile? tile = null;
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                SqlSelect(DbStrings.UserTileTable) +
+                $"WHERE ({DbStrings.TileTable}.{DbStrings.Action} ='filler' AND {DbStrings.UserTileTable}.{DbStrings.UserId} ='{userId}');"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tile = ReaderToUserTile(reader);
+
+            await _connection.CloseAsync();
+            return tile;
+        }
+
+        public async Task<List<UserTile>> GetAboutUserById(string id)
+        {
+            List<UserTile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                SqlSelect(DbStrings.UserTileTable) +
+                $"WHERE {DbStrings.UserTileTable}.{DbStrings.UserId} = '{id}';"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tiles.Add(ReaderToUserTile(reader));
+            await _connection.CloseAsync();
+            return tiles;
+        }
+
+        public async Task<UserTile?> Create(string userId, string action, string addedById)
+        {
+            UserTile? ent = null;
+            var uuid = Guid.NewGuid().ToString();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                $"INSERT INTO {DbStrings.TileTable} " +
+                $"VALUES ('{uuid}', '{action}');" +
+                $"INSERT INTO {DbStrings.UserTileTable} " +
+                $"VALUES ('{uuid}','{userId}', '{addedById}'); " +
+                SqlSelect(DbStrings.UserTileTable) +
+                $"WHERE {DbStrings.UserTileTable}.{DbStrings.TileId} = '{uuid}'"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) ent = ReaderToUserTile(reader);
+
+            await _connection.CloseAsync();
+            return ent;
+        }
+
+        public async Task<List<UserTile>> GetTilesForBoard(string lobbyId, string userId)
+        {
+            var sqlcommand =
+                $"SELECT {DbStrings.UserTileTable}.{DbStrings.Id}, {DbStrings.UserTileTable}.{DbStrings.Action}, " +
+                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic},  " +
+                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
+                $"JOIN {DbStrings.UserTable} As U1 ON {DbStrings.UserTileTable}.{DbStrings.UserId} = U1.id " +
+                $"JOIN {DbStrings.UserTable} As U2 ON {DbStrings.UserTileTable}.{DbStrings.AddedById} = U2.id";
+
+            List<UserTile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(SqlSelect(
+                    $"(SELECT {DbStrings.PendingPlayerTable}.{DbStrings.UserId} as uId " +
+                    $"FROM {DbStrings.PendingPlayerTable} " +
+                    $"WHERE {DbStrings.PendingPlayerTable}.LobbyId = '{lobbyId}' " +
+                    $"and {DbStrings.PendingPlayerTable}.{DbStrings.UserId} != '{userId}') As pp " +
+                    $"JOIN {DbStrings.UserTileTable} on pp.uId = {DbStrings.UserTileTable}.{DbStrings.UserId}")
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tiles.Add(ReaderToUserTile(reader));
+            await _connection.CloseAsync();
+            return tiles;
+        }
+
+        public async Task<List<UserTile>> FindMadeByUserId(string userId)
+        {
+            List<UserTile> tiles = new();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                SqlSelect(DbStrings.UserTileTable) +
+                $"WHERE {DbStrings.UserTileTable}.{DbStrings.AddedById} = '{userId}';"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) tiles.Add(ReaderToUserTile(reader));
+            await _connection.CloseAsync();
+            return tiles;
+        }
 
         private static string SqlSelect(string from)
         {
@@ -31,146 +151,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             UserTile userTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), about, addedBy);
 
             return userTile;
-        }
-
-        public async Task<List<UserTile>> FindAll()
-        {
-            List<UserTile> tiles = new();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(SqlSelect($"{DbStrings.UserTileTable}"), _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                tiles.Add(ReaderToUserTile(reader));
-            }
-            await _connection.CloseAsync();
-            return tiles;
-        }
-
-        public async Task<UserTile?> FindById(string id)
-        {
-            UserTile? tile = null;
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                SqlSelect($"{DbStrings.UserTileTable}") + 
-                $"WHERE {DbStrings.UserTileTable}.{DbStrings.TileId} ='{id}';"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                tile = ReaderToUserTile(reader);
-            }
-
-            await _connection.CloseAsync();
-            return tile;
-        }
-
-        public async Task<UserTile?> FindFiller(string userId)
-        {
-            UserTile? tile = null;
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                SqlSelect(DbStrings.UserTileTable) + 
-                $"WHERE ({DbStrings.TileTable}.{DbStrings.Action} ='filler' AND {DbStrings.UserTileTable}.{DbStrings.UserId} ='{userId}');"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                tile = ReaderToUserTile(reader);
-            }
-
-            await _connection.CloseAsync();
-            return tile;
-        }
-
-        public async Task<List<UserTile>> GetAboutUserById(string id)
-        {
-            List<UserTile> tiles = new();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                SqlSelect(DbStrings.UserTileTable) +
-                $"WHERE {DbStrings.UserTileTable}.{DbStrings.UserId} = '{id}';"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                tiles.Add(ReaderToUserTile(reader));
-            }
-            await _connection.CloseAsync();
-            return tiles;
-        }
-
-        public async Task<UserTile?> Create(string userId, string action, string addedById)
-        {
-            UserTile? ent = null;
-            var uuid = Guid.NewGuid().ToString();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                $"INSERT INTO {DbStrings.TileTable} " +
-                $"VALUES ('{uuid}', '{action}');" +
-                $"INSERT INTO {DbStrings.UserTileTable} " +
-                $"VALUES ('{uuid}','{userId}', '{addedById}'); " +
-                SqlSelect(DbStrings.UserTileTable) + 
-                $"WHERE {DbStrings.UserTileTable}.{DbStrings.TileId} = '{uuid}'"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                ent = ReaderToUserTile(reader);
-            }
-
-            await _connection.CloseAsync();
-            return ent;
-        }
-
-        public async Task<List<UserTile>> GetTilesForBoard(string lobbyId, string userId)
-        {
-            var sqlcommand =
-                $"SELECT {DbStrings.UserTileTable}.{DbStrings.Id}, {DbStrings.UserTileTable}.{DbStrings.Action}, " +
-                $"U1.{DbStrings.Id}, U1.{DbStrings.Username}, U1.{DbStrings.Nickname}, U1.{DbStrings.ProfilePic},  " +
-                $"U2.{DbStrings.Id}, U2.{DbStrings.Username}, U2.{DbStrings.Nickname}, U2.{DbStrings.ProfilePic} " +
-                $"JOIN {DbStrings.UserTable} As U1 ON {DbStrings.UserTileTable}.{DbStrings.UserId} = U1.id " +
-                $"JOIN {DbStrings.UserTable} As U2 ON {DbStrings.UserTileTable}.{DbStrings.AddedById} = U2.id";
-            
-            List<UserTile> tiles = new();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(SqlSelect($"(SELECT {DbStrings.PendingPlayerTable}.{DbStrings.UserId} as uId " +
-                                                             $"FROM {DbStrings.PendingPlayerTable} " +
-                                                             $"WHERE {DbStrings.PendingPlayerTable}.LobbyId = '{lobbyId}' " +
-                                                             $"and {DbStrings.PendingPlayerTable}.{DbStrings.UserId} != '{userId}') As pp " +
-                                                             $"JOIN {DbStrings.UserTileTable} on pp.uId = {DbStrings.UserTileTable}.{DbStrings.UserId}" )
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                tiles.Add(ReaderToUserTile(reader));
-            }
-            await _connection.CloseAsync();
-            return tiles;
-        }
-
-        public async Task<List<UserTile>> FindMadeByUserId(string userId)
-        {
-            List<UserTile> tiles = new();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                SqlSelect(DbStrings.UserTileTable) +
-                $"WHERE {DbStrings.UserTileTable}.{DbStrings.AddedById} = '{userId}';"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
-            {
-                tiles.Add(ReaderToUserTile(reader));
-            }
-            await _connection.CloseAsync();
-            return tiles;
         }
     }
 }

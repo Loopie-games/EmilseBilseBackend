@@ -6,21 +6,21 @@ namespace moonbaboon.bingo.Core.IServices
     public interface IGameService
     {
         public Game GetById(string id);
-        
+
         public Game Create(string hostId);
-        
+
         /// <summary>
-        /// Creates a new Game from lobby, if provided with id from matching lobby and host.
+        ///     Creates a new Game from lobby, if provided with id from matching lobby and host.
         /// </summary>
         /// <param name="lobbyId">Id specific for a lobby</param>
         /// <param name="hostId">UserId from the host of the lobby</param>
         /// <returns>the created game</returns>
         public Game NewGame(string lobbyId, string hostId);
-        
+
         /// <summary>
-        /// Gets player list from game id
-        /// Checks if the user requesting the list is part of the game
-        /// if the user is part of the game, the player list is returned
+        ///     Gets player list from game id
+        ///     Checks if the user requesting the list is part of the game
+        ///     if the user is part of the game, the player list is returned
         /// </summary>
         /// <param name="gameId">Id specific for a Game</param>
         /// <param name="userId">Id specific for a User</param>

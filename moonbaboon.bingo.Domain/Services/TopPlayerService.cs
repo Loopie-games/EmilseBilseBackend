@@ -31,7 +31,7 @@ namespace moonbaboon.bingo.Domain.Services
                 Console.WriteLine(e);
                 throw;
             }
-            
+
             ;
         }
     }

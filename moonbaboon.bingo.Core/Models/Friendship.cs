@@ -13,8 +13,6 @@
         public string? Id { get; set; }
         public UserSimple FriendId1 { get; set; }
         public UserSimple FriendId2 { get; set; }
-        public bool Accepted { get; set; } 
-
+        public bool Accepted { get; set; }
     }
-    
 }

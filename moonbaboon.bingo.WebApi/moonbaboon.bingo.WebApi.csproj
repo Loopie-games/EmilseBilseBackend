@@ -8,16 +8,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="6.0.8" />
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
-        <PackageReference Include="MySqlConnector" Version="2.1.11" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+        <PackageReference Include="BCrypt.Net-Core" Version="1.6.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="6.0.8"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7"/>
+        <PackageReference Include="MySqlConnector" Version="2.1.11"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\moonbaboon.bingo.DataAccess\moonbaboon.bingo.DataAccess.csproj" />
-      <ProjectReference Include="..\moonbaboon.bingo.Domain\moonbaboon.bingo.Domain.csproj" />
+        <ProjectReference Include="..\moonbaboon.bingo.DataAccess\moonbaboon.bingo.DataAccess.csproj"/>
+        <ProjectReference Include="..\moonbaboon.bingo.Domain\moonbaboon.bingo.Domain.csproj"/>
     </ItemGroup>
 
 </Project>

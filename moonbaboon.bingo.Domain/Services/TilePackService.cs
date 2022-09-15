@@ -19,7 +19,9 @@ namespace moonbaboon.bingo.Domain.Services
         {
             try
             {
-                return userId == null ? _tilePackRepository.FindAll().Result : _tilePackRepository.FindAll_LoggedUser(userId).Result;
+                return userId == null
+                    ? _tilePackRepository.FindAll().Result
+                    : _tilePackRepository.FindAll_LoggedUser(userId).Result;
             }
             catch (Exception e)
             {
