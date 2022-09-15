@@ -128,8 +128,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
 
         private async Task UpdatePlayerList(string lobbyId)
         {
-            List<PendingPlayerDto> playerList = _pendingPlayerService.GetByLobbyId(lobbyId)
-                .Select(player => new PendingPlayerDto(player)).ToList();
+            var playerList = _pendingPlayerService.GetByLobbyId(lobbyId);
             await Clients.Group(lobbyId).SendAsync("playerList", playerList);
         }
 
