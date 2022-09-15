@@ -51,9 +51,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserSimple))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<User?> GetById(string id)
+        public ActionResult<UserSimple> GetById(string id)
         {
             try
             {
@@ -77,7 +77,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost(nameof(CreateUser))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserDtos.UserDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserSimple))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<UserSimple> CreateUser(User user)
         {

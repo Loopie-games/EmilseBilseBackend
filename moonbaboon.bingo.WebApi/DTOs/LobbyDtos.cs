@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using moonbaboon.bingo.Core.Models;
+﻿using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.DTOs
 {
@@ -15,33 +14,5 @@ namespace moonbaboon.bingo.WebApi.DTOs
         public string LobbyId { get; set; }
         public UserSimple Host { get; set; }
         public string Pin { get; set; }
-    }
-    
-    public class CreateLobbyDto
-    {
-        public CreateLobbyDto(string hostId)
-        {
-            HostId = hostId;
-        }
-    
-        [Required]
-        public string HostId { get; set; }
-        
-    }
-
-    public class CloseLobbyDto
-    {
-        public CloseLobbyDto(string lobbyId, string hostId)
-        {
-            LobbyId = lobbyId;
-            HostId = hostId;
-        }
-
-        [Required]
-        public string LobbyId { get; set; }
-        [Required]
-        public string HostId { get; set; }
-
-        
     }
 }
