@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.SignalR
 {
     [Authorize]
     public class GameHub : Hub
     {
-        private readonly ILobbyService _lobbyService;
-        private readonly IPendingPlayerService _pendingPlayerService;
         private readonly IGameService _gameService;
         private readonly IBoardService _boardService;
         private readonly IBoardTileService _boardTileService;
 
-        public GameHub(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService, IGameService gameService,
+        public GameHub(IGameService gameService,
             IBoardService boardService, IBoardTileService boardTileService)
         {
-            _lobbyService = lobbyService;
-            _pendingPlayerService = pendingPlayerService;
             _gameService = gameService;
             _boardService = boardService;
             _boardTileService = boardTileService;
