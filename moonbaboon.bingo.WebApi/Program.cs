@@ -1,8 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using Microsoft.Extensions.Hosting;
+using Stripe;
 
 namespace moonbaboon.bingo.WebApi
 {
@@ -10,7 +12,8 @@ namespace moonbaboon.bingo.WebApi
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateHostBuilder(args)
+                .Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)

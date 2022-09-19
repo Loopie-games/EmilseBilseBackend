@@ -15,6 +15,7 @@ using moonbaboon.bingo.Domain.IRepositories;
 using moonbaboon.bingo.Domain.Services;
 using moonbaboon.bingo.WebApi.SignalR;
 using MySqlConnector;
+using Stripe;
 
 namespace moonbaboon.bingo.WebApi
 {
@@ -34,6 +35,8 @@ namespace moonbaboon.bingo.WebApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            StripeConfiguration.ApiKey = Configuration["Stripe:Key"];
+            
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -70,7 +73,7 @@ namespace moonbaboon.bingo.WebApi
                 };
             });
 
-
+            
             services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
             services.AddSwaggerGen(options =>
@@ -191,6 +194,7 @@ namespace moonbaboon.bingo.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
