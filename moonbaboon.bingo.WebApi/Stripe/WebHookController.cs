@@ -26,8 +26,7 @@ namespace moonbaboon.bingo.WebApi.Stripe
                 // Handle the event
                 if (stripeEvent.Type == Events.PaymentIntentSucceeded)
                 {
-                    Console.WriteLine("bitches");
-                    
+                    Console.WriteLine("Payment Succeeded");
                 }
                 // ... handle other event types
                 else

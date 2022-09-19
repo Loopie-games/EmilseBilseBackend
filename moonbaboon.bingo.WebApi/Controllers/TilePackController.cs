@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
+using Stripe;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -26,12 +29,22 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var tps= _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var priceService = new PriceService();
+                List<TilePackDto> tpDtOs = new();
+                foreach (TilePack tp in tps)
+                {
+                    Console.WriteLine(tp.PriceStripe + "price");
+                    Price price = priceService.Get(tp.PriceStripe, null, null);
+                    tpDtOs.Add(new TilePackDto(tp) {Price = price.UnitAmount});
+                }
+
+                return Ok(tpDtOs);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return BadRequest(e.Message);
             }
         }
 
@@ -64,7 +77,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl));
+                //TODO add stripe price
+                var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl, null));
                 return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
             }
             catch (Exception e)

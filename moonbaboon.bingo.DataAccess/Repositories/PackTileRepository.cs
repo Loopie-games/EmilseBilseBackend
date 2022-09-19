@@ -69,7 +69,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static string sql_select(string from)
         {
             return
-                $"SELECT T.{DbStrings.Id}, T.{DbStrings.Action}, TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl} " +
+                $"SELECT T.{DbStrings.Id}, T.{DbStrings.Action}, TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl}, TP.{DbStrings.PriceStripe} " +
                 $"FROM {from} " +
                 $"JOIN {DbStrings.TileTable} AS T ON {Table}.{DbStrings.TileId} = T.{DbStrings.Id} " +
                 $"JOIN {DbStrings.TilePackTable} AS TP On {Table}.{DbStrings.PackId} = TP.{DbStrings.Id} ";
@@ -78,7 +78,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static PackTile ReaderToEnt(MySqlDataReader reader)
         {
             TilePack tilePack = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
-                reader.GetValue(4).ToString());
+                reader.GetValue(4).ToString(),reader.GetValue(5).ToString());
             PackTile packTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), tilePack);
             return packTile;
         }

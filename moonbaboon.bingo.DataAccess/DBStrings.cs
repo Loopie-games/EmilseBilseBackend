@@ -86,6 +86,7 @@
         //TilePack
         public const string TilePackTable = "TilePack";
         public const string PicUrl = "PicUrl";
+        public const string PriceStripe = "Stripe_PRICE";
 
         //PackTile
         public const string PackTileTable = "PackTile";
