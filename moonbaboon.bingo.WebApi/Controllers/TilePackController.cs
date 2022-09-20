@@ -67,21 +67,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost(nameof(Create))]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePack))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<TilePack> Create(NewTilePackDto toCreate)
+        public ActionResult<TilePack> Create(TilePack toCreate)
         {
             try
             {
-                //TODO add stripe price
-                var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl, null));
+                var created = _tilePackService.Create(toCreate);
                 return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return BadRequest(e.Message);
             }
         }
     }
