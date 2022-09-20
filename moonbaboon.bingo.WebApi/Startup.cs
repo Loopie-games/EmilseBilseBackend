@@ -136,6 +136,9 @@ namespace moonbaboon.bingo.WebApi
             });
 
             //Setting up dependency injection
+            //Database
+            services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
+            
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
@@ -144,6 +147,9 @@ namespace moonbaboon.bingo.WebApi
             services.AddScoped<IAuthService, AuthService>();
 
             //Tiles
+            services.AddScoped<ITileRepository, TileRepository>();
+            
+            //UserTiles
             services.AddScoped<IUserTileRepository, UserTileRepository>();
             services.AddScoped<IUserTileService, UserTileService>();
 
