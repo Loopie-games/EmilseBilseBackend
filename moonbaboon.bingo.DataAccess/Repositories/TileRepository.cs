@@ -6,7 +6,7 @@ using MySqlConnector;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
-    public class TileRepository:ITileRepository
+    public class TileRepository : ITileRepository
     {
         private readonly MySqlConnection _connection;
 
@@ -22,10 +22,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand("SELECT * FROM Tile", _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                tiles.Add(new Tile(reader));
-            }
+            while (reader.Read()) tiles.Add(new Tile(reader));
             return tiles;
         }
     }

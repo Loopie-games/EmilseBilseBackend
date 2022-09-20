@@ -75,7 +75,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 "SELECT * FROM Tile RIGHT JOIN PackTile on PackTile.TileId = Tile.Id"
                 , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())  list.Add(new Tile(reader.GetString(0), reader.GetString(1), null, TileType.PackTile));
+            while (await reader.ReadAsync())
+                list.Add(new Tile(reader.GetString(0), reader.GetString(1), null, TileType.PackTile));
 
             await _connection.CloseAsync();
             return list;
@@ -93,7 +94,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static PackTile ReaderToEnt(MySqlDataReader reader)
         {
             TilePack tilePack = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
-                reader.GetValue(4).ToString(),reader.GetValue(5).ToString());
+                reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
             PackTile packTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), tilePack);
             return packTile;
         }

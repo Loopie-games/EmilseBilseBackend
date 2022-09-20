@@ -27,12 +27,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                var tps= _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var tps = _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
                 var priceService = new PriceService();
                 List<TilePackDto> tpDtOs = new();
                 foreach (TilePack tp in tps)
                 {
-                    Price price = priceService.Get(tp.PriceStripe, null, null);
+                    Price price = priceService.Get(tp.PriceStripe);
                     tpDtOs.Add(new TilePackDto(tp) {Price = price.UnitAmount});
                 }
 

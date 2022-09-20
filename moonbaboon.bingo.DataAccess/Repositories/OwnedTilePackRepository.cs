@@ -44,7 +44,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             UserSimple owner = new(reader.GetString(0), reader.GetString(1), reader.GetString(2),
                 reader.GetValue(3).ToString());
-            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetValue(6).ToString(), reader.GetValue(7).ToString());
+            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetValue(6).ToString(),
+                reader.GetValue(7).ToString());
             return new OwnedTilePack(owner, tilePack);
         }
     }

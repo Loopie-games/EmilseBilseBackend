@@ -1,9 +1,4 @@
-﻿
-
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
-using MySqlConnector;
+﻿using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {
@@ -17,27 +12,16 @@ namespace moonbaboon.bingo.Core.Models
             TileType = tileType;
         }
 
-        public Tile(string? id, string action)
-        {
-            Id = id;
-            Action = action;
-            AddedBy = null;
-            TileType = null;
-        }
-
         public Tile(MySqlDataReader reader)
         {
             Id = reader.GetString("Id");
             Action = reader.GetString("Action");
-            AddedBy = null;
-            TileType = null;
         }
 
         public string? Id { get; set; }
         public string Action { get; set; }
         public string? AddedBy { get; }
         public TileType? TileType { get; }
-        
     }
 
     public enum TileType

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Globalization;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.Models;
 using Stripe;
@@ -9,7 +7,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class StripeController: ControllerBase
+    public class StripeController : ControllerBase
     {
         [Authorize(Roles = nameof(Admin))]
         [HttpPost(nameof(createProduct))]
@@ -21,7 +19,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             };
             var serviceProduct = new ProductService();
             Product product = serviceProduct.Create(optionsProduct);
-            
+
             var optionsPrice = new PriceCreateOptions
             {
                 UnitAmount = priceG,
@@ -41,8 +39,5 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
             return service.Get(priceId).UnitAmount ?? 0;
         }
-        
-        
     }
-    
 }

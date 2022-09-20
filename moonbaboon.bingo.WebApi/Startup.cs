@@ -36,7 +36,7 @@ namespace moonbaboon.bingo.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             StripeConfiguration.ApiKey = Configuration["Stripe:Key"];
-            
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,7 +73,7 @@ namespace moonbaboon.bingo.WebApi
                 };
             });
 
-            
+
             services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
             services.AddControllers();
             services.AddSwaggerGen(options =>
@@ -138,7 +138,7 @@ namespace moonbaboon.bingo.WebApi
             //Setting up dependency injection
             //Database
             services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
-            
+
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
@@ -149,7 +149,7 @@ namespace moonbaboon.bingo.WebApi
             //Tiles
             services.AddScoped<ITileRepository, TileRepository>();
             services.AddScoped<ITileService, TileService>();
-            
+
             //UserTiles
             services.AddScoped<IUserTileRepository, UserTileRepository>();
             services.AddScoped<IUserTileService, UserTileService>();
@@ -196,7 +196,7 @@ namespace moonbaboon.bingo.WebApi
 
             //Admin
             services.AddScoped<IAdminRepository, AdminRepository>();
-            
+
             //Stripe
             services.AddScoped<PriceService>();
         }
@@ -204,7 +204,6 @@ namespace moonbaboon.bingo.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
