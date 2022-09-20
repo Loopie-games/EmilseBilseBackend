@@ -64,5 +64,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [HttpGet(nameof(GetTilesUsedInPacks))]
+        public ActionResult<List<Tile>> GetTilesUsedInPacks()
+        {
+            return _packTileService.GetTilesUsedInPacks();
+        }
     }
 }

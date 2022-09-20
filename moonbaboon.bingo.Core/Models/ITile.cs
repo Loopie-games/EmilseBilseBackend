@@ -2,7 +2,7 @@
 {
     public class Tile
     {
-        public Tile(string? id, string action, string addedBy, TileType tileType)
+        public Tile(string? id, string action, string? addedBy, TileType tileType)
         {
             Id = id;
             Action = action;
@@ -12,7 +12,7 @@
 
         public string? Id { get; set; }
         public string Action { get; set; }
-        public string AddedBy { get; }
+        public string? AddedBy { get; }
         public TileType TileType { get; }
     }
 

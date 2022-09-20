@@ -66,6 +66,21 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent ?? throw new Exception("Error i creating packtile with Id: " + id);
         }
 
+        public async Task<List<Tile>> GetTilesUsedInPacks()
+        {
+            var list = new List<Tile>();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                "SELECT * FROM Tile RIGHT JOIN PackTile on PackTile.TileId = Tile.Id"
+                , _connection);
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())  list.Add(new Tile(reader.GetString(0), reader.GetString(1), null, TileType.PackTile));
+
+            await _connection.CloseAsync();
+            return list;
+        }
+
         private static string sql_select(string from)
         {
             return
