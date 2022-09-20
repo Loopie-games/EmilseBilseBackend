@@ -25,10 +25,10 @@ namespace moonbaboon.bingo.Core.Models
             TileType = null;
         }
 
-        public Tile(MySqlDataReader reader, IReadOnlyList<string>? names)
+        public Tile(MySqlDataReader reader)
         {
-            Id = reader.GetString(names?[0] ?? "Id");
-            Action = reader.GetString(names?[1] ?? "Action");
+            Id = reader.GetString("Id");
+            Action = reader.GetString("Action");
             AddedBy = null;
             TileType = null;
         }

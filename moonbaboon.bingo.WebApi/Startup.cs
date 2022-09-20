@@ -148,6 +148,7 @@ namespace moonbaboon.bingo.WebApi
 
             //Tiles
             services.AddScoped<ITileRepository, TileRepository>();
+            services.AddScoped<ITileService, TileService>();
             
             //UserTiles
             services.AddScoped<IUserTileRepository, UserTileRepository>();

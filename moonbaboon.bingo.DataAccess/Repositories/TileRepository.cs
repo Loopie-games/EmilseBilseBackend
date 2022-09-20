@@ -24,9 +24,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (reader.Read())
             {
-                tiles.Add(new Tile(reader, null));
+                tiles.Add(new Tile(reader));
             }
-
             return tiles;
         }
     }
