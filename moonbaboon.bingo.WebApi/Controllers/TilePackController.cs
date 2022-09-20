@@ -34,7 +34,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 List<TilePackDto> tpDtOs = new();
                 foreach (TilePack tp in tps)
                 {
-                    Console.WriteLine(tp.PriceStripe + "price");
                     Price price = priceService.Get(tp.PriceStripe, null, null);
                     tpDtOs.Add(new TilePackDto(tp) {Price = price.UnitAmount});
                 }
