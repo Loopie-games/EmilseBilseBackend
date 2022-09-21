@@ -86,7 +86,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}'); " +
+                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}', '{toCreate.PriceStripe ?? ""}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'"
                 , _connection);
