@@ -4,25 +4,20 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class PackTile : Tile
     {
-        public PackTile(string? id, string action, TilePack pack) : base(id, action, pack.Name, Models.TileType.PackTile)
+        public PackTile(Tile tile, TilePack pack) : base(tile.Id, tile.Action, pack.Name, Models.TileType.PackTile)
         {
-            Id = id;
-            Action = action;
+            Tile = tile;
             Pack = pack;
         }
 
         public PackTile(MySqlDataReader reader) : base(reader.GetString("TileId"), reader.GetString("TileAction"), reader.GetString("TilePackName"), Models.TileType.PackTile)
         {
-            Id = reader.GetString("TileID");
-            Action = reader.GetString("TileAction");
             Pack = new TilePack(reader.GetString("TilePackId"), reader.GetString("TilePackName"),
                 reader.GetString("TilePackPic"), reader.GetString("TilePackPrice"));
-
+            Tile = new Tile(reader.GetString("TileID"), reader.GetString("TileAction"), Pack.Name, Models.TileType.PackTile);
         }
 
-        
-        public string? Id { get; set; }
-        public string Action { get; set; }
+        public Tile Tile { get; set; }
         public TilePack Pack { get; set; }
     }
 
