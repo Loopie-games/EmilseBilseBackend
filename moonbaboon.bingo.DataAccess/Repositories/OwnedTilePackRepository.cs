@@ -34,7 +34,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             return
                 $"SELECT U.{DbStrings.Id}, U.{DbStrings.Username}, U.{DbStrings.Nickname}, U.{DbStrings.ProfilePic}," +
-                $"TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl} " +
+                $"TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl}, TP.{DbStrings.PriceStripe} " +
                 $"FROM {from} " +
                 $"JOIN {DbStrings.UserTable} AS U ON {Table}.{DbStrings.OwnerId} = U.{DbStrings.Id} " +
                 $"JOIN {DbStrings.TilePackTable} AS TP On {Table}.{DbStrings.TilePackId} = TP.{DbStrings.Id} ";
@@ -44,7 +44,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             UserSimple owner = new(reader.GetString(0), reader.GetString(1), reader.GetString(2),
                 reader.GetValue(3).ToString());
-            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetValue(6).ToString());
+            TilePack tilePack = new(reader.GetString(4), reader.GetString(5), reader.GetValue(6).ToString(),
+                reader.GetValue(7).ToString());
             return new OwnedTilePack(owner, tilePack);
         }
     }

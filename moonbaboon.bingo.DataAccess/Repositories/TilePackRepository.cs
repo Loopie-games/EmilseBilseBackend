@@ -16,7 +16,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             var list = new List<TilePack>();
             await _connection.OpenAsync();
-            await using var command = new MySqlCommand($"SELECT * FROM `{DbStrings.TilePackTable}`", _connection);
+            await using var command = new MySqlCommand(sql_select(Table), _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             var list = new List<TilePack>();
             await _connection.OpenAsync();
             await using var command = new MySqlCommand(
-                "SELECT TilePack.Id, TilePack.Name, TilePack.PicUrl, " +
+                $"SELECT TilePack.Id, TilePack.Name, TilePack.PicUrl, {DbStrings.PriceStripe}, " +
                 "CASE WHEN OwnedTilePack.OwnerId is Null THEN '0' ELSE '1' END as Owned " +
                 "FROM TilePack " +
                 $"LEFT JOIN OwnedTilePack ON OwnedTilePack.TilePackId = TilePack.Id && OwnedTilePack.OwnerId = '{userId}' ",
@@ -42,7 +42,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             while (await reader.ReadAsync())
             {
                 var ent = ReaderToEnt(reader);
-                ent.IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(3)));
+                ent.IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(4)));
                 list.Add(ent);
             }
 
@@ -86,7 +86,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}'); " +
+                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}', '{toCreate.PriceStripe ?? ""}'); " +
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.Id} = '{uuid}'"
                 , _connection);
@@ -100,7 +100,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         private static TilePack ReaderToEnt(MySqlDataReader reader)
         {
             return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
-                reader.GetValue(2).ToString());
+                reader.GetValue(2).ToString(), reader.GetValue(3).ToString());
         }
 
         private static string sql_select(string from)

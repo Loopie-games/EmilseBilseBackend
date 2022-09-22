@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
+using Stripe;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -26,19 +28,28 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var tps = _tilePackService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var priceService = new PriceService();
+                List<TilePackDto> tpDtOs = new();
+                foreach (TilePack tp in tps)
+                {
+                    Price price = priceService.Get(tp.PriceStripe);
+                    tpDtOs.Add(new TilePackDto(tp) {Price = price.UnitAmount});
+                }
+
+                return Ok(tpDtOs);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return BadRequest(e.Message);
             }
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<TilePack> GetById(string id)
+        public ActionResult<TilePack> GetById([Required, StringLength(50, MinimumLength = 36)]string id)
         {
             try
             {
@@ -57,20 +68,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        [HttpPost(nameof(Create))]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePack))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<TilePack> Create(NewTilePackDto toCreate)
+        public ActionResult<TilePack> Create(TilePack toCreate)
         {
             try
             {
-                var created = _tilePackService.Create(new TilePack(null, toCreate.Name, toCreate.PicUrl));
+                var created = _tilePackService.Create(toCreate);
                 return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return BadRequest(e.Message);
             }
         }
     }

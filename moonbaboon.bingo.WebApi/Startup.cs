@@ -15,6 +15,7 @@ using moonbaboon.bingo.Domain.IRepositories;
 using moonbaboon.bingo.Domain.Services;
 using moonbaboon.bingo.WebApi.SignalR;
 using MySqlConnector;
+using Stripe;
 
 namespace moonbaboon.bingo.WebApi
 {
@@ -34,6 +35,8 @@ namespace moonbaboon.bingo.WebApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            StripeConfiguration.ApiKey = Configuration["Stripe:Key"];
+
             services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -133,6 +136,9 @@ namespace moonbaboon.bingo.WebApi
             });
 
             //Setting up dependency injection
+            //Database
+            services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
+
             //Users
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
@@ -141,6 +147,10 @@ namespace moonbaboon.bingo.WebApi
             services.AddScoped<IAuthService, AuthService>();
 
             //Tiles
+            services.AddScoped<ITileRepository, TileRepository>();
+            services.AddScoped<ITileService, TileService>();
+
+            //UserTiles
             services.AddScoped<IUserTileRepository, UserTileRepository>();
             services.AddScoped<IUserTileService, UserTileService>();
 
@@ -186,6 +196,9 @@ namespace moonbaboon.bingo.WebApi
 
             //Admin
             services.AddScoped<IAdminRepository, AdminRepository>();
+
+            //Stripe
+            services.AddScoped<PriceService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

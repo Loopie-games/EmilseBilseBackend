@@ -12,6 +12,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="6.0.8"/>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7"/>
         <PackageReference Include="MySqlConnector" Version="2.1.11"/>
+        <PackageReference Include="Stripe.net" Version="40.9.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
     </ItemGroup>
 

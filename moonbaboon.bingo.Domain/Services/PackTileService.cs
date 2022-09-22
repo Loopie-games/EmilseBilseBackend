@@ -31,5 +31,15 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _packTileRepository.GetById(id).Result;
         }
+
+        public List<Tile> GetTilesUsedInPacks()
+        {
+            return _packTileRepository.GetTilesUsedInPacks().Result;
+        }
+
+        public PackTile AddToPack(PackTileEntity pt)
+        {
+            return _packTileRepository.AddToPack(pt).Result;
+        }
     }
 }
