@@ -9,7 +9,7 @@ using moonbaboon.bingo.WebApi.DTOs;
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
-    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
+    [Route("[controller]")]
     public class PackTileController : ControllerBase
     {
         private readonly IPackTileService _packTileService;
@@ -34,10 +34,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
         
-        
-
-
-        [HttpGet(nameof(GetByPackId) + "{packId}")]
+        [HttpGet(nameof(GetByPackId)+"/{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<List<PackTile>> GetByPackId(string packId)
@@ -48,6 +45,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.Write(e);
                 return NotFound(e.Message);
             }
         }
@@ -64,6 +62,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                return BadRequest(e.Message);
+            }
+        }
+
+        [HttpDelete(nameof(ClearPack))]
+        public ActionResult<bool> ClearPack(string id)
+        {
+            try
+            {
+                return _packTileService.Clear(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
@@ -89,8 +101,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        [HttpGet(nameof(GetPackTile))]
-        [Route("{pt}")]
+        [HttpGet(nameof(GetPackTile)+"/{pt}")]
         public ActionResult<PackTile> GetPackTile(PackTileEntity pt)
         {
             try

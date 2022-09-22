@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -89,10 +87,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
 
                 await using var reader = await command.ExecuteReaderAsync();
-                while (reader.Read())
-                { 
-                    return new PackTile(reader);
-                }
+                while (reader.Read()) return new PackTile(reader);
                 await con.CloseAsync();
             }
 
@@ -127,9 +122,22 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
                 }
                 command.ExecuteNonQuery();
-                //await con.CloseAsync();
             }
             return pt;
+        }
+
+        public async Task<bool> Clear(string id)
+        {
+            await using var con = _connection;
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new("DELETE FROM PackTile WHERE PackId = @packId;", con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
+                }
+                return command.ExecuteNonQuery() > 0;
+            }
         }
 
         private static string sql_select(string from)

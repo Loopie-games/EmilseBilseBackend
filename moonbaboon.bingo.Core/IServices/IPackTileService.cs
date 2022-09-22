@@ -11,5 +11,6 @@ namespace moonbaboon.bingo.Core.IServices
         public PackTile GetById(string id);
         public List<Tile> GetTilesUsedInPacks();
         public PackTileEntity AddToPack(PackTileEntity pt);
+        public bool Clear(string id);
     }
 }
