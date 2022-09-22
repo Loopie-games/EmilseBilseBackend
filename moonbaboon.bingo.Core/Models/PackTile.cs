@@ -20,9 +20,9 @@ namespace moonbaboon.bingo.Core.Models
 
         }
 
+        
         public string? Id { get; set; }
         public string Action { get; set; }
-        public new string AddedBy => Pack.Name;
         public TilePack Pack { get; set; }
     }
 
