@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -9,7 +10,7 @@ using moonbaboon.bingo.WebApi.DTOs;
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
     public class PackTileController : ControllerBase
     {
         private readonly IPackTileService _packTileService;
@@ -69,6 +70,32 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<List<Tile>> GetTilesUsedInPacks()
         {
             return _packTileService.GetTilesUsedInPacks();
+        }
+
+        [HttpPost(nameof(AddToTilePack))]
+        public ActionResult<PackTile> AddToTilePack(PackTileEntity pt)
+        {
+            try
+            {
+                return _packTileService.AddToPack(pt);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return BadRequest();
+            }
+        }
+        
+        public class AddTilesToPackDto
+        {
+            public AddTilesToPackDto(string[] toAdd, string packId)
+            {
+                ToAdd = toAdd;
+                PackId = packId;
+            }
+
+            public string[] ToAdd { get; set; }
+            public string PackId { get; set; }
         }
     }
 }
