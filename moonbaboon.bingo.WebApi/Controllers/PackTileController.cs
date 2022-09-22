@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -34,8 +33,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        
 
-        [HttpGet(nameof(GetByPackId) + "/{packId}")]
+
+        [HttpGet(nameof(GetByPackId) + "{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<List<PackTile>> GetByPackId(string packId)
@@ -77,7 +79,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _packTileService.AddToPack(pt);
+                var created = _packTileService.AddToPack(pt);
+                return CreatedAtAction(nameof(GetPackTile), new{created.TileId, created.PackId}, created);
             }
             catch (Exception e)
             {
@@ -85,17 +88,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest();
             }
         }
-        
-        public class AddTilesToPackDto
-        {
-            public AddTilesToPackDto(string[] toAdd, string packId)
-            {
-                ToAdd = toAdd;
-                PackId = packId;
-            }
 
-            public string[] ToAdd { get; set; }
-            public string PackId { get; set; }
+        [HttpGet(nameof(GetPackTile))]
+        [Route("{pt}")]
+        public ActionResult<PackTile> GetPackTile(PackTileEntity pt)
+        {
+            try
+            {
+                return Ok(_packTileService.GetPackTile(pt));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return NotFound(e.Message);
+            }
         }
     }
 }

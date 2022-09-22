@@ -21,6 +21,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _packTileRepository.GetByPackId(packId).Result;
         }
 
+        public PackTile GetPackTile(PackTileEntity pt)
+        {
+            return _packTileRepository.GetPackTile(pt).Result;
+        }
+
         public PackTile Create(string action, string packId)
         {
             var pack = _tilePackRepository.FindById(packId).Result;
@@ -37,7 +42,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _packTileRepository.GetTilesUsedInPacks().Result;
         }
 
-        public PackTile AddToPack(PackTileEntity pt)
+        public PackTileEntity AddToPack(PackTileEntity pt)
         {
             return _packTileRepository.AddToPack(pt).Result;
         }

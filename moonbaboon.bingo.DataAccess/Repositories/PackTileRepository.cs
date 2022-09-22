@@ -115,7 +115,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public async Task<PackTile> AddToPack(PackTileEntity pt)
+        public async Task<PackTileEntity> AddToPack(PackTileEntity pt)
         {
             await using var con = _connection;
             {
@@ -127,9 +127,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
                 }
                 command.ExecuteNonQuery();
-                await con.CloseAsync();
+                //await con.CloseAsync();
             }
-            return await GetPackTile(pt);
+            return pt;
         }
 
         private static string sql_select(string from)
