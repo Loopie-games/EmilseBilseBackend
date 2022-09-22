@@ -129,7 +129,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             TilePack tilePack = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
                 reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
-            PackTile packTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), tilePack);
+            PackTile packTile = new(new Tile(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), null, TileType.PackTile), tilePack);
             return packTile;
         }
     }

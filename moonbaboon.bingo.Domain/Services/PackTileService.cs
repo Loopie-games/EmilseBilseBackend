@@ -24,7 +24,7 @@ namespace moonbaboon.bingo.Domain.Services
         public PackTile Create(string action, string packId)
         {
             var pack = _tilePackRepository.FindById(packId).Result;
-            return _packTileRepository.Create(new PackTile(null, action, pack)).Result;
+            return _packTileRepository.Create(new PackTile(new Tile(null, action, null, TileType.PackTile), pack)).Result;
         }
 
         public PackTile GetById(string id)
