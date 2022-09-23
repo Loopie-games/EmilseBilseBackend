@@ -83,7 +83,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                     return BadRequest($"Username '{user.Username}' is already in use.");
 
                 var u = _userService.CreateUser(user);
-                return CreatedAtAction(nameof(GetById), new {id = u.Id}, u);
+                return CreatedAtAction(nameof(GetById), new { id = u.Id }, u);
             }
             catch (Exception e)
             {
@@ -104,6 +104,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<UserSimple> UpdateUser(string id, User user) {
+
+            if (id != user.Id)
+                return BadRequest("User ID mismatch...");
+
+            UserSimple res = _userService.UpdateUser(id, user);
+
+
+            return Ok(res);
         }
     }
 }

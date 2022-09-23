@@ -152,5 +152,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     reader.GetString(2), reader.GetValue(3).ToString());
             return ent;
         }
+
+        public async Task<UserSimple> UpdateUser(string id, User user)
+        {
+
+            await _connection.OpenAsync();
+
+            string query = $"UPDATE {DbStrings.UserTable} SET " +
+                             $"{DbStrings.Username} = '{user.Username}', " +
+                             $"{DbStrings.Nickname} = '{user.Nickname}', " +
+                             $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' " +
+                             $"WHERE {DbStrings.Id} = '{user.Id}'";
+
+            await using var command = new MySqlCommand(query,
+                _connection);
+
+            await using var reader = await command.ExecuteReaderAsync();
+            await _connection.CloseAsync();
+
+            return new UserSimple(user.Id,user.Username,user.Nickname,user.ProfilePicUrl);
+        }
     }
 }

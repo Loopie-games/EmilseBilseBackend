@@ -47,5 +47,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _userRepository.GetSalt(username).Result;
         }
+
+        public UserSimple UpdateUser(string id, User user)
+        {
+            return _userRepository.UpdateUser(id, user).Result;
+        }
     }
 }
