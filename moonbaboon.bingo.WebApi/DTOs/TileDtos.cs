@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.DTOs
@@ -44,6 +45,11 @@ namespace moonbaboon.bingo.WebApi.DTOs
 
     public class TilePackDto
     {
+        [JsonConstructor]
+        public TilePackDto(string name)
+        {
+            Name = name;
+        }
         public TilePackDto(TilePack tp)
         {
             Id = tp.Id;
@@ -57,5 +63,10 @@ namespace moonbaboon.bingo.WebApi.DTOs
         public string? PicUrl { get; set; }
         public bool? IsOwned { get; set; }
         public long? Price { get; set; }
+
+        public TilePack ToTilePack()
+        {
+            return new TilePack(Id, Name, PicUrl, null);
+        }
     }
 }

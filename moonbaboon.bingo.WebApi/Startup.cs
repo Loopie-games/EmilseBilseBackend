@@ -199,6 +199,7 @@ namespace moonbaboon.bingo.WebApi
 
             //Stripe
             services.AddScoped<PriceService>();
+            services.AddScoped<ProductService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -44,5 +44,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _tilePackRepository.Create(toCreate).Result;
         }
+
+        public void Update(TilePack toUpdate)
+        {
+            _tilePackRepository.Update(toUpdate);
+        }
     }
 }
