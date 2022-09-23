@@ -18,6 +18,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             _packTileService = packTileService;
         }
+        
+        /*
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
@@ -33,6 +35,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+        */
         
         [HttpGet(nameof(GetByPackId)+"/{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
@@ -49,7 +52,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return NotFound(e.Message);
             }
         }
-
+        /*
         [HttpPost(nameof(Create))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -58,13 +61,16 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var created = _packTileService.Create(toCreate.Action, toCreate.PackId);
-                return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
+                if (created.Tile.Id != null && created.Pack.Id != null)
+                    return CreatedAtAction(nameof(GetPackTile), new {TileId = created.Tile.Id, PackId = created.Pack.Id}, created);
+                return BadRequest("Error in creating pack tile");
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
         }
+        */
 
         [HttpDelete(nameof(ClearPack))]
         public ActionResult<bool> ClearPack(string id)
@@ -101,7 +107,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        [HttpGet(nameof(GetPackTile)+"/{pt}")]
+        [HttpGet(nameof(GetPackTile))]
+        [Route("{pt}")]
         public ActionResult<PackTile> GetPackTile(PackTileEntity pt)
         {
             try
