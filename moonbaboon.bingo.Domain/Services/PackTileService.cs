@@ -8,22 +8,15 @@ namespace moonbaboon.bingo.Domain.Services
     public class PackTileService : IPackTileService
     {
         private readonly IPackTileRepository _packTileRepository;
-        private readonly ITilePackRepository _tilePackRepository;
 
-        public PackTileService(IPackTileRepository packTileRepository, ITilePackRepository tilePackRepository)
+        public PackTileService(IPackTileRepository packTileRepository)
         {
             _packTileRepository = packTileRepository;
-            _tilePackRepository = tilePackRepository;
         }
 
         public List<PackTile> GetByPackId(string packId)
         {
             return _packTileRepository.GetByPackId(packId).Result;
-        }
-
-        public PackTile GetPackTile(PackTileEntity pt)
-        {
-            return _packTileRepository.GetPackTile(pt).Result;
         }
 
         public PackTile GetById(string id)

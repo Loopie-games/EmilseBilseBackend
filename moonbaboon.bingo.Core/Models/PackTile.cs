@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.Core.Models
             PackId = packId;
         }
 
-        public string Id { get; set; }
+        public string? Id { get; set; }
         public string TileId { get; set; }
         public string PackId { get; set; }
         

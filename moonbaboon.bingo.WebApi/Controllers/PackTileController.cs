@@ -82,22 +82,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             catch (Exception e)
             {
                 Console.Write(e);
-                return BadRequest();
-            }
-        }
-
-        [HttpGet(nameof(GetPackTile))]
-        [Route("{pt}")]
-        protected ActionResult<PackTile> GetPackTile(PackTileEntity pt)
-        {
-            try
-            {
-                return Ok(_packTileService.GetPackTile(pt));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return NotFound(e.Message);
+                return BadRequest(e.Message);
             }
         }
     }

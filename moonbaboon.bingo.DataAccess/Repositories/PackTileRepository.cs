@@ -9,7 +9,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class PackTileRepository : IPackTileRepository
     {
-        private const string Table = DbStrings.PackTileTable;
         private readonly MySqlConnection _connection;
 
         public PackTileRepository(MySqlConnection connection)
@@ -38,10 +37,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
 
                 await using var reader = await command.ExecuteReaderAsync();
-                while (reader.Read())
-                {
-                    list.Add(new PackTile(reader));
-                }
+                while (reader.Read()) list.Add(new PackTile(reader));
+
                 await con.CloseAsync();
             }
             return list;
@@ -74,29 +71,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             throw new Exception($"No {nameof(PackTile)} with id: {id}");
         }
 
-        public async Task<PackTile> GetPackTile(PackTileEntity pt)
-        {
-            await using var con = _connection;
-            {
-                con.Open();
-
-                await using MySqlCommand command =
-                    new(
-                        "SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice FROM PackTile JOIN Tile T on PackTile.TileId = T.Id JOIN TilePack TP on TP.Id = PackTile.PackId WHERE TileId = @tileId AND PackId=@packId",
-                        con);
-                {
-                    command.Parameters.Add("@tileId", MySqlDbType.VarChar).Value = pt.TileId;
-                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
-                }
-
-                await using var reader = await command.ExecuteReaderAsync();
-                while (reader.Read()) return new PackTile(reader);
-                await con.CloseAsync();
-            }
-
-            throw new Exception("Error in " + nameof(GetPackTile));
-        }
-
         public async Task<List<Tile>> GetTilesUsedInPacks()
         {
             var list = new List<Tile>();
@@ -115,6 +89,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<PackTileEntity> Create(PackTileEntity pt)
         {
+            pt.Id = Guid.NewGuid().ToString();
             await using var con = _connection;
             {
                 con.Open();
@@ -126,6 +101,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
                 }
                 command.ExecuteNonQuery();
+                
             }
             return pt;
         }
@@ -142,26 +118,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
                 return command.ExecuteNonQuery() > 0;
             }
-        }
-
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {DbStrings.Id} As PackTileId T.{DbStrings.Id}, T.{DbStrings.Action}, TP.{DbStrings.Id}, TP.{DbStrings.Name}, TP.{DbStrings.PicUrl}, TP.{DbStrings.PriceStripe} " +
-                $"FROM {from} " +
-                $"JOIN {DbStrings.TileTable} AS T ON {Table}.{DbStrings.TileId} = T.{DbStrings.Id} " +
-                $"JOIN {DbStrings.TilePackTable} AS TP On {Table}.{DbStrings.PackId} = TP.{DbStrings.Id} ";
-        }
-
-        private static PackTile ReaderToEnt(MySqlDataReader reader)
-        {
-            TilePack tilePack = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(),
-                reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
-            PackTile packTile =
-                new(reader.GetString(0),
-                    new Tile(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), null, TileType.PackTile),
-                    tilePack);
-            return packTile;
         }
     }
 }
