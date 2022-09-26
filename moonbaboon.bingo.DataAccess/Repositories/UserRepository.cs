@@ -158,10 +158,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.OpenAsync();
 
-            string query = $"UPDATE {DbStrings.UserTable} SET " +
-                             $"{DbStrings.Username} = '{user.Username}', " +
-                             $"{DbStrings.Nickname} = '{user.Nickname}', " +
-                             $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' " +
+            string query = $"UPDATE {DbStrings.UserTable} SET "                     +
+                             $"{DbStrings.Username} = '{user.Username}', "          +
+                             $"{DbStrings.Nickname} = '{user.Nickname}', "          +
+                             $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' "    +
                              $"WHERE {DbStrings.Id} = '{user.Id}'";
 
             await using var command = new MySqlCommand(query,
