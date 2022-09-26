@@ -66,6 +66,9 @@ namespace moonbaboon.bingo.Domain.Services
                 {
                     //Create board for player
                     var board = _boardRepository.Create(player.User.Id, game.Id).Result;
+                    
+                    //get tiles from activated Packs
+                    //List<BoardTile> boardTilesPack = _ 
 
                     //get tiles about other players
                     List<BoardTile> boardTiles = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
