@@ -109,7 +109,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [HttpGet(nameof(GetPackTile))]
         [Route("{pt}")]
-        public ActionResult<PackTile> GetPackTile(PackTileEntity pt)
+        protected ActionResult<PackTile> GetPackTile(PackTileEntity pt)
         {
             try
             {

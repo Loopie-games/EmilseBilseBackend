@@ -97,23 +97,36 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent ?? throw new Exception($"Error i creating {Table} with name: " + toCreate.Name);
         }
 
-        public async void Update(TilePack toUpdate)
+        public async Task Update(TilePack toUpdate)
         {
-           await using var con = _connection;
-           {
-               con.Open();
-               await using MySqlCommand command =
-                   new(
-                       "UPDATE TilePack SET Name = @name, PicUrl = @picUrl, Stripe_PRICE = @stripe WHERE Id = @packId;",
-                       con);
-               {
-                   command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = toUpdate.Id;
-                   command.Parameters.Add("@name", MySqlDbType.VarChar).Value = toUpdate.Name;
-                   command.Parameters.Add("@picUrl", MySqlDbType.VarChar).Value = toUpdate.PicUrl;
-                   command.Parameters.Add("@stripe", MySqlDbType.VarChar).Value = toUpdate.PriceStripe;
-               }
-               command.ExecuteNonQuery();
-           }
+            await using var con = _connection;
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new(
+                        "UPDATE TilePack SET Name = @name, PicUrl = @picUrl, Stripe_PRICE = @stripe WHERE Id = @packId;",
+                        con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = toUpdate.Id;
+                    command.Parameters.Add("@name", MySqlDbType.VarChar).Value = toUpdate.Name;
+                    command.Parameters.Add("@picUrl", MySqlDbType.VarChar).Value = toUpdate.PicUrl;
+                    command.Parameters.Add("@stripe", MySqlDbType.VarChar).Value = toUpdate.PriceStripe;
+                }
+                command.ExecuteNonQuery();
+            }
+        }
+
+        public async Task Delete(string id)
+        {
+            await using var con = _connection;
+            {
+                con.Open();
+                await using MySqlCommand command = new("DELETE FROM TilePack WHERE Id = @packId", con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
+                }
+                command.ExecuteNonQuery();
+            }
         }
 
         private static TilePack ReaderToEnt(MySqlDataReader reader)

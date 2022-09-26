@@ -10,5 +10,6 @@ namespace moonbaboon.bingo.Core.IServices
         public TilePack GetDefault();
         public TilePack Create(TilePack toCreate);
         public void Update(TilePack toUpdate);
+        public void Delete(string packId);
     }
 }

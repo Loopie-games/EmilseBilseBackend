@@ -55,6 +55,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
+        
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TilePackDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -76,6 +77,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return NotFound(e.Message);
             }
         }
+        
 
         [HttpGet(nameof(GetDefault))]
         public ActionResult<TilePack> GetDefault()
@@ -148,6 +150,22 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 _tilePackService.Update(updated);
 
 
+                return NoContent();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete]
+        public ActionResult Delete(string packId)
+        {
+            try
+            {
+                _tilePackService.Delete(packId);
                 return NoContent();
             }
             catch (Exception e)

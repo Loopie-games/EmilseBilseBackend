@@ -47,7 +47,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public void Update(TilePack toUpdate)
         {
-            _tilePackRepository.Update(toUpdate);
+            _tilePackRepository.Update(toUpdate).Wait();
+        }
+
+        public void Delete(string packId)
+        {
+            _tilePackRepository.Delete(packId).Wait();
         }
     }
 }
