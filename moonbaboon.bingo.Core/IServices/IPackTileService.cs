@@ -7,10 +7,9 @@ namespace moonbaboon.bingo.Core.IServices
     {
         public List<PackTile> GetByPackId(string packId);
         public PackTile GetPackTile(PackTileEntity pt);
-        public PackTile Create(string Action, string packId);
         public PackTile GetById(string id);
         public List<Tile> GetTilesUsedInPacks();
-        public PackTileEntity AddToPack(PackTileEntity pt);
+        public PackTileEntity Create(PackTileEntity pt);
         public bool Clear(string id);
     }
 }
