@@ -8,23 +8,15 @@ namespace moonbaboon.bingo.Domain.Services
     public class PackTileService : IPackTileService
     {
         private readonly IPackTileRepository _packTileRepository;
-        private readonly ITilePackRepository _tilePackRepository;
 
-        public PackTileService(IPackTileRepository packTileRepository, ITilePackRepository tilePackRepository)
+        public PackTileService(IPackTileRepository packTileRepository)
         {
             _packTileRepository = packTileRepository;
-            _tilePackRepository = tilePackRepository;
         }
 
         public List<PackTile> GetByPackId(string packId)
         {
             return _packTileRepository.GetByPackId(packId).Result;
-        }
-
-        public PackTile Create(string action, string packId)
-        {
-            var pack = _tilePackRepository.FindById(packId).Result;
-            return _packTileRepository.Create(new PackTile(new Tile(null, action, null, TileType.PackTile), pack)).Result;
         }
 
         public PackTile GetById(string id)
@@ -37,9 +29,14 @@ namespace moonbaboon.bingo.Domain.Services
             return _packTileRepository.GetTilesUsedInPacks().Result;
         }
 
-        public PackTile AddToPack(PackTileEntity pt)
+        public PackTileEntity Create(PackTileEntity pt)
         {
-            return _packTileRepository.AddToPack(pt).Result;
+            return _packTileRepository.Create(pt).Result;
+        }
+
+        public bool Clear(string id)
+        {
+            return _packTileRepository.Clear(id).Result;
         }
     }
 }

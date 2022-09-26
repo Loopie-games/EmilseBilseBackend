@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
-    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
+    [Route("[controller]")]
     public class PackTileController : ControllerBase
     {
         private readonly IPackTileService _packTileService;
@@ -31,6 +29,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
@@ -46,22 +45,21 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.Write(e);
                 return NotFound(e.Message);
             }
         }
 
-        [HttpPost(nameof(Create))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PackTile))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<PackTile> Create(NewPackTileDto toCreate)
+        [HttpDelete(nameof(ClearPack))]
+        public ActionResult<bool> ClearPack(string id)
         {
             try
             {
-                var created = _packTileService.Create(toCreate.Action, toCreate.PackId);
-                return CreatedAtAction(nameof(GetById), new {id = created.Id}, created);
+                return _packTileService.Clear(id);
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
@@ -77,25 +75,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _packTileService.AddToPack(pt);
+                var created = _packTileService.Create(pt);
+                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
             }
             catch (Exception e)
             {
                 Console.Write(e);
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-        }
-        
-        public class AddTilesToPackDto
-        {
-            public AddTilesToPackDto(string[] toAdd, string packId)
-            {
-                ToAdd = toAdd;
-                PackId = packId;
-            }
-
-            public string[] ToAdd { get; set; }
-            public string PackId { get; set; }
         }
     }
 }

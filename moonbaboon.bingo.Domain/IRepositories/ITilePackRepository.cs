@@ -11,5 +11,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<TilePack> FindDefault();
         public Task<TilePack> FindById(string packId);
         public Task<TilePack> Create(TilePack toCreate);
+        public Task Update(TilePack toUpdate);
+        public Task Delete(string id);
     }
 }
