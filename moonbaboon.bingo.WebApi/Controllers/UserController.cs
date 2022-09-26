@@ -107,7 +107,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<UserSimple> UpdateUser(string id, User user) {
+        public ActionResult<UserSimple> UpdateUser(string id, UserSimple user) {
 
             if (id != user.Id)
                 return BadRequest("User ID mismatch...");

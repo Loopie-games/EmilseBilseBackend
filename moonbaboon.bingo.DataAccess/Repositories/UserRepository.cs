@@ -153,7 +153,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        public async Task<UserSimple> UpdateUser(string id, User user)
+        public async Task<UserSimple> UpdateUser(string id, UserSimple user)
         {
 
             await _connection.OpenAsync();
