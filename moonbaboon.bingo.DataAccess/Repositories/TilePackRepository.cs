@@ -49,6 +49,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return list;
         }
+        
+        public async Task<List<TilePack>> GetOwnedTilePacks(string userId)
+        {
+            var list = new List<TilePack>();
+            await _connection.OpenAsync();
+
+            await using MySqlCommand command = new(
+                "SELECT TilePack.Id AS TilePackId, TilePack.Name AS TilePackName, TilePack.PicUrl AS TilePackPic, TilePack.Stripe_PRICE AS TilePackStripe FROM `TilePack` JOIN OwnedTilePack ON TilePack.Id = OwnedTilePack.TilePackId WHERE OwnedTilePack.OwnerId = @ownerId;"
+                , _connection);
+            {
+                command.Parameters.Add("@ownerId", MySqlDbType.VarChar).Value = userId;
+            }
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+                list.Add(new TilePack(reader));
+
+            await _connection.CloseAsync();
+            return list;
+        }
 
         public async Task<TilePack> FindDefault()
         {

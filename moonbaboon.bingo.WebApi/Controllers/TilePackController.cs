@@ -55,6 +55,21 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet(nameof(GetOwned))]
+        public ActionResult<List<TilePack>> GetOwned()
+        {
+            try
+            {
+                return Ok(_tilePackService.GetOwned(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TilePackDto))]
