@@ -6,34 +6,32 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class FriendshipController: ControllerBase
+    public class FriendshipController : ControllerBase
     {
-
         private readonly IFriendshipService _friendshipService;
 
         public FriendshipController(IFriendshipService friendshipService)
         {
             _friendshipService = friendshipService;
         }
-        
+
         [HttpGet]
         public ActionResult<List<Friendship>> GetAll()
         {
             return Ok(_friendshipService.GetAll());
         }
-        
+
         [HttpGet(nameof(GetFriendsByUserId))]
         public ActionResult<List<Friend>> GetFriendsByUserId(string userId)
         {
-            return Ok(_friendshipService.GetFriendsByUserId(userId) );
+            return Ok(_friendshipService.GetFriendsByUserId(userId));
         }
-        
+
         [Authorize]
         [HttpGet(nameof(SearchUsers) + "/{searchStr}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
@@ -41,13 +39,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<List<Friend>> SearchUsers(string searchStr)
         {
             if (searchStr.Length > 2)
-            {
-                return Ok(_friendshipService.SearchUsers(searchStr, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
-            }
-            else
-            {
-                return BadRequest("use at last 3 characters in your search");
-            }
+                return Ok(_friendshipService.SearchUsers(searchStr,
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+            return BadRequest("use at last 3 characters in your search");
         }
 
         [Authorize]
@@ -56,7 +50,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return Ok(_friendshipService.SendFriendRequest(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId));
+                return Ok(_friendshipService.SendFriendRequest(
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, toUserId));
             }
             catch (Exception e)
             {
@@ -81,7 +76,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 return _friendshipService.AcceptFriendRequest(friendshipId,
-                                                                HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             }
             catch (Exception e)
             {

@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BoardTileController: ControllerBase
+    public class BoardTileController : ControllerBase
     {
-        private readonly IBoardTileService _boardTileService;
-        private readonly IUserTileService _userTileService;
         private readonly IBoardService _boardService;
+        private readonly IBoardTileService _boardTileService;
 
-        public BoardTileController(IBoardTileService boardTileService, IUserTileService userTileService, IBoardService boardService)
+        public BoardTileController(IBoardTileService boardTileService, IBoardService boardService)
         {
             _boardTileService = boardTileService;
-            _userTileService = userTileService;
             _boardService = boardService;
         }
 
@@ -29,16 +25,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _boardTileService.GetById(id);
         }
-        
+
+
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
         public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
             var boardTiles = _boardTileService.GetByBoardId(id);
-            
-
             return boardTiles;
         }
-        
+
         [Authorize]
         [HttpGet(nameof(GetByGameId) + "/{gameId}")]
         public ActionResult<List<BoardTile>> GetByGameId(string gameId)

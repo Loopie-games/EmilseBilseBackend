@@ -7,90 +7,116 @@ using MySqlConnector;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
-    public class PackTileRepository: IPackTileRepository
+    public class PackTileRepository : IPackTileRepository
     {
-        private readonly MySqlConnection _connection = new(DBStrings.SqLconnection);
+        private readonly MySqlConnection _connection;
 
-        private const string Table = DBStrings.PackTileTable;
+        public PackTileRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT T.{DBStrings.Id}, T.{DBStrings.Action}, TP.{DBStrings.Id}, TP.{DBStrings.Name}, TP.{DBStrings.PicUrl} " +
-                $"FROM {from} " +
-                $"JOIN {DBStrings.TileTable} AS T ON {Table}.{DBStrings.TileId} = T.{DBStrings.Id} " +
-                $"JOIN {DBStrings.TilePackTable} AS TP On {Table}.{DBStrings.PackId} = TP.{DBStrings.Id} ";
-        }
-        
-        private static PackTile ReaderToEnt(MySqlDataReader reader)
-        {
-            TilePack tilePack = new(reader.GetValue(2).ToString(), reader.GetValue(3).ToString(), reader.GetValue(4).ToString());
-            PackTile packTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), tilePack);
-            return packTile;
-        }
-        
-        
         public async Task<List<PackTile>> GetByPackId(string packId)
         {
             List<PackTile> list = new();
+            await using var con = _connection;
+            {
+                con.Open();
+
+                await using MySqlCommand command =
+                    new(
+                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
+                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        FROM PackTile 
+                            JOIN Tile T on PackTile.TileId = T.Id 
+                            JOIN TilePack TP on TP.Id = PackTile.PackId 
+                        WHERE PackTile.PackId = @packId",
+                        con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = packId;
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) list.Add(new PackTile(reader));
+
+                await con.CloseAsync();
+            }
+            return list;
+        }
+
+        public async Task<PackTile> GetById(string id)
+        {
+            await using var con = _connection;
+            {
+                con.Open();
+
+                await using MySqlCommand command =
+                    new(
+                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
+                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        FROM PackTile 
+                            JOIN Tile T on PackTile.TileId = T.Id 
+                            JOIN TilePack TP on TP.Id = PackTile.PackId 
+                        WHERE PackTile.Id = @Id",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) return new PackTile(reader);
+                await con.CloseAsync();
+            }
+
+            throw new Exception($"No {nameof(PackTile)} with id: {id}");
+        }
+
+        public async Task<List<Tile>> GetTilesUsedInPacks()
+        {
+            var list = new List<Tile>();
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE {Table}.{DBStrings.PackId} = '{packId}';", 
-                _connection);
+                "SELECT * FROM Tile RIGHT JOIN PackTile on PackTile.TileId = Tile.Id"
+                , _connection);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
-                list.Add(ReaderToEnt(reader));
-
-            }
+                list.Add(new Tile(reader.GetString(0), reader.GetString(1), null, TileType.PackTile));
 
             await _connection.CloseAsync();
             return list;
         }
 
-        public async Task<PackTile> Create(PackTile toCreate)
+        public async Task<PackTileEntity> Create(PackTileEntity pt)
         {
-            PackTile? ent = null;
-            var uuid = Guid.NewGuid().ToString();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                $"INSERT INTO {DBStrings.TileTable} " +
-                $"VALUES ('{uuid}', '{toCreate.Action}');" +
-                $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.Pack.Id}'); " +
-                sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.TileId} = '{uuid}'"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
+            pt.Id = Guid.NewGuid().ToString();
+            await using var con = _connection;
             {
-                ent = ReaderToEnt(reader);
+                con.Open();
+                await using MySqlCommand command =
+                    new("INSERT INTO PackTile(Id, TileId, PackId) VALUES (@Id,@tileId,@packId);", con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = pt.Id;
+                    command.Parameters.Add("@tileId", MySqlDbType.VarChar).Value = pt.TileId;
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
+                }
+                command.ExecuteNonQuery();
             }
-
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("Error i creating packtile with action: " + toCreate.Action);
+            return pt;
         }
 
-        public async Task<PackTile> GetById(string id)
+        public async Task<bool> Clear(string id)
         {
-            PackTile? ent = null;
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                sql_select(Table) + 
-                $"WHERE {Table}.{DBStrings.TileId} = '{id}'"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while(await reader.ReadAsync())
+            await using var con = _connection;
             {
-                ent = ReaderToEnt(reader);
+                con.Open();
+                await using MySqlCommand command =
+                    new("DELETE FROM PackTile WHERE PackId = @packId;", con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
+                }
+                return command.ExecuteNonQuery() > 0;
             }
-
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("Error i creating packtile with Id: " + id);
         }
     }
 }

@@ -1,13 +1,7 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Win32.SafeHandles;
 using moonbaboon.bingo.Core.IServices;
-using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
@@ -16,9 +10,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
+        private readonly IAuthService _authService;
         private readonly IConfiguration _configuration;
         private readonly IUserService _service;
-        private readonly IAuthService _authService;
 
         public AuthController(IUserService service, IConfiguration configuration, IAuthService authService)
         {
@@ -32,24 +26,24 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             var salt = _service.GetSalt(loginInformation.Username);
             var password = BCrypt.Net.BCrypt.HashPassword(loginInformation.Password, salt);
-            User? user = _service.Login(loginInformation.Username, password);
+            var user = _service.Login(loginInformation.Username, password);
             if (user == null)
                 return BadRequest("User does not exist");
-            
+
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-            
+
             return Ok(new AuthResponse {UUID = user.Id!, JWT = _authService.EncodeJwt(user, tokenKey)});
         }
 
         [HttpPost]
         public ActionResult Login(UserDtos.LoginDto loginInformation)
         {
-            User? user = _service.Login(loginInformation.Username, loginInformation.Password);
+            var user = _service.Login(loginInformation.Username, loginInformation.Password);
             if (user == null)
                 return BadRequest("User does not exist");
-            
+
             var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-            
+
             return Ok(new AuthResponse {UUID = user.Id!, JWT = _authService.EncodeJwt(user, tokenKey)});
         }
 

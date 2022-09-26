@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PackTileController:ControllerBase
+    public class PackTileController : ControllerBase
     {
         private readonly IPackTileService _packTileService;
 
@@ -30,10 +29,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
-        
+
         [HttpGet(nameof(GetByPackId) + "/{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -45,26 +45,44 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.Write(e);
                 return NotFound(e.Message);
             }
-            
         }
 
-        [HttpPost(nameof(Create))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PackTile))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<PackTile> Create(NewPackTileDto toCreate)
+        [HttpDelete(nameof(ClearPack))]
+        public ActionResult<bool> ClearPack(string id)
         {
             try
             {
-                var created = _packTileService.Create(new Tile(null, toCreate.Action), toCreate.PackId);
-                return CreatedAtAction(nameof(GetById),new{id = created.Id}, created);
+                return _packTileService.Clear(id);
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-            
+        }
+
+        [HttpGet(nameof(GetTilesUsedInPacks))]
+        public ActionResult<List<Tile>> GetTilesUsedInPacks()
+        {
+            return _packTileService.GetTilesUsedInPacks();
+        }
+
+        [HttpPost(nameof(AddToTilePack))]
+        public ActionResult<PackTile> AddToTilePack(PackTileEntity pt)
+        {
+            try
+            {
+                var created = _packTileService.Create(pt);
+                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return BadRequest(e.Message);
+            }
         }
     }
 }

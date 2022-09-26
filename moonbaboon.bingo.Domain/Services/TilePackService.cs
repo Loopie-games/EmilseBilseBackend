@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -14,9 +15,19 @@ namespace moonbaboon.bingo.Domain.Services
             _tilePackRepository = tilePackRepository;
         }
 
-        public List<TilePack> GetAll()
+        public List<TilePack> GetAll(string? userId)
         {
-            return _tilePackRepository.FindAll().Result;
+            try
+            {
+                return userId == null
+                    ? _tilePackRepository.FindAll().Result
+                    : _tilePackRepository.FindAll_LoggedUser(userId).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public TilePack GetById(string id)
@@ -32,6 +43,16 @@ namespace moonbaboon.bingo.Domain.Services
         public TilePack Create(TilePack toCreate)
         {
             return _tilePackRepository.Create(toCreate).Result;
+        }
+
+        public void Update(TilePack toUpdate)
+        {
+            _tilePackRepository.Update(toUpdate).Wait();
+        }
+
+        public void Delete(string packId)
+        {
+            _tilePackRepository.Delete(packId).Wait();
         }
     }
 }

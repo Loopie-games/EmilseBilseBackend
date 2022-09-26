@@ -13,10 +13,15 @@ namespace moonbaboon.bingo.Domain.Services
         {
             _pendingPlayerRepository = pendingPlayerRepository;
         }
-        
+
         public List<PendingPlayer> GetByLobbyId(string lobbyId)
         {
             return _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
+        }
+
+        public PendingPlayer GetByUserId(string userId)
+        {
+            return _pendingPlayerRepository.GetByUserId(userId).Result;
         }
     }
 }

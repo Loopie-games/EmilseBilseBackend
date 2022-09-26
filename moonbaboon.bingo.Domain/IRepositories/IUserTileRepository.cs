@@ -1,8 +1,6 @@
-﻿using moonbaboon.bingo.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Domain.IRepositories
 {

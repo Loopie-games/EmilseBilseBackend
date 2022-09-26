@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -8,16 +7,13 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class UserService : IUserService
     {
+        private readonly IAdminRepository _adminRepository;
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IAdminRepository adminRepository)
         {
             _userRepository = userRepository;
-        }
-
-        public List<User> GetAll()
-        {
-            return _userRepository.FindAll().Result;
+            _adminRepository = adminRepository;
         }
 
         public List<UserSimple> Search(string searchStr)
@@ -25,17 +21,19 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Search(searchStr).Result;
         }
 
-        public User? Login(string dtoUsername, string dtoPassword)
+        public UserSimple Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
 
-        public User? GetById(string id)
+        public UserSimple GetById(string id)
         {
-            return _userRepository.ReadById(id).Result;
+            var u = _userRepository.ReadById(id).Result;
+            var a = _adminRepository.IsAdmin(u.Id).Result;
+            return a ?? u;
         }
 
-        public User CreateUser(User user)
+        public UserSimple CreateUser(User user)
         {
             return _userRepository.Create(user).Result;
         }
@@ -45,7 +43,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.VerifyUsername(username).Result;
         }
 
-        public string? GetSalt(string username)
+        public string GetSalt(string username)
         {
             return _userRepository.GetSalt(username).Result;
         }
