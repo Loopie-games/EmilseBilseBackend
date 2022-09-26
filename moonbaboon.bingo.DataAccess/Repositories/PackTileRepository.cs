@@ -20,16 +20,30 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<PackTile>> GetByPackId(string packId)
         {
             List<PackTile> list = new();
-            await _connection.OpenAsync();
+            await using var con = _connection;
+            {
+                con.Open();
 
-            await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.PackId} = '{packId}';",
-                _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) list.Add(ReaderToEnt(reader));
+                await using MySqlCommand command =
+                    new(
+                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
+                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        FROM PackTile 
+                            JOIN Tile T on PackTile.TileId = T.Id 
+                            JOIN TilePack TP on TP.Id = PackTile.PackId 
+                        WHERE PackTile.PackId = @packId",
+                        con);
+                {
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = packId;
+                }
 
-            await _connection.CloseAsync();
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read())
+                {
+                    list.Add(new PackTile(reader));
+                }
+                await con.CloseAsync();
+            }
             return list;
         }
 
@@ -57,7 +71,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 await con.CloseAsync();
             }
 
-            throw new Exception("Error in " + nameof(GetPackTile));
+            throw new Exception($"No {nameof(PackTile)} with id: {id}");
         }
 
         public async Task<PackTile> GetPackTile(PackTileEntity pt)
