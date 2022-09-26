@@ -55,7 +55,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(TilePackDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -69,7 +69,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 {
                     price = _priceService.Get(tp.PriceStripe);
                 }
-                return Ok(new TilePackDto(tp){Price = price?.UnitAmount ?? null});
+
+                return Ok(new TilePackDto(tp) {Price = price?.UnitAmount ?? null});
             }
             catch (Exception e)
             {
@@ -77,7 +78,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return NotFound(e.Message);
             }
         }
-        
+
 
         [HttpGet(nameof(GetDefault))]
         public ActionResult<TilePack> GetDefault()
@@ -95,13 +96,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var tp = toCreate.ToTilePack();
 
-                
-                    
-                    var product = _productService.Create(new ProductCreateOptions {Name = toCreate.Name});
-                    var price = _priceService.Create(new PriceCreateOptions
-                        {UnitAmount = toCreate.Price ?? 0, Currency = "usd", Product = product.Id});
-                    tp.PriceStripe = price.Id;
-                
+
+                var product = _productService.Create(new ProductCreateOptions {Name = toCreate.Name});
+                var price = _priceService.Create(new PriceCreateOptions
+                    {UnitAmount = toCreate.Price ?? 0, Currency = "usd", Product = product.Id});
+                tp.PriceStripe = price.Id;
 
 
                 var created = _tilePackService.Create(tp);
@@ -165,6 +164,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
+                var tp = _tilePackService.GetById(packId);
+                if (!string.IsNullOrEmpty(tp.PriceStripe))
+                {
+                    _priceService.Update(tp.PriceStripe, new PriceUpdateOptions {Active = false});
+                }
                 _tilePackService.Delete(packId);
                 return NoContent();
             }
