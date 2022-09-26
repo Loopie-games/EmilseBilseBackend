@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
-using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -18,7 +17,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             _packTileService = packTileService;
         }
-        
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -35,7 +34,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        [HttpGet(nameof(GetByPackId)+"/{packId}")]
+        [HttpGet(nameof(GetByPackId) + "/{packId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PackTile))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<List<PackTile>> GetByPackId(string packId)
@@ -77,7 +76,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var created = _packTileService.Create(pt);
-                return CreatedAtAction(nameof(GetById), new{created.Id}, created);
+                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
             }
             catch (Exception e)
             {

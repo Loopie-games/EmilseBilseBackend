@@ -101,7 +101,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = pt.PackId;
                 }
                 command.ExecuteNonQuery();
-                
             }
             return pt;
         }
