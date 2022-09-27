@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,17 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
         public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
-            var boardTiles = _boardTileService.GetByBoardId(id);
-            return boardTiles;
+            try
+            {
+                var boardTiles = _boardTileService.GetByBoardId(id);
+                return Ok(boardTiles);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
         }
 
         [Authorize]

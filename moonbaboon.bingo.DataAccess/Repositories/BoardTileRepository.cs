@@ -49,14 +49,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<List<BoardTile>> FindByBoardId(string id)
         {
-            await using var _connection = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = new MySqlConnection(DbStrings.SqlConnection);
             List<BoardTile> list = new();
-            await _connection.OpenAsync();
+            await con.OpenAsync();
 
             await using MySqlCommand command = new(
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.BoardId} = '{id}';",
-                _connection);
+                con);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
@@ -64,9 +64,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 list.Add(boardTile);
             }
 
-            await _connection.CloseAsync();
+            await con.CloseAsync();
             return list;
         }
+        
+        //SELECT BoardTile.Id, Board.Id, Board.GameId, Board.UserId, Tile.Id, Tile.Action, BoardTile.TileType As TT, AboutUser.id, AboutUser.username, AboutUser.nickname, AboutUser.ProfilePicURL, BoardTile.Position, BoardTile.IsActivated, CASE BoardTile.TileType WHEN 'UserTile' THEN ByUser.username WHEN 'PackTile' THEN TilePack.Name ELSE NULL END As AddedBy FROM `BoardTile` JOIN Board On BoardTile.BoardId = Board.Id JOIN User As AboutUser ON BoardTile.AboutUserId = AboutUser.id JOIN Tile ON BoardTile.TileId = Tile.Id LEFT JOIN PackTile ON BoardTile.TileId = PackTile.TileId LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId LEFT JOIN UserTile ON BoardTile.TileId= UserTile.TileId LEFT JOIN User AS ByUser ON UserTile.AddedById = ByUser.id WHERE `BoardId` ='877567b0-66e2-4493-ad88-e3f90ed8eb3c';
 
         public async Task<BoardTile> Update(BoardTile toUpdate)
         {
