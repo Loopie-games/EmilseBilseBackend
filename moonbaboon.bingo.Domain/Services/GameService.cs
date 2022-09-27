@@ -15,6 +15,7 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly ILobbyRepository _lobbyRepository;
         private readonly IPackTileRepository _packTileRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
+        private readonly IOwnedTilePackRepository _ownedTilePackRepository;
 
         private readonly Random _random = new();
         private readonly ITilePackRepository _tilePackRepository;
@@ -26,7 +27,7 @@ namespace moonbaboon.bingo.Domain.Services
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
             ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository,
-            ITopPlayerRepository topPlayerRepository)
+            ITopPlayerRepository topPlayerRepository, IOwnedTilePackRepository ownedTilePackRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -38,6 +39,7 @@ namespace moonbaboon.bingo.Domain.Services
             _lobbyRepository = lobbyRepository;
             _userRepository = userRepository;
             _topPlayerRepository = topPlayerRepository;
+            _ownedTilePackRepository = ownedTilePackRepository;
         }
 
         public Game GetById(string id)
@@ -50,7 +52,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.Create(hostId).Result;
         }
 
-        public Game NewGame(string lobbyId, string userId)
+        public Game NewGame(string lobbyId, string userId, string[]? tilePackIds)
         {
             try
             {
@@ -61,52 +63,91 @@ namespace moonbaboon.bingo.Domain.Services
                 var game = _gameRepository.Create(userId).Result;
                 var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
-                //Set board and tiles up for each player in lobby
-                foreach (var player in players)
+                
+                if(tilePackIds is null || tilePackIds.Length <1)
                 {
-                    //Create board for player
-                    var board = _boardRepository.Create(player.User.Id, game.Id).Result;
-                    
-                    //get tiles from activated Packs
-                    //List<BoardTile> boardTilesPack = _ 
-
-                    //get tiles about other players
-                    List<BoardTile> boardTiles = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
-                        .Result
-                        .Select((t, i) => new BoardTile(null, board, t, t.User, i, false))
-                        .ToList();
-
-                    //if not enough boardtiles for users; fill with default tiles
-                    if (boardTiles.Count < 24)
+                    //Set board and tiles up for each player in lobby
+                    foreach (var player in players)
                     {
-                        List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
+                        //Create board for player
+                        var board = _boardRepository.Create(player.User.Id, game.Id).Result;
 
-                        var defaultTiles = GetDefaultTiles();
-                        //create temp list for refilling in case, that not enough default tiles are available
-                        var defaultTilesTemp = new List<PackTile>();
+                        //get tiles about other players
+                        List<BoardTile> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
+                            .Result
+                            .Select((t, i) => new BoardTile(null, board, t, t.User, i, false))
+                            .ToList();
 
-                        while (boardTiles.Count < 24)
+                        //if not enough boardtiles for users; fill with default tiles
+                        if (boardTilesUser.Count < 24)
                         {
-                            //Make sure there is enough default tiles
-                            if (defaultTilesTemp.Count < 1) defaultTilesTemp = new List<PackTile>(defaultTiles);
+                            List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
 
-                            //find random player
-                            var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
+                            var defaultTiles = GetDefaultTiles();
+                            //create temp list for refilling in case, that not enough default tiles are available
+                            var defaultTilesTemp = new List<PackTile>();
 
-                            //find random default tile
-                            var randomTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count)];
+                            while (boardTilesUser.Count < 24)
+                            {
+                                //Make sure there is enough default tiles
+                                if (defaultTilesTemp.Count < 1) defaultTilesTemp = new List<PackTile>(defaultTiles);
 
-                            //Create new board tile
-                            boardTiles.Add(
-                                new BoardTile(null, board, randomTile, rp, boardTiles.Count, false));
+                                //find random player
+                                var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
 
-                            //remove random default tile after used, to avoid duplicate boardtiles
-                            defaultTilesTemp.Remove(randomTile);
+                                //find random default tile
+                                var randomTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count)];
+
+                                //Create new board tile
+                                boardTilesUser.Add(
+                                    new BoardTile(null, board, randomTile, rp, boardTilesUser.Count, false));
+
+                                //remove random default tile after used, to avoid duplicate boardtiles
+                                defaultTilesTemp.Remove(randomTile);
+                            }
                         }
+
+                        //Insert all boardtiles in database
+                        var unused = boardTilesUser.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
+                            .ToList();
+                    }
+                }
+                else
+                {
+                    //Check ownership over chosen packages
+                    if (tilePackIds.Any(tpId => !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
+                    {
+                        throw new Exception("You dont have ownership over one or more of the tilepacks");
                     }
 
+                    var packTiles = new List<PackTile>();
+
+                    foreach (var packId in tilePackIds)
+                    {
+                        packTiles.AddRange(_packTileRepository.GetByPackId(packId).Result);
+                    }
+
+                    var boardTilesPack = new List<BoardTile>();
+                    foreach (var player in players)
+                    {
+                        List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
+                        var board = _boardRepository.Create(player.User.Id, game.Id).Result;
+                        var boardTilesPlayer = new List<BoardTile>();
+                        var packTilesTemp = new List<PackTile>(packTiles);
+                        while (boardTilesPlayer.Count <24 || packTilesTemp.Count <=0)
+                        {
+                            //find random player
+                            var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
+                            
+                            var randomTile = packTilesTemp[_random.Next(0, packTiles.Count)];
+                            boardTilesPlayer.Add(new BoardTile(null, board, randomTile, rp, boardTilesPlayer.Count, false));
+                            packTilesTemp.Remove(randomTile);
+
+                        }
+                        boardTilesPack.AddRange(boardTilesPlayer);
+                    }
                     //Insert all boardtiles in database
-                    var unused = boardTiles.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
+                    var unused = boardTilesPack.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
                         .ToList();
                 }
 
