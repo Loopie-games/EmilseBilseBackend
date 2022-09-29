@@ -34,26 +34,20 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardTileEntity TurnTile(string boardTileId, string userId)
         {
-            try
-            {
-                //checks that the user trying to turn the tile is owner of the board, else Error
-                var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
-                if (boardTile.Board.UserId != userId)
-                    throw new Exception("You do not own this board, and can not turn the tiles!");
+            
+            //checks that the user trying to turn the tile is owner of the board, else Error
+            var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
+            if (boardTile.Board.UserId != userId)
+                throw new Exception("You do not own this board, and can not turn the tiles!");
 
-                var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
-                if (game.State != State.Ongoing)
-                    throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
+            var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
+            if (game.State != State.Ongoing)
+                throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
 
-                boardTile.IsActivated = !boardTile.IsActivated;
-                var tile = _boardTileRepository.Update(new BoardTileEntity(boardTile)).Result;
-                return tile;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            boardTile.IsActivated = !boardTile.IsActivated;
+            var tile = _boardTileRepository.Update(new BoardTileEntity(boardTile)).Result;
+            return tile;
+
         }
     }
 }
