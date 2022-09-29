@@ -11,11 +11,18 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class BoardTileRepository : IBoardTileRepository
     {
         private const string Table = DbStrings.BoardTileTable;
+        private readonly MySqlConnection _connection;
+
+        public BoardTileRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
         public async Task<BoardTile> ReadById(string id)
         {
             BoardTile? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
+            
             await con.OpenAsync();
             await using MySqlCommand command = new(
                 sql_select(Table) +
