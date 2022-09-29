@@ -49,7 +49,7 @@ namespace moonbaboon.bingo.Core.Models
         public BoardTileEntity(BoardTile boardTile)
         {
             Id = boardTile.Id;
-            AboutUserId = boardTile.Id;
+            AboutUserId = boardTile.AboutUser.Id;
             BoardId = boardTile.Board.Id;
             TileId = boardTile.ByTile.Id;
             Position = boardTile.Position;

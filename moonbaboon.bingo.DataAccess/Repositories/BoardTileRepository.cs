@@ -96,6 +96,7 @@ WHERE BoardTile.BoardId = @boardId;",
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new BoardTile(reader));
 
+            
             await con.CloseAsync();
             return list;
         }
