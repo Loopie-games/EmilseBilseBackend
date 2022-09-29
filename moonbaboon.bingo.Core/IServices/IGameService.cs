@@ -14,8 +14,9 @@ namespace moonbaboon.bingo.Core.IServices
         /// </summary>
         /// <param name="lobbyId">Id specific for a lobby</param>
         /// <param name="hostId">UserId from the host of the lobby</param>
+        /// <param name="tilePackIds"></param>
         /// <returns>the created game</returns>
-        public Game NewGame(string lobbyId, string hostId);
+        public Game NewGame(string lobbyId, string hostId, string[]? tilePackIds);
 
         /// <summary>
         ///     Gets player list from game id

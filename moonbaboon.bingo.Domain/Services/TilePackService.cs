@@ -30,6 +30,11 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
+        public List<TilePack> GetOwned(string userId)
+        {
+            return _tilePackRepository.GetOwnedTilePacks(userId).Result;
+        }
+
         public TilePack GetById(string id)
         {
             return _tilePackRepository.FindById(id).Result;

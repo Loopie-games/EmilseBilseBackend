@@ -1,4 +1,7 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using System.Data;
+using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
     public class User
     {
@@ -26,6 +29,14 @@
             Username = username;
             Nickname = nickname;
             ProfilePicUrl = profilePicUrl;
+        }
+
+        public UserSimple(MySqlDataReader reader)
+        {
+            Id = reader.GetString("User_Id");
+            Username = reader.GetString("User_Username");
+            Nickname = reader.GetString("User_Nickname");
+            ProfilePicUrl = reader.GetValue("User_ProfilePicUrl").ToString();
         }
 
         public string? Id { get; set; }

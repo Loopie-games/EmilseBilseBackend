@@ -77,9 +77,30 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult<Game> Create(string lobbyId)
+        public ActionResult<Game> Create(CreateGameDto gameDto)
         {
-            return _gameService.NewGame(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                return _gameService.NewGame(gameDto.LobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+            
+        }
+        
+        public class CreateGameDto
+        {
+            public CreateGameDto(string lobbyId, string[]? tpIds)
+            {
+                LobbyId = lobbyId;
+                TpIds = tpIds;
+            }
+
+            public string LobbyId { get; set; }
+            public string[]? TpIds { get; set; }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,17 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet(nameof(GetByBoardId) + "/{id}")]
         public ActionResult<List<BoardTile>> GetByBoardId(string id)
         {
-            var boardTiles = _boardTileService.GetByBoardId(id);
-            return boardTiles;
+            try
+            {
+                var boardTiles = _boardTileService.GetByBoardId(id);
+                return Ok(boardTiles);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+            
         }
 
         [Authorize]
@@ -46,9 +56,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<BoardTile?> Create(BoardTile boardTile)
+        public ActionResult<BoardTile> Create(BoardTileEntity boardTile)
         {
-            return _boardTileService.Create(boardTile);
+            try
+            {
+                var created = _boardTileService.Create(boardTile);
+                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return BadRequest(e.Message);
+            }
         }
     }
 }
