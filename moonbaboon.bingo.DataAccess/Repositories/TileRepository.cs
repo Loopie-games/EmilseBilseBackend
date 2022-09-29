@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand("SELECT * FROM Tile", _connection);
+            await using var command = new MySqlCommand("SELECT Tile.Id AS Tile_Id, Tile.Action AS Tile_Action FROM Tile", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (reader.Read()) tiles.Add(new Tile(reader));
             return tiles;

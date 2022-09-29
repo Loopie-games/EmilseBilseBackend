@@ -2,23 +2,16 @@
 {
     public class UserTile : Tile
     {
-        public UserTile(string? id, string action, UserSimple user, UserSimple addedByUser) : base(id, action,
-            addedByUser.Username, TileType.UserTile)
+        public UserTile(Tile tile, UserSimple user, UserSimple addedByUser) : base(tile.Id, tile.Action,
+            addedByUser.Username, Models.TileType.UserTile)
         {
-            Id = id;
-            Action = action;
+            Tile = tile;
             User = user;
             AddedByUser = addedByUser;
-            AddedBy = addedByUser.Username;
         }
 
-        public string? Id { get; set; }
-        public string Action { get; set; }
-        public string AddedBy { get; }
-        public TileType TileType => TileType.UserTile;
-
+        public Tile Tile { get; set; }
         public UserSimple User { get; set; }
-
         public UserSimple AddedByUser { get; set; }
     }
 }

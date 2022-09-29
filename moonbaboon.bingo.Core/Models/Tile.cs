@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using System.Data;
+using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {
@@ -14,14 +15,14 @@ namespace moonbaboon.bingo.Core.Models
 
         public Tile(MySqlDataReader reader)
         {
-            Id = reader.GetString("Id");
-            Action = reader.GetString("Action");
+            Id = reader.GetString("Tile_Id");
+            Action = reader.GetString("Tile_Action");
         }
 
         public string? Id { get; set; }
         public string Action { get; set; }
-        public string? AddedBy { get; }
-        public TileType? TileType { get; }
+        public string? AddedBy { get; set; }
+        public TileType? TileType { get; set; }
     }
 
     public enum TileType

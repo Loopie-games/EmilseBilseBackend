@@ -15,10 +15,10 @@ namespace moonbaboon.bingo.Core.Models
 
         public TilePack(MySqlDataReader reader)
         {
-            Id = reader.GetString("TilePackId");
-            Name = reader.GetString("TilePackName");
-            PicUrl = reader.GetValue("TilePackPic").ToString();
-            PriceStripe = reader.GetValue("TilePackStripe").ToString();
+            Id = reader.GetString("TilePack_Id");
+            Name = reader.GetString("TilePack_Name");
+            PicUrl = reader.GetValue("TilePack_Pic").ToString();
+            PriceStripe = reader.GetValue("TilePack_Stripe").ToString();
         }
 
         public string? Id { get; set; }

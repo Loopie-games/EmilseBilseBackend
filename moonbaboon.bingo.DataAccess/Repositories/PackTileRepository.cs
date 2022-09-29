@@ -25,8 +25,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
-                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        @"SELECT PackTile.Id As PackTile_Id, T.Id AS Tile_Id, T.Action AS Tile_Action, 
+                        TP.Id AS TilePack_Id, TP.Name AS TilePack_Name, TP.PicUrl AS TilePack_Pic, TP.Stripe_PRICE As TilePack_Stripe 
                         FROM PackTile 
                             JOIN Tile T on PackTile.TileId = T.Id 
                             JOIN TilePack TP on TP.Id = PackTile.PackId 

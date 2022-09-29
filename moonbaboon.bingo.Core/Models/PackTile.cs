@@ -13,14 +13,15 @@ namespace moonbaboon.bingo.Core.Models
             Pack = pack;
         }
 
-        public PackTile(MySqlDataReader reader) : base(reader.GetString("TileId"), reader.GetString("TileAction"),
-            reader.GetString("TilePackName"), Models.TileType.PackTile)
+        public PackTile(MySqlDataReader reader) : base(reader)
         {
-            PackTileId = reader.GetString("PackTileId");
-            Pack = new TilePack(reader.GetString("TilePackId"), reader.GetString("TilePackName"),
-                reader.GetValue("TilePackPic").ToString(), reader.GetValue("TilePackPrice").ToString());
-            Tile = new Tile(reader.GetString("TileID"), reader.GetString("TileAction"), Pack.Name,
-                Models.TileType.PackTile);
+            PackTileId = reader.GetString("PackTile_Id");
+            Pack = new TilePack(reader);
+            Tile = new Tile(reader)
+            {
+                AddedBy = Pack.Name,
+                TileType = Models.TileType.PackTile
+            };
         }
 
         public string? PackTileId { get; set; }

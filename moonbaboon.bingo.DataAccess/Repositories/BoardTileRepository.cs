@@ -56,27 +56,36 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<List<BoardTile>> FindByBoardId(string id)
         {
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             List<BoardTile> list = new();
             await con.OpenAsync();
 
             await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.BoardId} = '{id}';",
+                @"
+SELECT BoardTile.Id As BoardTile_Id, BoardTile.TileType As BoardTile_TileType, BoardTile.Position As BoardTile_Position, BoardTile.IsActivated As BoardTile_IsActivated, 
+       Board.Id AS Board_Id, Board.GameId AS Board_GameId, Board.UserId AS Board_UserId, 
+       Tile.Id As Tile_Id, Tile.Action As Tile_Action, 
+       AboutUser.id As User_Id, AboutUser.username AS User_Username, AboutUser.nickname AS User_Nickname, AboutUser.ProfilePicURL AS User_ProfilePicUrl, 
+       CASE BoardTile.TileType WHEN 'UserTile' THEN ByUser.username WHEN 'PackTile' THEN TilePack.Name END As BoardTile_AddedBy 
+FROM `BoardTile` JOIN Board On BoardTile.BoardId = Board.Id JOIN User As AboutUser ON BoardTile.AboutUserId = AboutUser.id 
+    JOIN Tile ON BoardTile.TileId = Tile.Id 
+    LEFT JOIN PackTile ON BoardTile.TileId = PackTile.TileId 
+    LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId 
+    LEFT JOIN UserTile ON BoardTile.TileId= UserTile.TileId 
+    LEFT JOIN User AS ByUser ON UserTile.AddedById = ByUser.id 
+WHERE `BoardId` = @boardId;",
                 con);
+            command.Parameters.Add("@boardId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-            {
-                BoardTile boardTile = ReaderToBoardTile(reader);
-                list.Add(boardTile);
+            { 
+                list.Add(new BoardTile(reader));
             }
 
             await con.CloseAsync();
             return list;
         }
         
-        //SELECT BoardTile.Id, Board.Id, Board.GameId, Board.UserId, Tile.Id, Tile.Action, BoardTile.TileType As TT, AboutUser.id, AboutUser.username, AboutUser.nickname, AboutUser.ProfilePicURL, BoardTile.Position, BoardTile.IsActivated, CASE BoardTile.TileType WHEN 'UserTile' THEN ByUser.username WHEN 'PackTile' THEN TilePack.Name ELSE NULL END As AddedBy FROM `BoardTile` JOIN Board On BoardTile.BoardId = Board.Id JOIN User As AboutUser ON BoardTile.AboutUserId = AboutUser.id JOIN Tile ON BoardTile.TileId = Tile.Id LEFT JOIN PackTile ON BoardTile.TileId = PackTile.TileId LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId LEFT JOIN UserTile ON BoardTile.TileId= UserTile.TileId LEFT JOIN User AS ByUser ON UserTile.AddedById = ByUser.id WHERE `BoardId` ='877567b0-66e2-4493-ad88-e3f90ed8eb3c';
-
         public async Task<BoardTile> Update(BoardTile toUpdate)
         {
             await using var connection = new MySqlConnection(DbStrings.SqlConnection);

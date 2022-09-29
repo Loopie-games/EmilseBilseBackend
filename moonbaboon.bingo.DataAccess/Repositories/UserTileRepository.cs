@@ -148,7 +148,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
             UserSimple addedBy = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
-            UserTile userTile = new(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), about, addedBy);
+            UserTile userTile = new(new Tile(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), addedBy.Username, TileType.UserTile), about, addedBy);
 
             return userTile;
         }
