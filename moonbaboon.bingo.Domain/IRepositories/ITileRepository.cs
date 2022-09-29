@@ -7,5 +7,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface ITileRepository
     {
         public Task<List<Tile>> GetAll();
+        public Task<List<Tile>> GetTilesUsedInPacks();
     }
 }

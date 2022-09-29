@@ -56,7 +56,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                "SELECT TilePack.Id AS TilePackId, TilePack.Name AS TilePackName, TilePack.PicUrl AS TilePackPic, TilePack.Stripe_PRICE AS TilePackStripe FROM `TilePack` JOIN OwnedTilePack ON TilePack.Id = OwnedTilePack.TilePackId WHERE OwnedTilePack.OwnerId = @ownerId;"
+                "SELECT TilePack.Id AS TilePack_Id, TilePack.Name AS TilePack_Name, TilePack.PicUrl AS TilePack_Pic, TilePack.Stripe_PRICE AS TilePack_Stripe FROM `TilePack` JOIN OwnedTilePack ON TilePack.Id = OwnedTilePack.TilePackId WHERE OwnedTilePack.OwnerId = @ownerId;"
                 , _connection);
             {
                 command.Parameters.Add("@ownerId", MySqlDbType.VarChar).Value = userId;

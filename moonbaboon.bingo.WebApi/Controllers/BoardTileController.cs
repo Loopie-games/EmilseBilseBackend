@@ -39,7 +39,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return BadRequest(e.Message);
             }
             
         }
@@ -56,9 +56,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPost(nameof(Create))]
-        public ActionResult<BoardTile?> Create(BoardTile boardTile)
+        public ActionResult<BoardTile> Create(BoardTileEntity boardTile)
         {
-            return _boardTileService.Create(boardTile);
+            try
+            {
+                var created = _boardTileService.Create(boardTile);
+                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
+                return BadRequest(e.Message);
+            }
         }
     }
 }

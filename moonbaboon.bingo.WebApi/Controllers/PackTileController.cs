@@ -64,12 +64,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        [HttpGet(nameof(GetTilesUsedInPacks))]
-        public ActionResult<List<Tile>> GetTilesUsedInPacks()
-        {
-            return _packTileService.GetTilesUsedInPacks();
-        }
-
         [HttpPost(nameof(AddToTilePack))]
         public ActionResult<PackTile> AddToTilePack(PackTileEntity pt)
         {

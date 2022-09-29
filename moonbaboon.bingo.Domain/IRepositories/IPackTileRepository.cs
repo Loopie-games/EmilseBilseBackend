@@ -8,7 +8,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
     {
         public Task<List<PackTile>> GetByPackId(string packId);
         public Task<PackTile> GetById(string id);
-        public Task<List<Tile>> GetTilesUsedInPacks();
         public Task<PackTileEntity> Create(PackTileEntity pt);
         public Task<bool> Clear(string id);
     }

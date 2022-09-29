@@ -31,11 +31,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public Task<bool> ConfirmOwnership(string userId, string packId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<bool> ConfirmOwnership(OwnedTilePackEntity ownedTp)
         {
             await _connection.OpenAsync();

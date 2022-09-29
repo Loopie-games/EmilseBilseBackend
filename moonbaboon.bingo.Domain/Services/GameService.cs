@@ -97,7 +97,7 @@ namespace moonbaboon.bingo.Domain.Services
 
                                 //find random default tile
                                 var randomTile = defaultTilesTemp[_random.Next(0, defaultTilesTemp.Count)];
-
+                                
                                 //Create new board tile
                                 boardTilesUser.Add(
                                     new BoardTile(null, board, randomTile, rp, boardTilesUser.Count, false));
@@ -108,7 +108,7 @@ namespace moonbaboon.bingo.Domain.Services
                         }
 
                         //Insert all boardtiles in database
-                        var unused = boardTilesUser.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
+                        var unused = boardTilesUser.Select(boardTile => _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
                             .ToList();
                     }
                 }
@@ -147,7 +147,7 @@ namespace moonbaboon.bingo.Domain.Services
                         boardTilesPack.AddRange(boardTilesPlayer);
                     }
                     //Insert all boardtiles in database
-                    var unused = boardTilesPack.Select(boardTile => _boardTileRepository.Create(boardTile).Result)
+                    var unused = boardTilesPack.Select(boardTile => _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
                         .ToList();
                 }
 

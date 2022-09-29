@@ -3,29 +3,21 @@ using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {
-    public class PackTile : Tile
+    public class PackTile: ByTile
     {
-        public PackTile(string? packTileId, Tile tile, TilePack pack) : base(tile.Id, tile.Action, pack.Name,
-            Models.TileType.PackTile)
+        public PackTile(string? id, Tile tile, TilePack pack) : base(id, tile, Models.TileType.PackTile)
         {
-            PackTileId = packTileId;
-            Tile = tile;
+            Id = id;
             Pack = pack;
+            Tile = tile;
         }
 
-        public PackTile(MySqlDataReader reader) : base(reader)
+        public PackTile(MySqlDataReader reader) : base(reader.GetString("PackTile_Id"), new Tile(reader), Models.TileType.PackTile)
         {
-            PackTileId = reader.GetString("PackTile_Id");
+            Id = reader.GetString("PackTile_Id");
             Pack = new TilePack(reader);
-            Tile = new Tile(reader)
-            {
-                AddedBy = Pack.Name,
-                TileType = Models.TileType.PackTile
-            };
+            Tile = new Tile(reader);
         }
-
-        public string? PackTileId { get; set; }
-        public Tile Tile { get; set; }
         public TilePack Pack { get; set; }
     }
 

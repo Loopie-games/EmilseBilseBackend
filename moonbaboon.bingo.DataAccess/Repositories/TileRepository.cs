@@ -25,5 +25,22 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             while (reader.Read()) tiles.Add(new Tile(reader));
             return tiles;
         }
+        public async Task<List<Tile>> GetTilesUsedInPacks()
+        {
+            var list = new List<Tile>();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+
+                await using MySqlCommand command = new(
+                    "SELECT * FROM Tile RIGHT JOIN PackTile on PackTile.TileId = Tile.Id"
+                    , con);
+                await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    list.Add(new Tile(reader.GetString(0), reader.GetString(1)));
+                
+                return list;
+            }
+        }
     }
 }

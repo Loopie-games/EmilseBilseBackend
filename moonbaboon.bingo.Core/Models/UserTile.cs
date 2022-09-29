@@ -1,16 +1,16 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using System;
+
+namespace moonbaboon.bingo.Core.Models
 {
-    public class UserTile : Tile
+    public class UserTile : ByTile
     {
-        public UserTile(Tile tile, UserSimple user, UserSimple addedByUser) : base(tile.Id, tile.Action,
-            addedByUser.Username, Models.TileType.UserTile)
+        public UserTile(string id, Tile tile, UserSimple user, UserSimple addedByUser) : base(id, tile, Models.TileType.UserTile)
         {
+            Id = id;
             Tile = tile;
             User = user;
             AddedByUser = addedByUser;
         }
-
-        public Tile Tile { get; set; }
         public UserSimple User { get; set; }
         public UserSimple AddedByUser { get; set; }
     }

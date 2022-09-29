@@ -11,6 +11,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
 
+        /*
         public async Task<List<UserTile>> FindAll()
         {
             List<UserTile> tiles = new();
@@ -148,9 +149,46 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 reader.GetValue(4).ToString(), reader.GetValue(5).ToString());
             UserSimple addedBy = new(reader.GetValue(6).ToString(), reader.GetValue(7).ToString(),
                 reader.GetValue(8).ToString(), reader.GetValue(9).ToString());
-            UserTile userTile = new(new Tile(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), addedBy.Username, TileType.UserTile), about, addedBy);
+            //Needs own id
+            UserTile userTile = new(new Tile(reader.GetValue(0).ToString(), reader.GetValue(1).ToString()), about, addedBy);
 
             return userTile;
+        }
+    
+    */
+        public Task<UserTile?> Create(string userId, string action, string addedById)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<UserTile>> FindAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserTile?> FindById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<UserTile?> FindFiller(string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<UserTile>> GetAboutUserById(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<UserTile>> GetTilesForBoard(string lobbyId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<UserTile>> FindMadeByUserId(string userId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
