@@ -5,9 +5,13 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IGameService
     {
+        
+        /// <summary>
+        /// Find a game object from an Id
+        /// </summary>
+        /// <param name="id"> Id string</param>
+        /// <returns>Game with the given id</returns>
         public Game GetById(string id);
-
-        public Game Create(string hostId);
 
         /// <summary>
         ///     Creates a new Game from lobby, if provided with id from matching lobby and host.

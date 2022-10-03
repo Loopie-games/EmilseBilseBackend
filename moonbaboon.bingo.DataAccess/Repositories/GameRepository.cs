@@ -12,22 +12,32 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class GameRepository : IGameRepository
     {
         private const string Table = DbStrings.GameTable;
+        private readonly MySqlConnection _connection;
+
+        public GameRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
         public async Task<Game> FindById(string id)
         {
-            var ent =
-                await GameEnt(sql_select(Table) +
-                              $"WHERE {Table}.{DbStrings.Id} = '{id}'");
-            return ent ?? throw new Exception("No game found with id: " + id);
-        }
+            await using var con = _connection.Clone();
+            await con.OpenAsync();
 
-        public async Task<Game?> FindByHostId(string userId)
-        {
-            var ent =
-                await GameEnt(
-                    sql_select(Table) +
-                    $"WHERE {Table}.{DbStrings.HostId} = '{userId}'");
-            return ent;
+            await using MySqlCommand command = new(
+                @"SELECT Game.Id as Game_Id , Game.State AS Game_State,
+       Host.id AS Host_Id, Host.username AS Host_Username, Host.nickname AS Host_Nickname, Host.ProfilePicURL AS Host_ProfilePic,
+       Winner.id As Winner_Id, Winner.username As Winner_Username, Winner.nickname As Winner_Nickname, Winner.ProfilePicURL As Winner_ProfilePic
+FROM Game
+JOIN User Host on Host.id = Game.HostId
+Left Outer Join User Winner on Winner.id = Game.WinnerId",
+                con);
+            command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) return new Game(reader);
+
+            await con.CloseAsync();
+            throw new Exception($"no {nameof(Game)} with id: " + id);
         }
 
         public async Task<Game> Create(string hostId)

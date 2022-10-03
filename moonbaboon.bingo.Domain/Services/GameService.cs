@@ -47,11 +47,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.FindById(id).Result;
         }
 
-        public Game Create(string hostId)
-        {
-            return _gameRepository.Create(hostId).Result;
-        }
-
         public Game NewGame(string lobbyId, string userId, string[]? tilePackIds)
         {
             try

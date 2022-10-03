@@ -1,10 +1,13 @@
-﻿using System;
+﻿
+
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -77,7 +80,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
-        public ActionResult<Game> Create(CreateGameDto gameDto)
+        public ActionResult<Game> Create(GameDtos.CreateGameDto gameDto)
         {
             try
             {
@@ -89,18 +92,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-        }
-
-        public class CreateGameDto
-        {
-            public CreateGameDto(string lobbyId, string[]? tpIds)
-            {
-                LobbyId = lobbyId;
-                TpIds = tpIds;
-            }
-
-            public string LobbyId { get; set; }
-            public string[]? TpIds { get; set; }
         }
     }
 }

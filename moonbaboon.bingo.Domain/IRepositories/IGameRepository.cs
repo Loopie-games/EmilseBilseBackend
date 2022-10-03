@@ -6,9 +6,12 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IGameRepository
     {
+        /// <summary>
+        /// Find a game object from an Id
+        /// </summary>
+        /// <param name="id"> Id string</param>
+        /// <returns>Game with the given id</returns>
         public Task<Game> FindById(string id);
-
-        public Task<Game?> FindByHostId(string userId);
 
         /// <summary>
         ///     Inserts a new game in database
