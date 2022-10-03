@@ -149,6 +149,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
                     {
                         var newPrice = _priceService.Create(new PriceCreateOptions
                             {UnitAmount = toUpdate.Price, Currency = "usd", Product = oldPrice.ProductId});
+                        var product = _productService.Get(oldPrice.ProductId);
+                        _productService.Update(product.Id, new ProductUpdateOptions() {DefaultPrice = newPrice.Id});
                         _priceService.Update(oldPrice.Id, new PriceUpdateOptions {Active = false});
                         updated.PriceStripe = newPrice.Id;
                     }
