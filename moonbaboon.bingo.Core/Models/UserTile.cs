@@ -1,12 +1,12 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {
     public class UserTile : ByTile
     {
-        public UserTile(string id, Tile tile, UserSimple user, UserSimple addedByUser) : base(id, tile, Models.TileType.UserTile)
+        public UserTile(string id, Tile tile, UserSimple user, UserSimple addedByUser) : base(id, tile,
+            Models.TileType.UserTile)
         {
             Id = id;
             Tile = tile;
@@ -14,7 +14,8 @@ namespace moonbaboon.bingo.Core.Models
             AddedByUser = addedByUser;
         }
 
-        public UserTile(MySqlDataReader reader) : base(reader.GetString("UserTile_Id"), new Tile(reader), Models.TileType.UserTile)
+        public UserTile(MySqlDataReader reader) : base(reader.GetString("UserTile_Id"), new Tile(reader),
+            Models.TileType.UserTile)
         {
             Id = reader.GetString("UserTile_Id");
             Tile = new Tile(reader);
@@ -45,7 +46,7 @@ namespace moonbaboon.bingo.Core.Models
             AboutUserId = userTile.User.Id;
             AddedByUserId = userTile.AddedByUser.Id;
         }
-        
+
         public string? Id { get; set; }
         public string TileId { get; set; }
         public string AboutUserId { get; set; }

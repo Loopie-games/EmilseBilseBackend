@@ -81,16 +81,16 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _gameService.NewGame(gameDto.LobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+                return _gameService.NewGame(gameDto.LobbyId,
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-            
         }
-        
+
         public class CreateGameDto
         {
             public CreateGameDto(string lobbyId, string[]? tpIds)

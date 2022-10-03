@@ -96,7 +96,7 @@ WHERE BoardTile.BoardId = @boardId;",
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new BoardTile(reader));
 
-            
+
             await con.CloseAsync();
             return list;
         }
@@ -116,7 +116,8 @@ WHERE BoardTile.BoardId = @boardId;",
                     command.Parameters.Add("@BoardId", MySqlDbType.VarChar).Value = toUpdate.BoardId;
                     command.Parameters.Add("@TileId", MySqlDbType.VarChar).Value = toUpdate.TileId;
                     command.Parameters.Add("@Position", MySqlDbType.Int16).Value = toUpdate.Position;
-                    command.Parameters.Add("@IsActivated", MySqlDbType.Int16).Value = Convert.ToByte(toUpdate.IsActivated);
+                    command.Parameters.Add("@IsActivated", MySqlDbType.Int16).Value =
+                        Convert.ToByte(toUpdate.IsActivated);
                 }
                 await command.ExecuteNonQueryAsync();
             }

@@ -17,6 +17,5 @@ namespace moonbaboon.bingo.Domain.IRepositories
 
         public Task<List<BoardTile>> FindByBoardId(string id);
         public Task<BoardTileEntity> Update(BoardTileEntity toUpdate);
-        
     }
 }

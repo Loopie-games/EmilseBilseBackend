@@ -23,7 +23,6 @@ namespace moonbaboon.bingo.Core.Models
             AboutUser = new UserSimple(reader);
             Position = reader.GetInt32("BoardTile_Position");
             IsActivated = Convert.ToBoolean(reader.GetInt32("BoardTile_IsActivated"));
-
         }
 
         public string? Id { get; set; }
@@ -36,7 +35,8 @@ namespace moonbaboon.bingo.Core.Models
 
     public class BoardTileEntity
     {
-        public BoardTileEntity(string id, string aboutUserId, string boardId, string tileId, int position, bool isActivated)
+        public BoardTileEntity(string id, string aboutUserId, string boardId, string tileId, int position,
+            bool isActivated)
         {
             Id = id;
             AboutUserId = aboutUserId;

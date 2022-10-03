@@ -22,12 +22,13 @@ namespace moonbaboon.bingo.Core.Models
 
         public string? Id { get; set; }
         public Tile Tile { get; set; }
-        
-        public TileType? TileType { get;}
+
+        public TileType? TileType { get; }
     }
 
     public enum TileType
     {
-        UserTile, PackTile
+        UserTile,
+        PackTile
     }
 }

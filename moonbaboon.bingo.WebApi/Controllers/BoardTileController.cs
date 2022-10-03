@@ -41,7 +41,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
-            
         }
 
         [Authorize]
