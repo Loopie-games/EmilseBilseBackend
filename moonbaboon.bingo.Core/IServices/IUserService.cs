@@ -11,5 +11,6 @@ namespace moonbaboon.bingo.Core.IServices
         public UserSimple CreateUser(User user);
         public bool VerifyUsername(string username);
         public string GetSalt(string username);
+        public UserSimple UpdateUser(string id, UserSimple user);
     }
 }
