@@ -6,6 +6,7 @@ namespace moonbaboon.bingo.Core.IServices
     public interface IUserService
     {
         public List<UserSimple> Search(string searchStr);
+        public UserSimple SearchID(string searchStr);
         public UserSimple? Login(string dtoUsername, string dtoPassword);
         public UserSimple GetById(string id);
         public UserSimple CreateUser(User user);
