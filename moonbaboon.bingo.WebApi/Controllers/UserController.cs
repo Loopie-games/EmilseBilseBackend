@@ -30,6 +30,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return BadRequest("use at last 3 characters in your search");
         }
 
+        [HttpGet(nameof(SearchID) + "/{searchStr}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<List<UserSimple>> SearchID(string searchStr)
+        {
+            if (searchStr.Length > 2) return Ok(_userService.SearchID(searchStr));
+            return BadRequest("use at last 3 characters in your search");
+        }
+
         [Authorize]
         [HttpGet(nameof(GetLogged))]
         public ActionResult<UserSimple> GetLogged()

@@ -34,6 +34,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
+        public async Task<UserSimple> SearchID(string searchString)
+        {
+            UserSimple? u = null;
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                sql_select(Table) +
+                $"WHERE {Table}.{DbStrings.Username} " +
+                $"LIKE '%{searchString}%'", _connection);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                u = ReaderToEnt(reader);
+            }
+
+            await _connection.CloseAsync();
+            return u ?? new UserSimple("NULL", "NULL", "NULL", "NULL");
+        }
+
         public async Task<UserSimple> Login(string dtoUsername, string dtoPassword)
         {
             UserSimple? user = null;
