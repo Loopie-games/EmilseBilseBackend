@@ -114,6 +114,8 @@ namespace moonbaboon.bingo.Domain.Services
                 }
                 else
                 {
+                    Console.WriteLine(tilePackIds[0]);
+                    
                     //Check ownership over chosen packages
                     if (tilePackIds.Any(tpId => !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
                     {
@@ -134,12 +136,12 @@ namespace moonbaboon.bingo.Domain.Services
                         var board = _boardRepository.Create(player.User.Id, game.Id).Result;
                         var boardTilesPlayer = new List<BoardTile>();
                         var packTilesTemp = new List<PackTile>(packTiles);
-                        while (boardTilesPlayer.Count <24 || packTilesTemp.Count <=0)
+                        while (boardTilesPlayer.Count <24 && packTilesTemp.Count >0)
                         {
                             //find random player
                             var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
                             
-                            var randomTile = packTilesTemp[_random.Next(0, packTiles.Count)];
+                            var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
                             boardTilesPlayer.Add(new BoardTile(null, board, randomTile, rp, boardTilesPlayer.Count, false));
                             packTilesTemp.Remove(randomTile);
 
