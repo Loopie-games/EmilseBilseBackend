@@ -41,7 +41,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using var command = new MySqlCommand(
                 sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Username} " +
+                $"WHERE {Table}.{DbStrings.Id} " +
                 $"LIKE '%{searchString}%'", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
