@@ -40,6 +40,5 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="game">game to update</param>
         /// <returns>the updated game</returns>
         public Task<Game> Update(Game game);
-        public Task<List<Game>> GetEnded(string userId);
     }
 }

@@ -209,11 +209,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.Update(game).Result;
         }
 
-        public List<Game> GetEnded(string userId)
-        {
-            return _gameRepository.GetEnded(userId).Result;
-        }
-
         private List<PackTile> GetDefaultTiles()
         {
             return _packTileRepository
