@@ -37,8 +37,7 @@ FROM Game
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var g = new Game(reader);
-                return g;
+                return new Game(reader);
             }
 
             await con.CloseAsync();
