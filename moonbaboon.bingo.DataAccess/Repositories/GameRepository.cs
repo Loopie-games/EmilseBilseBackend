@@ -38,7 +38,6 @@ FROM Game
             while (await reader.ReadAsync())
             {
                 var g = new Game(reader);
-                Console.WriteLine("gameId: "+g.Id);
                 return g;
             }
 
