@@ -23,7 +23,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Game?> GetById(string id)
+        public ActionResult<Game> GetById(string id)
         {
             try
             {

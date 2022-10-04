@@ -5,7 +5,6 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IGameService
     {
-        
         /// <summary>
         /// Find a game object from an Id
         /// </summary>
@@ -32,9 +31,15 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>List of Players participating in the game</returns>
         public List<UserSimple> GetPlayers(string gameId, string userId);
 
+        /// <summary>
+        /// Deletes a game object, if given matching host and id of the game
+        /// </summary>
+        /// <param name="gameId">The id of the game</param>
+        /// <param name="hostId">the id of the host</param>
+        /// <returns>bool representing the completion of the deletion</returns>
         public bool Delete(string gameId, string hostId);
-        public Game ConfirmWin(string gameId, string hostId);
 
+        public Game ConfirmWin(string gameId, string hostId);
         public Game PauseGame(Game game, string userId);
         public Game DenyWin(string gameId, string userId);
         public List<Game> GetEnded(string userID);

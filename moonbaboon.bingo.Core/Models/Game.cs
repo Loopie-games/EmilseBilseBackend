@@ -16,7 +16,7 @@ namespace moonbaboon.bingo.Core.Models
 
         public Game(MySqlDataReader reader)
         {
-            Id = reader.GetString("Game_ID");
+            Id = reader.GetString("Game_Id");
             Host = new UserSimple(reader.GetString("Host_Id"), reader.GetString("Host_Username"),
                 reader.GetString("Host_Nickname"),
                 reader.GetValue("Host_ProfilePic").ToString());

@@ -24,17 +24,23 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var con = _connection.Clone();
             await con.OpenAsync();
 
-            await using MySqlCommand command = new(
-                @"SELECT Game.Id as Game_Id , Game.State AS Game_State,
-       Host.id AS Host_Id, Host.username AS Host_Username, Host.nickname AS Host_Nickname, Host.ProfilePicURL AS Host_ProfilePic,
-       Winner.id As Winner_Id, Winner.username As Winner_Username, Winner.nickname As Winner_Nickname, Winner.ProfilePicURL As Winner_ProfilePic
-FROM Game
-JOIN User Host on Host.id = Game.HostId
-Left Outer Join User Winner on Winner.id = Game.WinnerId",
+            await using MySqlCommand command = new(@"
+SELECT Game.Id AS Game_Id, Game.State AS Game_State, 
+       HOST.id AS Host_Id, HOST.username AS Host_Username, HOST.nickname AS Host_Nickname, HOST.ProfilePicURL AS Host_ProfilePic, 
+       Winner.id AS Winner_Id, Winner.username AS Winner_Username, Winner.nickname AS Winner_Nickname, Winner.ProfilePicURL AS Winner_ProfilePic 
+FROM Game 
+    JOIN User AS HOST ON HOST.id = Game.HostId 
+    LEFT OUTER JOIN User AS Winner ON Winner.id = Game.WinnerId
+    WHERE Game.Id = @GameId",
                 con);
-            command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
+            command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return new Game(reader);
+            while (await reader.ReadAsync())
+            {
+                var g = new Game(reader);
+                Console.WriteLine("gameId: "+g.Id);
+                return g;
+            }
 
             await con.CloseAsync();
             throw new Exception($"no {nameof(Game)} with id: " + id);
