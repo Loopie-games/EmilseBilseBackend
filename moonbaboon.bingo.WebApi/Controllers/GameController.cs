@@ -1,9 +1,8 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
@@ -23,15 +22,19 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Game))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Game> GetById(string id)
         {
             try
             {
                 var game = _gameService.GetById(id);
+                Console.Write("H: "+game.Host);
                 return Ok(game);
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return NotFound(e.Message);
             }
         }
@@ -66,12 +69,16 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePackDto))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Game> Create(GameDtos.CreateGameDto gameDto)
         {
             try
-            {
-                return _gameService.NewGame(gameDto.LobbyId,
+            { 
+                var gameId =_gameService.NewGame(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+                Console.WriteLine(gameId);
+                return _gameService.GetById(gameId);
             }
             catch (Exception e)
             {

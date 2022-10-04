@@ -44,15 +44,23 @@ FROM Game
             throw new Exception($"no {nameof(Game)} with id: " + id);
         }
 
-        public async Task<Game> Create(string hostId)
+        public async Task<string> Create(GameEntity toCreate)
         {
-            string uuid = Guid.NewGuid().ToString();
-            var ent = await GameEnt(
-                $"INSERT INTO `{Table}`(`{DbStrings.Id}`, `{DbStrings.HostId}`) " +
-                $"VALUES ('{uuid}','{hostId}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
-            return ent ?? throw new InvalidDataException("ERROR in creating game with host: " + hostId);
+            toCreate.Id = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new("INSERT INTO Game(Id, HostId, WinnerId, State) VALUES (@Id,@HostId, @WinnerId, @State);", con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toCreate.Id;
+                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = toCreate.HostId;
+                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = toCreate.WinnerId;
+                    command.Parameters.AddWithValue("@State", toCreate.State.ToString());
+                }
+                command.ExecuteNonQuery();
+            }
+            return toCreate.Id;
         }
 
         //Todo move to other repo?

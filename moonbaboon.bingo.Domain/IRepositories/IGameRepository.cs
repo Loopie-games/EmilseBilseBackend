@@ -18,7 +18,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// </summary>
         /// <param name="hostId">host of the lobby</param>
         /// <returns>Game</returns>
-        public Task<Game> Create(string hostId);
+        public Task<string> Create(GameEntity toCreate);
 
         /// <summary>
         /// Gets list of players is in game with given Id

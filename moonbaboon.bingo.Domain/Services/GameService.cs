@@ -47,13 +47,13 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.FindById(id).Result;
         }
 
-        public Game NewGame(string lobbyId, string userId, string[]? tilePackIds)
+        public string NewGame(string lobbyId, string userId, string[]? tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
             if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
 
-            var game = _gameRepository.Create(userId).Result;
+            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
 
@@ -63,7 +63,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     //Create board for player
-                    var board = _boardRepository.Create(player.User.Id, game.Id).Result;
+                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
 
                     //get tiles about other players
                     List<BoardTile> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
@@ -124,7 +124,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var board = _boardRepository.Create(player.User.Id, game.Id).Result;
+                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
                     var boardTilesPlayer = new List<BoardTile>();
                     var packTilesTemp = new List<PackTile>(packTiles);
                     while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
@@ -147,7 +147,7 @@ namespace moonbaboon.bingo.Domain.Services
                     .ToList();
             }
 
-            return game;
+            return gameId;
         }
 
 
