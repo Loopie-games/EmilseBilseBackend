@@ -80,10 +80,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var tp = _tilePackService.GetById(id);
                 Price? price = null;
-                if (!string.IsNullOrEmpty(tp.PriceStripe))
-                {
-                    price = _priceService.Get(tp.PriceStripe);
-                }
+                if (!string.IsNullOrEmpty(tp.PriceStripe)) price = _priceService.Get(tp.PriceStripe);
 
                 return Ok(new TilePackDto(tp) {Price = price?.UnitAmount ?? null});
             }
@@ -150,7 +147,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                         var newPrice = _priceService.Create(new PriceCreateOptions
                             {UnitAmount = toUpdate.Price, Currency = "usd", Product = oldPrice.ProductId});
                         var product = _productService.Get(oldPrice.ProductId);
-                        _productService.Update(product.Id, new ProductUpdateOptions() {DefaultPrice = newPrice.Id});
+                        _productService.Update(product.Id, new ProductUpdateOptions {DefaultPrice = newPrice.Id});
                         _priceService.Update(oldPrice.Id, new PriceUpdateOptions {Active = false});
                         updated.PriceStripe = newPrice.Id;
                     }
@@ -183,9 +180,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var tp = _tilePackService.GetById(packId);
                 if (!string.IsNullOrEmpty(tp.PriceStripe))
-                {
                     _priceService.Update(tp.PriceStripe, new PriceUpdateOptions {Active = false});
-                }
                 _tilePackService.Delete(packId);
                 return NoContent();
             }

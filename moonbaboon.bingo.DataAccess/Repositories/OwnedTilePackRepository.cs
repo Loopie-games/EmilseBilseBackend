@@ -36,16 +36,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
-                @"SELECT 1 FROM OwnedTilePack WHERE OwnedTilePack.OwnerId = @ownerId && OwnedTilePack.TilePackId = @packId", _connection);
+                @"SELECT 1 FROM OwnedTilePack WHERE OwnedTilePack.OwnerId = @ownerId && OwnedTilePack.TilePackId = @packId",
+                _connection);
             {
                 command.Parameters.Add("@ownerId", MySqlDbType.VarChar).Value = ownedTp.OwnerId;
                 command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = ownedTp.PackId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return Convert.ToBoolean(reader.GetByte(0));
-            }
+            while (await reader.ReadAsync()) return Convert.ToBoolean(reader.GetByte(0));
 
             await _connection.CloseAsync();
             return false;

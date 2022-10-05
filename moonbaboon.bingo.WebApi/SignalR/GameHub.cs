@@ -94,6 +94,10 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
         }
 
+        /// <summary>
+        /// Claims Win for User
+        /// </summary>
+        /// <param name="boardId">Id of the board the user wants to claim is won</param>
         public async Task ClaimWin(string boardId)
         {
             try
@@ -115,7 +119,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 Console.WriteLine(e);
                 await SendError(e.Message);
-                throw;
             }
         }
 

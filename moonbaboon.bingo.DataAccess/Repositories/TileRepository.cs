@@ -20,11 +20,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             List<Tile> tiles = new();
             await _connection.OpenAsync();
 
-            await using var command = new MySqlCommand("SELECT Tile.Id AS Tile_Id, Tile.Action AS Tile_Action FROM Tile", _connection);
+            await using var command =
+                new MySqlCommand("SELECT Tile.Id AS Tile_Id, Tile.Action AS Tile_Action FROM Tile", _connection);
             await using var reader = await command.ExecuteReaderAsync();
             while (reader.Read()) tiles.Add(new Tile(reader));
             return tiles;
         }
+
         public async Task<List<Tile>> GetTilesUsedInPacks()
         {
             var list = new List<Tile>();
@@ -38,7 +40,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 await using MySqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                     list.Add(new Tile(reader.GetString(0), reader.GetString(1)));
-                
+
                 return list;
             }
         }

@@ -10,7 +10,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class UserTileRepository : IUserTileRepository
     {
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
-        
+
 
         public async Task<List<UserTile>> FindAll()
         {
@@ -28,7 +28,7 @@ FROM UserTile
     JOIN User As About ON UserTile.AboutUserId = About.id 
     JOIN User As AddedBy ON UserTile.AddedByUser = AddedBy.id;"
                 , con);
-            
+
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new UserTile(reader));
 
@@ -84,7 +84,7 @@ WHERE UserTile.AboutUserId = @Id;"
             await con.CloseAsync();
             return list;
         }
-        
+
         public async Task<UserTileEntity> Create(UserTileEntity toCreate)
         {
             toCreate.Id = Guid.NewGuid().ToString();

@@ -9,7 +9,6 @@ using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase

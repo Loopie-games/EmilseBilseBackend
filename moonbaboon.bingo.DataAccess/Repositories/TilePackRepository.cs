@@ -49,7 +49,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.CloseAsync();
             return list;
         }
-        
+
         public async Task<List<TilePack>> GetOwnedTilePacks(string userId)
         {
             var list = new List<TilePack>();

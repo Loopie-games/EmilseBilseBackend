@@ -40,7 +40,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return _tilePackService.IsOwned(new OwnedTilePackEntity(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                return _tilePackService.IsOwned(new OwnedTilePackEntity(
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                     tilePackId));
             }
             catch (Exception e)

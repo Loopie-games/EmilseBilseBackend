@@ -21,7 +21,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _tileService.GetAll();
         }
-        
+
         [HttpGet(nameof(GetTilesUsedInPacks))]
         public ActionResult<List<Tile>> GetTilesUsedInPacks()
         {

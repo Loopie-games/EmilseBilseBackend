@@ -34,7 +34,6 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardTileEntity TurnTile(string boardTileId, string userId)
         {
-            
             //checks that the user trying to turn the tile is owner of the board, else Error
             var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
             if (boardTile.Board.UserId != userId)
@@ -47,7 +46,6 @@ namespace moonbaboon.bingo.Domain.Services
             boardTile.IsActivated = !boardTile.IsActivated;
             var tile = _boardTileRepository.Update(new BoardTileEntity(boardTile)).Result;
             return tile;
-
         }
     }
 }

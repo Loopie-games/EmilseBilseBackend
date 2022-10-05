@@ -18,7 +18,7 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _tileRepository.GetAll().Result;
         }
-        
+
         public List<Tile> GetTilesUsedInPacks()
         {
             return _tileRepository.GetTilesUsedInPacks().Result;
