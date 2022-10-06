@@ -34,9 +34,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public async Task<UserSimple> SearchID(string searchString)
+        public async Task<List<UserSimple>> SearchID(string searchString)
         {
-            UserSimple? u = null;
+            var list = new List<UserSimple>();
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
@@ -46,11 +46,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                u = ReaderToEnt(reader);
+                var ent = ReaderToEnt(reader);
+                list.Add(ent);
             }
 
             await _connection.CloseAsync();
-            return u ?? new UserSimple("NULL", "NULL", "NULL", "NULL");
+            return list;
         }
 
         public async Task<UserSimple> Login(string dtoUsername, string dtoPassword)

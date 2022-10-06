@@ -7,7 +7,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IUserRepository
     {
         public Task<List<UserSimple>> Search(string searchString);
-        public Task<UserSimple> SearchID(string searchString);
+        public Task<List<UserSimple>> SearchID(string searchString);
         public Task<UserSimple> Login(string dtoUsername, string dtoPassword);
 
         /// <summary>
