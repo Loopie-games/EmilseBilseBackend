@@ -21,7 +21,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Search(searchStr).Result;
         }
 
-        public UserSimple SearchID(string searchStr)
+        public List<UserSimple> SearchID(string searchStr)
         {
             return _userRepository.SearchID(searchStr).Result;
         }
