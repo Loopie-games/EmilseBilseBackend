@@ -57,5 +57,29 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _userRepository.UpdateUser(id, user).Result;
         }
+
+        public bool RemoveBanner(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveBanner(uuid).Result;       
+            }
+            return false;
+        }
+
+        public bool RemoveIcon(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveIcon(uuid).Result;       
+            }
+            return false;
+        }
+
+        public bool RemoveName(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveName(uuid).Result;       
+            }
+            return false;
+        }
     }
 }

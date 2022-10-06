@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -12,7 +13,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private const string Table = DbStrings.UserTable;
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
-
+        private readonly Random random = new Random();
 
         public async Task<List<UserSimple>> Search(string searchString)
         {
@@ -178,10 +179,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.OpenAsync();
 
-            string query = $"UPDATE {DbStrings.UserTable} SET "                    +
-                            $"{DbStrings.Username} = '{user.Username}', "          +
-                            $"{DbStrings.Nickname} = '{user.Nickname}', "          +
-                            $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' "    +
+            string query = $"UPDATE {DbStrings.UserTable} SET " +
+                            $"{DbStrings.Username} = '{user.Username}', " +
+                            $"{DbStrings.Nickname} = '{user.Nickname}', " +
+                            $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' " +
                             $"WHERE {DbStrings.Id} = '{user.Id}'";
 
             await using var command = new MySqlCommand(query,
@@ -190,7 +191,44 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             await _connection.CloseAsync();
 
-            return new UserSimple(user.Id,user.Username,user.Nickname,user.ProfilePicUrl);
+            return new UserSimple(user.Id, user.Username, user.Nickname, user.ProfilePicUrl);
+        }
+
+        public async Task<bool> RemoveBanner(string uuid)
+        {
+            await _connection.OpenAsync();
+
+            await _connection.CloseAsync();
+            return false;
+        }
+
+        public async Task<bool> RemoveIcon(string uuid)
+        {
+            await _connection.OpenAsync();
+
+            await _connection.CloseAsync();
+            return false;
+        }
+
+        public async Task<bool> RemoveName(string uuid)
+        {
+            await _connection.OpenAsync();
+
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            string newRandomName = new string(Enumerable.Repeat(chars, 16)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+
+            string query = $"UPDATE {DbStrings.UserTable} SET " +
+                            $"{DbStrings.Username} = '{newRandomName}'" +
+                            $"WHERE {DbStrings.Id} = '{uuid}'";
+
+            await using var command = new MySqlCommand(query, _connection);
+
+            int affectedRows = command.ExecuteNonQuery();
+
+            await _connection.CloseAsync();
+
+            return (affectedRows > 0);
         }
     }
 }
