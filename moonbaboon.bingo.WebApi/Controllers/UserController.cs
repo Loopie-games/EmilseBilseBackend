@@ -132,13 +132,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return res ? Ok() : BadRequest();
         }
 
-        [HttpPut(nameof(RemoveBanner) + "/{uuid}")]
+        [HttpPut(nameof(RemoveIcon) + "/{uuid}")]
         public ActionResult<bool> RemoveIcon(string uuid, string adminUUID){
             bool res = _userService.RemoveIcon(uuid, adminUUID);
             return res ? Ok() : BadRequest();
         }
 
-        [HttpPut(nameof(RemoveBanner) + "/{uuid}")]
+        [HttpPut(nameof(RemoveName) + "/{uuid}")]
         public ActionResult<bool> RemoveName(string uuid, string adminUUID){
             bool res = _userService.RemoveName(uuid, adminUUID);
             return res ? Ok() : BadRequest();
