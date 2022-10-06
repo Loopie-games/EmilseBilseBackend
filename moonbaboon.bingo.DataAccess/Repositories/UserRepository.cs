@@ -192,5 +192,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             return new UserSimple(user.Id,user.Username,user.Nickname,user.ProfilePicUrl);
         }
+
+        public Task<bool> RemoveBanner(string uuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveIcon(string uuid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveName(string uuid)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

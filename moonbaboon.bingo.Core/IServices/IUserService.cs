@@ -13,5 +13,8 @@ namespace moonbaboon.bingo.Core.IServices
         public bool VerifyUsername(string username);
         public string GetSalt(string username);
         public UserSimple UpdateUser(string id, UserSimple user);
+        bool RemoveBanner(string uuid, string adminUUID);
+        bool RemoveIcon(string uuid, string adminUUID);
+        bool RemoveName(string uuid, string adminUUID);
     }
 }
