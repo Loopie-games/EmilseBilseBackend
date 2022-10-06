@@ -29,7 +29,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var game = _gameService.GetById(id);
-                Console.Write("H: "+game.Host);
                 return Ok(game);
             }
             catch (Exception e)
@@ -74,10 +73,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<Game> Create(GameDtos.CreateGameDto gameDto)
         {
             try
-            { 
-                var gameId =_gameService.NewGame(gameDto.LobbyId,
+            {
+                var gameId = _gameService.NewGame(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                Console.WriteLine(gameId);
                 return _gameService.GetById(gameId);
             }
             catch (Exception e)
