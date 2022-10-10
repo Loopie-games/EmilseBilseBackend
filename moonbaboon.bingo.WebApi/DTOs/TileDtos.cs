@@ -50,6 +50,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
         {
             Name = name;
         }
+
         public TilePackDto(TilePack tp)
         {
             Id = tp.Id;

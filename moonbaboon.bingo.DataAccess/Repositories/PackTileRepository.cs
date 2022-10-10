@@ -19,14 +19,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<PackTile>> GetByPackId(string packId)
         {
             List<PackTile> list = new();
-            await using var con = _connection;
+            await using var con = _connection.Clone();
             {
                 con.Open();
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
-                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        @"SELECT PackTile.Id As PackTile_Id, T.Id AS Tile_Id, T.Action AS Tile_Action, 
+                        TP.Id AS TilePack_Id, TP.Name AS TilePack_Name, TP.PicUrl AS TilePack_Pic, TP.Stripe_PRICE As TilePack_Stripe 
                         FROM PackTile 
                             JOIN Tile T on PackTile.TileId = T.Id 
                             JOIN TilePack TP on TP.Id = PackTile.PackId 
@@ -38,15 +38,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using var reader = await command.ExecuteReaderAsync();
                 while (reader.Read()) list.Add(new PackTile(reader));
-
-                await con.CloseAsync();
             }
             return list;
         }
 
         public async Task<PackTile> GetById(string id)
         {
-            await using var con = _connection;
+            await using var con = _connection.Clone();
             {
                 con.Open();
 
@@ -65,32 +63,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using var reader = await command.ExecuteReaderAsync();
                 while (reader.Read()) return new PackTile(reader);
-                await con.CloseAsync();
             }
 
             throw new Exception($"No {nameof(PackTile)} with id: {id}");
         }
 
-        public async Task<List<Tile>> GetTilesUsedInPacks()
-        {
-            var list = new List<Tile>();
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                "SELECT * FROM Tile RIGHT JOIN PackTile on PackTile.TileId = Tile.Id"
-                , _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                list.Add(new Tile(reader.GetString(0), reader.GetString(1), null, TileType.PackTile));
-
-            await _connection.CloseAsync();
-            return list;
-        }
-
         public async Task<PackTileEntity> Create(PackTileEntity pt)
         {
             pt.Id = Guid.NewGuid().ToString();
-            await using var con = _connection;
+            await using var con = _connection.Clone();
             {
                 con.Open();
                 await using MySqlCommand command =
@@ -107,7 +88,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<bool> Clear(string id)
         {
-            await using var con = _connection;
+            await using var con = _connection.Clone();
             {
                 con.Open();
                 await using MySqlCommand command =

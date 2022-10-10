@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -28,6 +29,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await _connection.CloseAsync();
             return list;
+        }
+
+        public async Task<bool> ConfirmOwnership(OwnedTilePackEntity ownedTp)
+        {
+            await _connection.OpenAsync();
+
+            await using var command = new MySqlCommand(
+                @"SELECT 1 FROM OwnedTilePack WHERE OwnedTilePack.OwnerId = @ownerId && OwnedTilePack.TilePackId = @packId",
+                _connection);
+            {
+                command.Parameters.Add("@ownerId", MySqlDbType.VarChar).Value = ownedTp.OwnerId;
+                command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = ownedTp.PackId;
+            }
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) return Convert.ToBoolean(reader.GetByte(0));
+
+            await _connection.CloseAsync();
+            return false;
         }
 
         private static string sql_select(string from)

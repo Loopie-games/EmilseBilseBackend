@@ -12,33 +12,55 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class GameRepository : IGameRepository
     {
         private const string Table = DbStrings.GameTable;
+        private readonly MySqlConnection _connection;
+
+        public GameRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
         public async Task<Game> FindById(string id)
         {
-            var ent =
-                await GameEnt(sql_select(Table) +
-                              $"WHERE {Table}.{DbStrings.Id} = '{id}'");
-            return ent ?? throw new Exception("No game found with id: " + id);
+            await using var con = _connection.Clone();
+            await con.OpenAsync();
+
+            await using MySqlCommand command = new(@"
+SELECT Game.Id AS Game_Id, Game.State AS Game_State, 
+       HOST.id AS Host_Id, HOST.username AS Host_Username, HOST.nickname AS Host_Nickname, HOST.ProfilePicURL AS Host_ProfilePic, 
+       Winner.id AS Winner_Id, Winner.username AS Winner_Username, Winner.nickname AS Winner_Nickname, Winner.ProfilePicURL AS Winner_ProfilePic 
+FROM Game 
+    JOIN User AS HOST ON HOST.id = Game.HostId 
+    LEFT OUTER JOIN User AS Winner ON Winner.id = Game.WinnerId
+    WHERE Game.Id = @GameId",
+                con);
+            command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = id;
+            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                return new Game(reader);
+            }
+
+            await con.CloseAsync();
+            throw new Exception($"no {nameof(Game)} with id: " + id);
         }
 
-        public async Task<Game?> FindByHostId(string userId)
+        public async Task<string> Create(GameEntity toCreate)
         {
-            var ent =
-                await GameEnt(
-                    sql_select(Table) +
-                    $"WHERE {Table}.{DbStrings.HostId} = '{userId}'");
-            return ent;
-        }
-
-        public async Task<Game> Create(string hostId)
-        {
-            string uuid = Guid.NewGuid().ToString();
-            var ent = await GameEnt(
-                $"INSERT INTO `{Table}`(`{DbStrings.Id}`, `{DbStrings.HostId}`) " +
-                $"VALUES ('{uuid}','{hostId}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
-            return ent ?? throw new InvalidDataException("ERROR in creating game with host: " + hostId);
+            toCreate.Id = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new("INSERT INTO Game(Id, HostId, WinnerId, State) VALUES (@Id,@HostId, @WinnerId, @State);", con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toCreate.Id;
+                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = toCreate.HostId;
+                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = toCreate.WinnerId;
+                    command.Parameters.AddWithValue("@State", toCreate.State.ToString());
+                }
+                command.ExecuteNonQuery();
+            }
+            return toCreate.Id;
         }
 
         //Todo move to other repo?
@@ -98,26 +120,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                                     sql_select(Table) +
                                     $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'");
             return ent ?? throw new InvalidDataException("ERROR in updating game with id: " + game.Id);
-        }
-
-        public async Task<List<Game>> GetEnded(string userId)
-        {
-            var list = new List<Game>();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
-
-            await using var command = new MySqlCommand(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.HostId} = '{userId}' && {Table}.{DbStrings.State} = '{Enum.GetName(State.Ended)}'",
-                con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                var ent = ReaderToGame(reader);
-                list.Add(ent);
-            }
-
-            return list;
         }
 
         private static string sql_select(string from)

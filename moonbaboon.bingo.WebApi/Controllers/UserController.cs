@@ -9,7 +9,6 @@ using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
-    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase
@@ -27,6 +26,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
         public ActionResult<List<UserSimple>> Search(string searchStr)
         {
             if (searchStr.Length > 2) return Ok(_userService.Search(searchStr));
+            return BadRequest("use at last 3 characters in your search");
+        }
+
+        [HttpGet(nameof(SearchID) + "/{searchStr}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<List<UserSimple>> SearchID(string searchStr)
+        {
+            if (searchStr.Length > 2) return Ok(_userService.SearchID(searchStr));
             return BadRequest("use at last 3 characters in your search");
         }
 
@@ -83,7 +91,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                     return BadRequest($"Username '{user.Username}' is already in use.");
 
                 var u = _userService.CreateUser(user);
-                return CreatedAtAction(nameof(GetById), new {id = u.Id}, u);
+                return CreatedAtAction(nameof(GetById), new { id = u.Id }, u);
             }
             catch (Exception e)
             {
@@ -104,6 +112,37 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<UserSimple> UpdateUser(string id, UserSimple user) {
+
+            if (id != user.Id)
+                return BadRequest("User ID mismatch...");
+
+            UserSimple res = _userService.UpdateUser(id, user);
+
+
+            return Ok(res);
+        }
+
+        [HttpPut(nameof(RemoveBanner) + "/{uuid}")]
+        public ActionResult<bool> RemoveBanner(string uuid, string adminUUID){
+            bool res = false;//_userService.RemoveBanner(uuid, adminUUID);
+            return res ? Ok() : BadRequest();
+        }
+
+        [HttpPut(nameof(RemoveIcon) + "/{uuid}")]
+        public ActionResult<bool> RemoveIcon(string uuid, string adminUUID){
+            bool res = false;//_userService.RemoveIcon(uuid, adminUUID);
+            return res ? Ok() : BadRequest();
+        }
+
+        [HttpPut(nameof(RemoveName) + "/{uuid}")]
+        public ActionResult<bool> RemoveName(string uuid, string adminUUID){
+            Console.WriteLine($"Incoming: {uuid} FROM {adminUUID}");
+            bool res = _userService.RemoveName(uuid, adminUUID);
+            return res ? Ok() : BadRequest();
         }
     }
 }

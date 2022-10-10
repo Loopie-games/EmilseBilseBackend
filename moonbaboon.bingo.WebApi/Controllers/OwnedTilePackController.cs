@@ -33,5 +33,22 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Authorize]
+        [HttpGet(nameof(CheckOwnership))]
+        public ActionResult<bool> CheckOwnership(string tilePackId)
+        {
+            try
+            {
+                return _tilePackService.IsOwned(new OwnedTilePackEntity(
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
+                    tilePackId));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

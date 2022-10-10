@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -10,121 +9,119 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class BoardTileRepository : IBoardTileRepository
     {
-        private const string Table = DbStrings.BoardTileTable;
+        private readonly MySqlConnection _connection;
+
+        public BoardTileRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
+
 
         public async Task<BoardTile> ReadById(string id)
         {
-            BoardTile? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             await con.OpenAsync();
+
             await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{id}';",
+                @"SELECT BoardTile.Id AS BoardTile_Id, 
+       Board.Id AS Board_Id, Board.GameId AS Board_GameId, Board.UserId AS Board_UserId, 
+       BoardTile.TileId AS ByTile_Id, Tile.Id AS Tile_Id, Tile.Action AS Tile_Action, 
+       CASE WHEN PackTile.TileId IS NULL THEN '0' ELSE '1' END AS ByTile_Type, 
+       User.id AS User_Id, User.username AS User_Username, User.nickname AS User_Nickname, User.ProfilePicURL AS User_ProfilePicUrl, 
+       BoardTile.Position AS BoardTile_Position, BoardTile.IsActivated AS BoardTile_IsActivated 
+FROM BoardTile 
+    JOIN Board ON BoardTile.BoardId = Board.Id 
+    JOIN User ON BoardTile.AboutUserId = User.id 
+    LEFT JOIN PackTile ON BoardTile.TileId = PackTile.Id 
+    LEFT JOIN TilePack ON PackTile.PackId = TilePack.Id 
+    LEFT JOIN UserTile ON BoardTile.TileId = UserTile.Id 
+    LEFT JOIN Tile ON PackTile.TileId = Tile.Id || UserTile.TileId = Tile.Id 
+WHERE BoardTile.Id = @Id;",
                 con);
+            command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToBoardTile(reader);
-            return ent ?? throw new Exception($"no {Table} found with id: " + id);
+            while (await reader.ReadAsync()) return new BoardTile(reader);
+
+            await con.CloseAsync();
+            throw new Exception($"no {nameof(BoardTile)} with id: " + id);
         }
 
-        public async Task<BoardTile> Create(BoardTile toCreate)
+        public async Task<BoardTileEntity> Create(BoardTileEntity toCreate)
         {
-            string uuid = Guid.NewGuid().ToString();
-            BoardTile? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
-
-            await using var command = new MySqlCommand(
-                $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.AboutUser.Id}','{toCreate.Board.Id}', '{toCreate.Tile.TileType}','{toCreate.Tile.Id}','{toCreate.Position}','{Convert.ToInt32(toCreate.IsActivated)}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}';",
-                con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read()) ent = ReaderToBoardTile(reader);
-
-            if (ent == null) throw new InvalidDataException($"ERROR: {Table} not created");
-
-            return ent;
+            toCreate.Id = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new(
+                        "INSERT INTO BoardTile(Id, AboutUserId, BoardId, TileId, Position, IsActivated) VALUES (@Id, @AboutUserId , @BoardId, @TileId, @Position, @IsActivated);",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toCreate.Id;
+                    command.Parameters.Add("@AboutUserId", MySqlDbType.VarChar).Value = toCreate.AboutUserId;
+                    command.Parameters.Add("@BoardId", MySqlDbType.VarChar).Value = toCreate.BoardId;
+                    command.Parameters.Add("@TileId", MySqlDbType.VarChar).Value = toCreate.TileId;
+                    command.Parameters.Add("@Position", MySqlDbType.Int16).Value = toCreate.Position;
+                    command.Parameters.Add("@IsActivated", MySqlDbType.Bool).Value = toCreate.IsActivated;
+                }
+                command.ExecuteNonQuery();
+            }
+            return toCreate;
         }
+
 
         public async Task<List<BoardTile>> FindByBoardId(string id)
         {
-            await using var _connection = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             List<BoardTile> list = new();
-            await _connection.OpenAsync();
+            await con.OpenAsync();
 
             await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.BoardId} = '{id}';",
-                _connection);
+                @"SELECT BoardTile.Id AS BoardTile_Id, 
+       Board.Id AS Board_Id, Board.GameId AS Board_GameId, Board.UserId AS Board_UserId, 
+       BoardTile.TileId AS ByTile_Id, Tile.Id AS Tile_Id, Tile.Action AS Tile_Action, 
+       CASE WHEN PackTile.TileId IS NULL THEN '0' ELSE '1' END AS ByTile_Type, 
+       User.id AS User_Id, User.username AS User_Username, User.nickname AS User_Nickname, User.ProfilePicURL AS User_ProfilePicUrl, 
+       BoardTile.Position AS BoardTile_Position, BoardTile.IsActivated AS BoardTile_IsActivated 
+FROM BoardTile 
+    JOIN Board ON BoardTile.BoardId = Board.Id 
+    JOIN User ON BoardTile.AboutUserId = User.id 
+    LEFT JOIN PackTile ON BoardTile.TileId = PackTile.Id 
+    LEFT JOIN TilePack ON PackTile.PackId = TilePack.Id 
+    LEFT JOIN UserTile ON BoardTile.TileId = UserTile.Id 
+    LEFT JOIN Tile ON PackTile.TileId = Tile.Id || UserTile.TileId = Tile.Id 
+WHERE BoardTile.BoardId = @boardId;",
+                con);
+            command.Parameters.Add("@boardId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                BoardTile boardTile = ReaderToBoardTile(reader);
-                list.Add(boardTile);
-            }
+            while (await reader.ReadAsync()) list.Add(new BoardTile(reader));
 
-            await _connection.CloseAsync();
+
+            await con.CloseAsync();
             return list;
         }
 
-        public async Task<BoardTile> Update(BoardTile toUpdate)
+        public async Task<BoardTileEntity> Update(BoardTileEntity toUpdate)
         {
-            await using var connection = new MySqlConnection(DbStrings.SqlConnection);
-            BoardTile? ent = null;
-            await connection.OpenAsync();
-
-            await using var command = new MySqlCommand(
-                $"UPDATE {Table} " +
-                $"SET `{DbStrings.AboutUserId}`='{toUpdate.AboutUser.Id}',`{DbStrings.BoardId}`='{toUpdate.Board.Id}',`{DbStrings.TileId}`='{toUpdate.Tile.Id}',`{DbStrings.Position}`='{toUpdate.Position}',`{DbStrings.IsActivated}`='{Convert.ToInt32(toUpdate.IsActivated)}' " +
-                $"WHERE {DbStrings.Id} = '{toUpdate.Id}';" +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{toUpdate.Id}';",
-                connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToBoardTile(reader);
-
-            await connection.CloseAsync();
-
-            if (ent == null) throw new InvalidDataException($"ERROR: {Table} with id {toUpdate.Id} not updated");
-
-            return ent;
-        }
-
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {Table}.{DbStrings.Id}, {Table}.{DbStrings.Position}, {Table}.{DbStrings.IsActivated}, " +
-                $"{DbStrings.BoardTable}.{DbStrings.Id}, {DbStrings.BoardTable}.{DbStrings.GameId}, {DbStrings.BoardTable}.{DbStrings.UserId}, " +
-                $"{DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic}, " +
-                $"TOM.Id, TOM.Action, TOM.AddedBy, {Table}.{DbStrings.TileType} " +
-                $"FROM {from} " +
-                $"JOIN {DbStrings.BoardTable} ON {Table}.{DbStrings.BoardId} = {DbStrings.BoardTable}.{DbStrings.Id} " +
-                $"JOIN {DbStrings.UserTable} on {Table}.{DbStrings.AboutUserId} = {DbStrings.UserTable}.{DbStrings.Id} " +
-                "JOIN (" +
-                "SELECT Tile.Id As Id, Tile.Action As Action, TilePack.Name AS AddedBy " +
-                "FROM Tile JOIN PackTile ON Tile.Id = PackTile.TileId " +
-                "LEFT JOIN TilePack ON TilePack.Id = PackTile.PackId " +
-                "UNION SELECT Tile.Id, Tile.Action, User.username AS AddedBy " +
-                "FROM Tile JOIN UserTile ON Tile.Id = UserTile.TileId LEFT " +
-                "JOIN User ON UserTile.AddedById = User.id) AS TOM " +
-                $"ON {Table}.{DbStrings.TileId} = TOM.ID ";
-        }
-
-        private static BoardTile ReaderToBoardTile(MySqlDataReader reader)
-        {
-            Board board =
-                new(reader.GetString(3), reader.GetString(4), reader.GetString(5));
-            UserSimple user =
-                new(reader.GetString(6), reader.GetString(7), reader.GetString(8),
-                    reader.GetValue(9).ToString());
-            Tile tile = new(reader.GetString(10), reader.GetString(11), reader.GetString(12),
-                Enum.Parse<TileType>(reader.GetValue(13).ToString()));
-            BoardTile boardTile =
-                new(reader.GetString(0), board, tile, user, reader.GetInt32(1),
-                    Convert.ToBoolean(reader.GetValue(2).ToString()));
-
-            return boardTile;
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new(
+                        "UPDATE BoardTile SET `AboutUserId`=@AboutUserId,`BoardId`=@BoardId,`TileId`=@TileId,`Position`=@Position,`IsActivated`=@IsActivated WHERE BoardTile.Id  = @Id",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toUpdate.Id;
+                    command.Parameters.Add("@AboutUserId", MySqlDbType.VarChar).Value = toUpdate.AboutUserId;
+                    command.Parameters.Add("@BoardId", MySqlDbType.VarChar).Value = toUpdate.BoardId;
+                    command.Parameters.Add("@TileId", MySqlDbType.VarChar).Value = toUpdate.TileId;
+                    command.Parameters.Add("@Position", MySqlDbType.Int16).Value = toUpdate.Position;
+                    command.Parameters.Add("@IsActivated", MySqlDbType.Int16).Value =
+                        Convert.ToByte(toUpdate.IsActivated);
+                }
+                await command.ExecuteNonQueryAsync();
+            }
+            return toUpdate;
         }
     }
 }

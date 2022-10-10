@@ -13,9 +13,9 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <returns>BoardTile</returns>
         public Task<BoardTile> ReadById(string id);
 
-        public Task<BoardTile> Create(BoardTile toCreate);
+        public Task<BoardTileEntity> Create(BoardTileEntity toCreate);
 
         public Task<List<BoardTile>> FindByBoardId(string id);
-        public Task<BoardTile> Update(BoardTile toUpdate);
+        public Task<BoardTileEntity> Update(BoardTileEntity toUpdate);
     }
 }

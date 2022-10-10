@@ -21,6 +21,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Search(searchStr).Result;
         }
 
+        public List<UserSimple> SearchID(string searchStr)
+        {
+            return _userRepository.SearchID(searchStr).Result;
+        }
+
         public UserSimple Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
@@ -46,6 +51,35 @@ namespace moonbaboon.bingo.Domain.Services
         public string GetSalt(string username)
         {
             return _userRepository.GetSalt(username).Result;
+        }
+
+        public UserSimple UpdateUser(string id, UserSimple user)
+        {
+            return _userRepository.UpdateUser(id, user).Result;
+        }
+
+        public bool RemoveBanner(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveBanner(uuid).Result;       
+            }
+            return false;
+        }
+
+        public bool RemoveIcon(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveIcon(uuid).Result;       
+            }
+            return false;
+        }
+
+        public bool RemoveName(string uuid, string adminUUID)
+        {
+            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+                return _userRepository.RemoveName(uuid).Result;       
+            }
+            return false;
         }
     }
 }

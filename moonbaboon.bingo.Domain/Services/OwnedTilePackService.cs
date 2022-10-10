@@ -18,5 +18,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _ownedTilePackRepository.GetOwnedTilePacks(userId).Result;
         }
+
+        public bool IsOwned(OwnedTilePackEntity entity)
+        {
+            return _ownedTilePackRepository.ConfirmOwnership(entity).Result;
+        }
     }
 }

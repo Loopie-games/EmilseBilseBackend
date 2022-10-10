@@ -22,7 +22,7 @@ namespace moonbaboon.bingo.Domain.Services
             return _boardTileRepository.ReadById(id).Result;
         }
 
-        public BoardTile Create(BoardTile toCreate)
+        public BoardTileEntity Create(BoardTileEntity toCreate)
         {
             return _boardTileRepository.Create(toCreate).Result;
         }
@@ -32,28 +32,20 @@ namespace moonbaboon.bingo.Domain.Services
             return _boardTileRepository.FindByBoardId(id).Result;
         }
 
-        public BoardTile TurnTile(string boardTileId, string userId)
+        public BoardTileEntity TurnTile(string boardTileId, string userId)
         {
-            try
-            {
-                //checks that the user trying to turn the tile is owner of the board, else Error
-                var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
-                if (boardTile.Board.UserId != userId)
-                    throw new Exception("You do not own this board, and can not turn the tiles!");
+            //checks that the user trying to turn the tile is owner of the board, else Error
+            var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
+            if (boardTile.Board.UserId != userId)
+                throw new Exception("You do not own this board, and can not turn the tiles!");
 
-                var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
-                if (game.State != State.Ongoing)
-                    throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
+            var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
+            if (game.State != State.Ongoing)
+                throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
 
-                boardTile.IsActivated = !boardTile.IsActivated;
-                var tile = _boardTileRepository.Update(boardTile).Result;
-                return tile;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            boardTile.IsActivated = !boardTile.IsActivated;
+            var tile = _boardTileRepository.Update(new BoardTileEntity(boardTile)).Result;
+            return tile;
         }
     }
 }

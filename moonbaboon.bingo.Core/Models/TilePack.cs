@@ -1,4 +1,7 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using System.Data;
+using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
     public class TilePack
     {
@@ -8,6 +11,14 @@
             Name = name;
             PicUrl = picUrl;
             PriceStripe = priceStripe;
+        }
+
+        public TilePack(MySqlDataReader reader)
+        {
+            Id = reader.GetString("TilePack_Id");
+            Name = reader.GetString("TilePack_Name");
+            PicUrl = reader.GetValue("TilePack_Pic").ToString();
+            PriceStripe = reader.GetValue("TilePack_Stripe").ToString();
         }
 
         public string? Id { get; set; }
