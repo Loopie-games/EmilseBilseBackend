@@ -47,17 +47,16 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.FindById(id).Result;
         }
 
-        public string NewGame(string lobbyId, string userId, string[]? tilePackIds)
+        public string NewFreeForAll(string lobbyId, string userId, string[] tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
             if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
+            if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
 
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
-
-
-            if (tilePackIds is null || tilePackIds.Length <= 0) return gameId;
+            
             //Check ownership over chosen packages
             if (tilePackIds.Any(tpId =>
                 !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
@@ -77,7 +76,6 @@ namespace moonbaboon.bingo.Domain.Services
                 while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
                 {
                     var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
-                    Console.WriteLine(board.UserId + "" + player.User.Id + "" + player.User.Id.Equals(board.UserId));
                     boardTilesPlayer.Add(new BoardTile(null, board, randomTile, player.User, boardTilesPlayer.Count,
                         false));
                     packTilesTemp.Remove(randomTile);
@@ -94,8 +92,8 @@ namespace moonbaboon.bingo.Domain.Services
             return gameId;
         }
         
-        /*
-         * public string NewGame(string lobbyId, string userId, string[]? tilePackIds)
+        
+        public string NewOG(string lobbyId, string userId, string[]? tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
@@ -197,7 +195,7 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
-         */
+        
 
 
         /// <exception cref="Exception">if the user is not on the list</exception>

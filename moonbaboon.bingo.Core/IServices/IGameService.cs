@@ -19,7 +19,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="hostId">UserId from the host of the lobby</param>
         /// <param name="tilePackIds"></param>
         /// <returns>the created game</returns>
-        public string NewGame(string lobbyId, string hostId, string[]? tilePackIds);
+        public string NewOG(string lobbyId, string hostId, string[]? tilePackIds);
 
         /// <summary>
         ///     Gets player list from game id
@@ -62,5 +62,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="userId">id of the player that wants to deny</param>
         /// <returns>the game</returns>
         public Game DenyWin(string gameId, string userId);
+
+        string NewFreeForAll(string gameDtoLobbyId, string value, string[] gameDtoTpIds);
     }
 }
