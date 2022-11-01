@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -13,7 +14,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     {
         private const string Table = DbStrings.UserTable;
         private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
-        private readonly Random random = new Random();
+        private readonly Random _random = new();
 
         public async Task<List<UserSimple>> Search(string searchString)
         {
@@ -215,8 +216,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await _connection.OpenAsync();
 
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string newRandomName = new string(Enumerable.Repeat(chars, 16)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            string newRandomName = new(Enumerable.Repeat(chars, 16)
+                .Select(s => s[_random.Next(s.Length)]).ToArray());
 
             string query = $"UPDATE {DbStrings.UserTable} SET " +
                             $"{DbStrings.Username} = '{newRandomName}'" +
