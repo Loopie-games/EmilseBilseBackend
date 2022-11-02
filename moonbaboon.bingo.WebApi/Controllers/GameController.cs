@@ -86,7 +86,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
         
         [Authorize]
-        [HttpPost]
+        [HttpPost("/FFA")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Game> CreateFreeForAll(GameDtos.CreateGameDto gameDto)
