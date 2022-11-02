@@ -47,7 +47,53 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.FindById(id).Result;
         }
 
-        public string NewGame(string lobbyId, string userId, string[]? tilePackIds)
+        public string NewFreeForAll(string lobbyId, string userId, string[] tilePackIds)
+        {
+            //Get lobby and throw exception if not provided with correct host id
+            var lobby = _lobbyRepository.FindById(lobbyId).Result;
+            if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
+            if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
+
+            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
+            
+            //Check ownership over chosen packages
+            if (tilePackIds.Any(tpId =>
+                !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
+                throw new Exception("You dont have ownership over one or more of the tilepacks");
+
+            var packTiles = new List<PackTile>();
+
+            foreach (var packId in tilePackIds)
+                packTiles.AddRange(_packTileRepository.GetByPackId(packId).Result);
+
+            var boardTilesPack = new List<BoardTile>();
+            foreach (var player in players)
+            {
+                var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                var boardTilesPlayer = new List<BoardTile>();
+                var packTilesTemp = new List<PackTile>(packTiles);
+                while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
+                {
+                    var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
+                    boardTilesPlayer.Add(new BoardTile(null, board, randomTile, player.User, boardTilesPlayer.Count,
+                        false));
+                    packTilesTemp.Remove(randomTile);
+                }
+
+                boardTilesPack.AddRange(boardTilesPlayer);
+            }
+
+            //Insert all boardtiles in database
+            var unused = boardTilesPack.Select(boardTile =>
+                    _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
+                .ToList();
+
+            return gameId;
+        }
+        
+        
+        public string NewOG(string lobbyId, string userId, string[]? tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
@@ -149,6 +195,7 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
+        
 
 
         /// <exception cref="Exception">if the user is not on the list</exception>

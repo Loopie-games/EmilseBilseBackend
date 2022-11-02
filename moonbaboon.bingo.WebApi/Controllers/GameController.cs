@@ -68,13 +68,32 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePackDto))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Game> Create(GameDtos.CreateGameDto gameDto)
         {
             try
             {
-                var gameId = _gameService.NewGame(gameDto.LobbyId,
+                var gameId = _gameService.NewOG(gameDto.LobbyId,
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+                return _gameService.GetById(gameId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [Authorize]
+        [HttpPost("/FFA")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Game> CreateFreeForAll(GameDtos.CreateGameDto gameDto)
+        {
+            try
+            {
+                var gameId = _gameService.NewFreeForAll(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
                 return _gameService.GetById(gameId);
             }
