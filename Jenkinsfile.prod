@@ -1,10 +1,6 @@
 pipeline {
     agent any
-
-    parameters {
-        run filter: 'SUCCESSFUL', name: 'PROMOTED_BUILD', projectName: 'backend-dev'
-    }
-
+    
     stages {
         stage('Deploy to prod') {
             steps {
