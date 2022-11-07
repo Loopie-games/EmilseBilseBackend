@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\moonbaboon.bingo.Core\moonbaboon.bingo.Core.csproj"/>
+        <ProjectReference Include="..\moonbaboon.bingo.Core\moonbaboon.bingo.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Castle.Core" Version="5.0.0"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0"/>
+        <PackageReference Include="Castle.Core" Version="5.0.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.10.0" />
     </ItemGroup>
 
 </Project>

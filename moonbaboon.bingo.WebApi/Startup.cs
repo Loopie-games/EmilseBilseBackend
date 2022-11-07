@@ -171,6 +171,10 @@ namespace moonbaboon.bingo.WebApi
             //Game
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
+            
+            //GameMode
+            services.AddScoped<IGameModeRepository, GameModeRepository>();
+            services.AddScoped<IGameModeService, GameModeService>();
 
             //Board
             services.AddScoped<IBoardRepository, BoardRepository>();
