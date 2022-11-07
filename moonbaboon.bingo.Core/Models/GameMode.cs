@@ -1,4 +1,6 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
     public class GameMode
     {
@@ -6,6 +8,12 @@
         {
             Id = id;
             Name = name;
+        }
+
+        public GameMode(MySqlDataReader reader)
+        {
+            Id = reader.GetString("GameMode_Id");
+            Name = reader.GetString("GameMode_Name");
         }
 
         public string? Id { get; set; }
