@@ -26,7 +26,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BugReport GetById(string id)
         {
-            return _bugReportRepository.ReadById(id);
+            return _bugReportRepository.ReadById(id).Result;
         }
     }
 }
