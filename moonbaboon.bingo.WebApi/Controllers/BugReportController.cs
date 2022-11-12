@@ -32,8 +32,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
         
-        [HttpPost(nameof(AddToTilePack))]
-        public ActionResult<BugReport> AddToTilePack(BugReportEntity pt)
+        [HttpPost(nameof(Create))]
+        public ActionResult<BugReport> Create(BugReportEntity pt)
         {
             try
             {
@@ -47,7 +47,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
         
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BugReport))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<BugReport> GetById(string id)
