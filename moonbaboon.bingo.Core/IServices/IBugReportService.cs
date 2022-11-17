@@ -5,9 +5,9 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IBugReportService
     {
-        public List<BugReport> GetAll();
+        public List<BugReport> GetAll(string userId);
 
         public BugReportEntity Create(BugReportEntity bugReportEntity);
-        public BugReport GetById(string id);
+        public BugReport GetById(string id, string userId);
     }
 }

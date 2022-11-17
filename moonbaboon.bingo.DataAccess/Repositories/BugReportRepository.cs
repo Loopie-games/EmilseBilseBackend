@@ -16,15 +16,20 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             _connection = connection;
         }
 
-        public async Task<List<BugReport>> FindAll()
+        public async Task<List<BugReport>> FindAll(string adminId)
         {
             var list = new List<BugReport>();
+
             await _connection.OpenAsync();
 
             await using MySqlCommand command = new(
-                @"SELECT BugReport.Id As BugReport_Id, BugReport.Title As BugReport_Title, BugReport.Description AS BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl
+                @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
-                            JOIN User U on BugReport.ReportingUserId = U.id", _connection);
+                            JOIN User U on BugReport_ReportingUserId = U.id
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id", _connection);
+            {
+                command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
+            }
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
                 list.Add(new BugReport(reader));
@@ -41,7 +46,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "INSERT INTO BugReport(Id, ReportingUserId, Title, Description) VALUES (@Id,@ReportingUserId,@Title,@Description);",
+                        "INSERT INTO BugReport VALUES (@Id,@ReportingUserId,@Title,@Description);",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
@@ -54,7 +59,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return entity;
         }
 
-        public async Task<BugReport> ReadById(string id)
+        public async Task<BugReport> ReadById(string id, string adminId)
         {
             await using var con = _connection.Clone();
             {
@@ -62,12 +67,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT BugReport.Id As BugReport_Id, BugReport.Title As BugReport_Title, BugReport.Description AS BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl
+                        @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
-                            JOIN User U on BugReport.ReportingUserId = U.id
-                        WHERE BugReport.Id = @Id",
+                            JOIN User U on BugReport_ReportingUserId = U.id
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id
+                        WHERE BugReport.BugReport_Id = @Id",
                         con);
                 {
+                    command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
                 }
 

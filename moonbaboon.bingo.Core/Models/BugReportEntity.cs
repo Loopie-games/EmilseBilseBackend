@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using System.Data;
+using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {
@@ -20,25 +21,19 @@ namespace moonbaboon.bingo.Core.Models
 
     public class BugReport
     {
-        public BugReport(string? id, UserSimple? reportingUser, string title, string? description)
-        {
-            Id = id;
-            ReportingUser = reportingUser;
-            Title = title;
-            Description = description;
-        }
-
         public BugReport(MySqlDataReader reader)
         {
             Id = reader.GetString("BugReport_Id");
             Title = reader.GetString("BugReport_Title");
-            Description = reader.GetString("BugReport_Description");
+            Description = reader.GetValue("BugReport_Description").ToString();
             ReportingUser = new UserSimple(reader);
+            StarId = reader.GetValue("StarredBugReport_Id").ToString();
         }
 
         public string? Id { get; set; }
         public UserSimple? ReportingUser { get; set; }
         public string Title { get; set; }
         public string? Description { get; set; }
+        public string? StarId { get; set; }
     }
 }
