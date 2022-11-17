@@ -36,4 +36,18 @@ namespace moonbaboon.bingo.Core.Models
         public string? Description { get; set; }
         public string? StarId { get; set; }
     }
+
+    public class StarredBugReportEntity
+    {
+        public StarredBugReportEntity(string? id, string adminId, string bugReportId)
+        {
+            Id = id;
+            AdminId = adminId;
+            BugReportId = bugReportId;
+        }
+
+        public string? Id { get; set; }
+        public string AdminId { get; set; }
+        public string BugReportId { get; set; }
+    }
 }

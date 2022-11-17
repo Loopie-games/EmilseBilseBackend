@@ -35,6 +35,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
         [Authorize]
         [HttpPost(nameof(Create))]
         public ActionResult<BugReport> Create(UserBugReportDto pt)
@@ -42,7 +43,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var created = _bugReportService.Create(new BugReportEntity(null, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, pt.Title, pt.Description));
-                return CreatedAtAction(nameof(GetById), new {created.Id}, created);
+                return Ok(created);
             }
             catch (Exception e)
             {
@@ -50,9 +51,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
         [Authorize(Roles = nameof(Admin))]
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BugReport))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<BugReport> GetById(string id)
@@ -64,6 +65,26 @@ namespace moonbaboon.bingo.WebApi.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [Authorize]
+        [HttpPost(nameof(AddStar))]
+        public ActionResult<BugReport> AddStar(string bugreportId)
+        {
+            try
+            {
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null) throw new Exception("ERROR: no NameIdentifier id found in JWT token");
+                _bugReportService.AddStar(userId,
+                    bugreportId);
+                return CreatedAtAction(nameof(GetById), new {id = bugreportId}, bugreportId);
+
+            }
+            catch (Exception e)
+            {
+                Console.Write(e);
                 return BadRequest(e.Message);
             }
         }

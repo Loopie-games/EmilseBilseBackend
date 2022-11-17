@@ -85,5 +85,25 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             throw new Exception($"No {nameof(BugReport)} with id: {id}");
         }
+
+        public async Task AddStar(StarredBugReportEntity entity)
+        {
+            entity.Id = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new(
+                        "INSERT INTO StarredBugReport (StarredBugReport_Id, Admin_Id, BugReport_Id) SELECT @Id,@AdminId, @BugReportId WHERE NOT EXISTS (SELECT * FROM StarredBugReport WHERE Admin_Id = @AdminId AND BugReport_Id = @BugReportId);",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
+                    command.Parameters.Add("@AdminId", MySqlDbType.VarChar).Value = entity.AdminId;
+                    command.Parameters.Add("@BugReportId", MySqlDbType.VarChar).Value = entity.BugReportId;
+                    
+                }
+                command.ExecuteNonQuery();
+            }
+        }
     }
 }
