@@ -26,7 +26,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
                             JOIN User U on BugReport_ReportingUserId = U.id
-                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id", _connection);
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id",
+                _connection);
             {
                 command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
             }

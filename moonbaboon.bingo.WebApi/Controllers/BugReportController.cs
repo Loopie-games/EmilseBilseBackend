@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -34,13 +35,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+        [Authorize]
         [HttpPost(nameof(Create))]
-        public ActionResult<BugReport> Create(BugReportEntity pt)
+        public ActionResult<BugReport> Create(UserBugReportDto pt)
         {
             try
             {
-                var created = _bugReportService.Create(pt);
+                var created = _bugReportService.Create(new BugReportEntity(null, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, pt.Title, pt.Description));
                 return CreatedAtAction(nameof(GetById), new {created.Id}, created);
             }
             catch (Exception e)
