@@ -36,5 +36,12 @@ namespace moonbaboon.bingo.Domain.Services
             if (admin?.AdminId != null) return _bugReportRepository.ReadById(id, admin.AdminId).Result;
             throw new Exception("U need to be an Admin to excess this");
         }
+
+        public void AddStar(string userId, string bugReportId)
+        {
+            var admin = _adminRepository.IsAdmin(userId).Result;
+
+            _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.AdminId, bugReportId)).Wait();
+        }
     }
 }
