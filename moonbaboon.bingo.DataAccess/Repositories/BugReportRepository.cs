@@ -94,7 +94,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "INSERT INTO StarredBugReport (StarredBugReport_Id, Admin_Id, BugReport_Id) VALUES (@Id, @AdminId, @BugReportId)",
+                        "INSERT INTO StarredBugReport (StarredBugReport_Id, Admin_Id, BugReport_Id) SELECT @Id,@AdminId, @BugReportId WHERE NOT EXISTS (SELECT * FROM StarredBugReport WHERE Admin_Id = @AdminId AND BugReport_Id = @BugReportId);",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;

@@ -39,6 +39,8 @@ namespace moonbaboon.bingo.Domain.Services
 
         public void AddStar(string userId, string bugReportId)
         {
+            
+            
             var admin = _adminRepository.IsAdmin(userId).Result;
 
             _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.AdminId, bugReportId)).Wait();
