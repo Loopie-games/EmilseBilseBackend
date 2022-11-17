@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -11,19 +13,20 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class BugReportController: ControllerBase
     {
-        private IBugReportService _bugReportService;
+        private readonly IBugReportService _bugReportService;
 
         public BugReportController(IBugReportService bugReportService)
         {
             _bugReportService = bugReportService;
         }
         
+        [Authorize(Roles = nameof(Admin))]
         [HttpGet]
         public ActionResult<List<BugReport>> GetAll()
         {
             try
             {
-                return Ok(_bugReportService.GetAll());
+                return _bugReportService.GetAll(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
             }
             catch (Exception e)
             {
@@ -46,7 +49,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+        [Authorize(Roles = nameof(Admin))]
         [HttpGet]
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BugReport))]
@@ -55,7 +58,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return Ok(_bugReportService.GetById(id));
+                return Ok(_bugReportService.GetById(id, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
             }
             catch (Exception e)
             {
