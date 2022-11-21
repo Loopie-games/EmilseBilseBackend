@@ -232,11 +232,12 @@ namespace moonbaboon.bingo.Domain.Services
             foreach (var board in topRanked)
             {
                 var user = _userRepository.ReadById(board.UserId).Result;
-                var unused = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles))
+                var unused = _topPlayerRepository.Create(new TopPlayerEntity(null, gameId, user.Id, board.TurnedTiles))
                     .Result;
             }
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(gameId).Result;
         }
 
         public Game PauseGame(Game game, string userId)
@@ -248,7 +249,8 @@ namespace moonbaboon.bingo.Domain.Services
             game.State = State.Paused;
             game.Winner = _userRepository.ReadById(userId).Result;
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(game.Id).Result;
         }
 
         public Game DenyWin(string gameId, string userId)
@@ -260,7 +262,8 @@ namespace moonbaboon.bingo.Domain.Services
             game.State = State.Ongoing;
             game.Winner = null;
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(gameId).Result;
         }
 
         private List<PackTile> GetDefaultTiles()

@@ -9,7 +9,7 @@ namespace moonbaboon.bingo.Core.IServices
         public List<TilePack> GetOwned(string userId);
         public TilePack GetById(string id);
         public TilePack GetDefault();
-        public TilePack Create(TilePack toCreate);
+        public string Create(TilePack toCreate);
         public void Update(TilePack toUpdate);
         public void Delete(string packId);
     }

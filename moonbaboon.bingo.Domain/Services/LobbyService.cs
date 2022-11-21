@@ -36,7 +36,7 @@ namespace moonbaboon.bingo.Domain.Services
             //if user is already host for a lobby, close the old one
             if (lobby?.Id is not null) CloseLobby(lobby.Id, hostId);
             var lobbyNew = _lobbyRepository.Create(new Lobby(null, hostId, null)).Result;
-            return lobbyNew;
+            return _lobbyRepository.FindById(lobbyNew).Result;
         }
 
 
@@ -48,10 +48,15 @@ namespace moonbaboon.bingo.Domain.Services
                 Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
                 var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
                 if (pp is not null && pp.Lobby.Id == lobby.Id) return pp;
-                if (pp is not null && pp.Lobby.Id != lobby.Id) return _pendingPlayerRepository.Update(pp).Result;
+                if (pp is not null && pp.Lobby.Id != lobby.Id)
+                {
+                    _pendingPlayerRepository.Update(pp).Wait();
+                    return _pendingPlayerRepository.ReadById(pp.Id).Result;
+                }
 
                 //if user already is in the lobby the PendingPlayer is returned, else a new is created
-                return _pendingPlayerRepository.Create(new PendingPlayer(user, lobby)).Result;
+                var newP = _pendingPlayerRepository.Create(new PendingPlayer(user, lobby)).Result;
+                return _pendingPlayerRepository.ReadById(newP).Result;
             }
             catch (Exception e)
             {
@@ -60,26 +65,21 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
-        public bool CloseLobby(string lobbyId, string hostId)
+        public void CloseLobby(string lobbyId, string hostId)
         {
-            try
-            {
-                var lobby = _lobbyRepository.FindById(lobbyId).Result;
-                if (lobby.Host != hostId) throw new Exception("you Cannot Delete a lobby you are not host for");
-                return _pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Result &&
-                       _lobbyRepository.DeleteLobby(lobbyId).Result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            var lobby = _lobbyRepository.FindById(lobbyId).Result;
+            if (lobby.Host != hostId) throw new Exception("you Cannot Delete a lobby you are not host for");
+            _pendingPlayerRepository.DeleteWithLobbyId(lobbyId).Wait();
+            _lobbyRepository.DeleteLobby(lobbyId).Wait();
         }
 
-        public bool LeaveLobby(string userId)
+        public void LeaveLobby(string userId)
         {
             var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
-            return pp != null && _pendingPlayerRepository.Delete(pp.Id).Result;
+            if (pp is not null)
+            {
+                _pendingPlayerRepository.Delete(pp.Id).Wait();
+            }
         }
     }
 }

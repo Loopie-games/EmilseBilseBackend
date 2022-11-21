@@ -116,7 +116,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
 
                 var created = _tilePackService.Create(tp);
-                return CreatedAtAction(nameof(GetById), new {id = created.Id}, new TilePackDto(created));
+                return CreatedAtAction(nameof(GetById), new {id = created}, new TilePackDto(created));
             }
             catch (Exception e)
             {

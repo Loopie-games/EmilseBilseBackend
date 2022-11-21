@@ -11,15 +11,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private const string Table = DbStrings.UserTable;
         private readonly MySqlConnection _connection;
         private readonly Random _random = new();
 
         public UserRepository(MySqlConnection connection)
         {
-            _connection = connection.Clone();
+            _connection = connection;
         }
-        
+
         public async Task<List<User>> GetPlayers(string gameId)
         {
             var list = new List<User>();
@@ -41,58 +40,43 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<User>> Search(string searchString)
         {
             var list = new List<User>();
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Username} " +
-                $"LIKE '%{searchString}%'", _connection);
+                @"Select * from User WHERE User.User_Username LIKE @searchString", _connection);
+            {
+                command.Parameters.Add("@searchString", MySqlDbType.VarChar).Value = searchString;
+            }
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
+                list.Add(new User(reader));
             }
 
-            await _connection.CloseAsync();
-            return list;
-        }
-
-        public async Task<List<User>> SearchID(string searchString)
-        {
-            var list = new List<User>();
-            await _connection.OpenAsync();
-
-            await using var command = new MySqlCommand(
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} " +
-                $"LIKE '%{searchString}%'", _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
-            }
-
-            await _connection.CloseAsync();
             return list;
         }
 
         public async Task<User> Login(string dtoUsername, string dtoPassword)
         {
-            User? user = null;
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command =
                 new MySqlCommand(
-                    sql_select(Table) +
-                    $"WHERE `{DbStrings.Username}` = '{dtoUsername}' AND `{DbStrings.Password}` = '{dtoPassword}';",
-                    _connection);
+                    @"Select * from User 
+JOIN Auth A on User.User_id = A.Auth_UserId
+WHERE User_Username = @username AND  Auth_Password = @password",
+                    con);
+            {
+                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = dtoUsername;
+                command.Parameters.Add("@password", MySqlDbType.VarChar).Value = dtoPassword;
+            }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) user = ReaderToEnt(reader);
+            while (await reader.ReadAsync())
+            {
+                return new User(reader);
+            }
 
-            await _connection.CloseAsync();
-            return user ?? throw new InvalidOperationException("Invalid Login");
+            throw new InvalidOperationException("Invalid Login");
         }
 
         /// <summary>
@@ -103,155 +87,106 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         /// <exception cref="Exception">No user with given id</exception>
         public async Task<User> ReadById(string id)
         {
-            User? user = null;
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command =
-                new MySqlCommand(sql_select(Table) +
-                                 $"WHERE `{DbStrings.Id}` = '{id}';",
-                    _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) user = ReaderToEnt(reader);
-
-            await _connection.CloseAsync();
-            return user ?? throw new Exception("No user found with id: " + id);
-        }
-
-        public async Task<User> Create(User user)
-        {
-            User? ent = null;
-            string uuid = Guid.NewGuid().ToString();
-            await _connection.OpenAsync();
-
-            var insertInto =
-                $"INSERT INTO `{DbStrings.UserTable}`(`{DbStrings.Id}`, `{DbStrings.Username}`, `{DbStrings.Password}`, `{DbStrings.Salt}`, `{DbStrings.Nickname}`";
-            var values = $"VALUES ('{uuid}','{user.Username}', '{user.Password}', '{user.Salt}', '{user.Nickname}'";
-
-            if (!string.IsNullOrEmpty(user.ProfilePicUrl))
-            {
-                insertInto += $", `{DbStrings.ProfilePic}`";
-                values += $", '{user.ProfilePicUrl}'";
-            }
-
-            values += ");";
-            insertInto += ") ";
-
-            await using var command = new MySqlCommand(
-                insertInto + values +
-                sql_select(Table) +
-                $"WHERE `{DbStrings.Id}` = '{uuid}'", _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
-
-            await _connection.CloseAsync();
-            return ent ?? throw new InvalidDataException("ERROR: User not created");
-        }
-
-        public async Task<bool> VerifyUsername(string username)
-        {
-            username = username.ToLower();
-            var b = true;
-            await _connection.OpenAsync();
-
-            await using var command = new MySqlCommand(
-                $"SELECT * FROM `{DbStrings.UserTable}` " +
-                $"WHERE Lower(`{DbStrings.Username}`) = '{username}';",
-                _connection);
+                new MySqlCommand(@"select * from User WHERE User_id = @id;",
+                    con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
-                if (reader.GetValue(1).ToString()?.ToLower() == username)
-                    b = false;
+            {
+                return new User(reader);
+            }
 
-            await _connection.CloseAsync();
-            return b;
+            throw new Exception("No user found with id: " + id);
         }
 
-        public async Task<string> GetSalt(string username)
+        public async Task<string> Create(User entity)
         {
-            string? ent = null;
-            await _connection.OpenAsync();
+            string uuid = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            con.Open();
+            await using var command = new MySqlCommand(
+                @"Insert into User VALUES (@id, @username, @nickname, @profilePic)", con);
+            {
+                command.Parameters.Add("@id", MySqlDbType.VarChar).Value = entity.Id;
+                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = entity.Username;
+                command.Parameters.Add("@nickname", MySqlDbType.VarChar).Value = entity.Nickname;
+                command.Parameters.Add("@profilePic", MySqlDbType.VarChar).Value = entity.ProfilePicUrl;
+            }
+            command.ExecuteNonQuery();
+            return uuid;
+        }
+
+        public async Task<bool> UsernameExists(string username)
+        {
+            username = username.ToLower();
+            await using var con = _connection.Clone();
+            con.Open();
+            await using var command = new MySqlCommand(
+                @"SELECT COUNT(`User_id`) FROM User WHERE Lower(User_Username) = @username",
+                con);
+            {
+                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = username.ToLower();
+            }
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) return reader.GetInt32(0) > 0;
+
+            await _connection.CloseAsync();
+            throw new Exception("ERROR: " + nameof(UsernameExists));
+        }
+
+        public async Task<string> GetSalt(string userId)
+        {
+            await using var con = _connection.Clone();
+            con.Open();
 
             await using var command =
                 new MySqlCommand(
-                    $"SELECT {DbStrings.UserTable}.{DbStrings.Salt} FROM `{DbStrings.UserTable}` WHERE `{DbStrings.Username}` = '{username}'",
-                    _connection);
+                    @"SELECT Auth_Salt FROM Auth WHERE Auth_UserId = @UserId",
+                    con);
+            {
+                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
+            }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = reader.GetValue(0).ToString();
+            while (await reader.ReadAsync())
+            {
+                return reader.GetString(0);
+            }
 
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("no user with given username");
+            throw new Exception("no user with given userId");
         }
 
-        private static string sql_select(string from)
+        public async Task UpdateUser(User entity)
         {
-            return
-                $"SELECT {DbStrings.UserTable}.{DbStrings.Id}, {DbStrings.UserTable}.{DbStrings.Username}, {DbStrings.UserTable}.{DbStrings.Nickname}, {DbStrings.UserTable}.{DbStrings.ProfilePic} " +
-                $"FROM {from} ";
+            await using var con = _connection.Clone();
+            con.Open();
+            await using var command = new MySqlCommand(
+                @"UPDATE `User` SET `User_Username`=@Username,`User_Nickname`=@Password,`User_ProfilePicURL`= @ProfilePic WHERE User_id = @UserId",
+                con);
+            {
+                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.Id;
+                command.Parameters.Add("@Username", MySqlDbType.VarChar).Value = entity.Username;
+                command.Parameters.Add("@Password", MySqlDbType.VarChar).Value = entity.Nickname;
+                command.Parameters.Add("@ProfilePic", MySqlDbType.VarChar).Value = entity.ProfilePicUrl;
+            }
+            command.ExecuteNonQuery();
         }
 
-        private static User ReaderToEnt(MySqlDataReader reader)
+        public async Task RemoveName(string userId)
         {
-            var ent =
-                new User(reader.GetString(0), reader.GetString(1),
-                    reader.GetString(2), reader.GetValue(3).ToString());
-            return ent;
-        }
-
-        public async Task<User> UpdateUser(string id, User user)
-        {
-
-            await _connection.OpenAsync();
-
-            string query = $"UPDATE {DbStrings.UserTable} SET " +
-                            $"{DbStrings.Username} = '{user.Username}', " +
-                            $"{DbStrings.Nickname} = '{user.Nickname}', " +
-                            $"{DbStrings.ProfilePic} = '{user.ProfilePicUrl}' " +
-                            $"WHERE {DbStrings.Id} = '{user.Id}'";
-
-            await using var command = new MySqlCommand(query,
-                _connection);
-
-            await using var reader = await command.ExecuteReaderAsync();
-            await _connection.CloseAsync();
-
-            return new User(user.Id, user.Username, user.Nickname, user.ProfilePicUrl);
-        }
-
-        public async Task<bool> RemoveBanner(string uuid)
-        {
-            await _connection.OpenAsync();
-
-            await _connection.CloseAsync();
-            return false;
-        }
-
-        public async Task<bool> RemoveIcon(string uuid)
-        {
-            await _connection.OpenAsync();
-
-            await _connection.CloseAsync();
-            return false;
-        }
-
-        public async Task<bool> RemoveName(string uuid)
-        {
-            await _connection.OpenAsync();
+            await using var con = _connection.Clone();
 
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             string newRandomName = new(Enumerable.Repeat(chars, 16)
                 .Select(s => s[_random.Next(s.Length)]).ToArray());
 
-            string query = $"UPDATE {DbStrings.UserTable} SET " +
-                            $"{DbStrings.Username} = '{newRandomName}'" +
-                            $"WHERE {DbStrings.Id} = '{uuid}'";
-
-            await using var command = new MySqlCommand(query, _connection);
-
-            int affectedRows = command.ExecuteNonQuery();
-
-            await _connection.CloseAsync();
-
-            return (affectedRows > 0);
+            await using var command = new MySqlCommand(@"UPDATE User SET User_Username = @RandomName WHERE User_id = @UserId", con);
+            {
+                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
+                command.Parameters.Add("@RandomName", MySqlDbType.VarChar).Value = newRandomName;
+            }
+            command.ExecuteNonQuery();
         }
     }
 }

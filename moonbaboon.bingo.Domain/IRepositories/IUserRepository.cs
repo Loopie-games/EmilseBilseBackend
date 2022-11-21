@@ -7,7 +7,6 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IUserRepository
     {
         public Task<List<User>> Search(string searchString);
-        public Task<List<User>> SearchID(string searchString);
         public Task<User> Login(string dtoUsername, string dtoPassword);
 
         /// <summary>
@@ -17,13 +16,11 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <returns>A Task with the User as Result</returns>
         public Task<User> ReadById(string id);
 
-        public Task<User> Create(User user);
-        public Task<bool> VerifyUsername(string username);
-        public Task<string> GetSalt(string username);
-        public Task<User> UpdateUser(string id, User user);
-        public Task<bool> RemoveBanner(string uuid);
-        public Task<bool> RemoveIcon(string uuid);
-        public Task<bool> RemoveName(string uuid);
+        public Task<string> Create(User user);
+        public Task<bool> UsernameExists(string username);
+        public Task<string> GetSalt(string userId);
+        public Task UpdateUser(User entity);
+        public Task RemoveName(string userId);
         
         /// <summary>
         /// Gets list of players is in game with given Id

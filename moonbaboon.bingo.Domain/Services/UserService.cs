@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -21,11 +22,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Search(searchStr).Result;
         }
 
-        public List<User> SearchID(string searchStr)
-        {
-            return _userRepository.SearchID(searchStr).Result;
-        }
-
         public User Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
@@ -36,14 +32,14 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.ReadById(id).Result;
         }
 
-        public User CreateUser(User user)
+        public string CreateUser(User user)
         {
             return _userRepository.Create(user).Result;
         }
 
         public bool VerifyUsername(string username)
         {
-            return _userRepository.VerifyUsername(username).Result;
+            return _userRepository.UsernameExists(username).Result;
         }
 
         public string GetSalt(string username)
@@ -51,33 +47,24 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.GetSalt(username).Result;
         }
 
-        public User UpdateUser(string id, User user)
+        public void UpdateUser(string id, User user)
         {
-            return _userRepository.UpdateUser(id, user).Result;
+            if (id == user.Id)
+            {
+                _userRepository.UpdateUser(user).Wait();
+            }
+            else
+            {
+                throw new Exception("You can only change your own profile");
+            }
+
         }
 
-        public bool RemoveBanner(string uuid, string adminUUID)
+        public void RemoveName(string uuid, string adminUUID)
         {
             if(_adminRepository.FindByUserId(adminUUID).Result != null){
-                return _userRepository.RemoveBanner(uuid).Result;       
+                 _userRepository.RemoveName(uuid).Wait();       
             }
-            return false;
-        }
-
-        public bool RemoveIcon(string uuid, string adminUUID)
-        {
-            if(_adminRepository.FindByUserId(adminUUID).Result != null){
-                return _userRepository.RemoveIcon(uuid).Result;       
-            }
-            return false;
-        }
-
-        public bool RemoveName(string uuid, string adminUUID)
-        {
-            if(_adminRepository.FindByUserId(adminUUID).Result != null){
-                return _userRepository.RemoveName(uuid).Result;       
-            }
-            return false;
         }
     }
 }

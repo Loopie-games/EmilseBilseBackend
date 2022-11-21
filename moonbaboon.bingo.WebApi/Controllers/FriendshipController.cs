@@ -68,7 +68,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                _friendshipService.AcceptFriendRequest(friendshipId);
+                _friendshipService.AcceptFriendRequest(friendshipId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 return Ok();
             }
             catch (Exception e)

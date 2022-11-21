@@ -6,6 +6,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IPendingPlayerRepository
     {
+        public Task<PendingPlayer> ReadById(string id);
         /// <summary>
         ///     Creates PendingPlayer in Database
         /// </summary>

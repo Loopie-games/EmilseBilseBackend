@@ -81,8 +81,8 @@ namespace moonbaboon.bingo.WebApi.SignalR
         {
             try
             {
-                if (_lobbyService.CloseLobby(lobbyId, GetUserId(Context)))
-                    await Clients.Group(lobbyId).SendAsync("lobbyClosed");
+                _lobbyService.CloseLobby(lobbyId, GetUserId(Context));
+                await Clients.Group(lobbyId).SendAsync("lobbyClosed");
             }
             catch (Exception e)
             {
@@ -99,8 +99,9 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
                 try
                 {
-                    if (lobbyId is not null && _lobbyService.LeaveLobby(GetUserId(Context)))
+                    if (lobbyId is not null )
                     {
+                        _lobbyService.LeaveLobby(GetUserId(Context));
                         await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);
                         await UpdatePlayerList(lobbyId);
                     }

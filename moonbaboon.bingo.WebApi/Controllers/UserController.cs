@@ -29,15 +29,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return BadRequest("use at last 3 characters in your search");
         }
 
-        [HttpGet(nameof(SearchID) + "/{searchStr}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<List<User>> SearchID(string searchStr)
-        {
-            if (searchStr.Length > 2) return Ok(_userService.SearchID(searchStr));
-            return BadRequest("use at last 3 characters in your search");
-        }
-
         [Authorize]
         [HttpGet(nameof(GetLogged))]
         public ActionResult<User> GetLogged()
@@ -91,7 +82,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                     return BadRequest($"Username '{user.Username}' is already in use.");
 
                 var u = _userService.CreateUser(user);
-                return CreatedAtAction(nameof(GetById), new { id = u.Id }, u);
+                return CreatedAtAction(nameof(GetById), new { id = u }, u);
             }
             catch (Exception e)
             {
@@ -114,35 +105,19 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public ActionResult<User> UpdateUser(string id, User user) {
-
-            if (id != user.Id)
-                return BadRequest("User ID mismatch...");
-
-            User res = _userService.UpdateUser(id, user);
-
-
-            return Ok(res);
-        }
-
-        [HttpPut(nameof(RemoveBanner) + "/{uuid}")]
-        public ActionResult<bool> RemoveBanner(string uuid, string adminUUID){
-            bool res = false;//_userService.RemoveBanner(uuid, adminUUID);
-            return res ? Ok() : BadRequest();
-        }
-
-        [HttpPut(nameof(RemoveIcon) + "/{uuid}")]
-        public ActionResult<bool> RemoveIcon(string uuid, string adminUUID){
-            bool res = false;//_userService.RemoveIcon(uuid, adminUUID);
-            return res ? Ok() : BadRequest();
-        }
-
-        [HttpPut(nameof(RemoveName) + "/{uuid}")]
-        public ActionResult<bool> RemoveName(string uuid, string adminUUID){
-            Console.WriteLine($"Incoming: {uuid} FROM {adminUUID}");
-            bool res = _userService.RemoveName(uuid, adminUUID);
-            return res ? Ok() : BadRequest();
+        [Authorize]
+        [HttpPut]
+        public ActionResult<User> UpdateUser(User user) {
+            try
+            {
+                _userService.UpdateUser(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, user);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -33,7 +34,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             var lobby = _lobbyService.GetById(lobbyId);
             if (lobby?.Id is null || lobby.Pin is null) return NotFound("lobby not found");
             var host = _userService.GetById(lobby.Host);
-            if (host is null) return NotFound("host not found");
             host.Id = null;
             return Ok(new LobbyForPlayerDto(lobby.Id, lobby.Pin, host));
         }
@@ -53,9 +53,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpDelete(nameof(CloseLobby))]
-        public ActionResult<bool> CloseLobby(string lobbyId)
+        public ActionResult CloseLobby(string lobbyId)
         {
-            return _lobbyService.CloseLobby(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                _lobbyService.CloseLobby(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
         }
     }
 }

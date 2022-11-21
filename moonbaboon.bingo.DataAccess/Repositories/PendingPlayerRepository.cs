@@ -16,6 +16,30 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             _connection = connection;
         }
 
+        public async Task<PendingPlayer> ReadById(string id)
+        {
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+
+                await using MySqlCommand command =
+                    new(
+                        @"SELECT * From PendingPlayer 
+JOIN Lobby L on L.Lobby_Id = PendingPlayer.PendingPlayer_LobbyId
+JOIN User U on U.User_id = PendingPlayer.PendingPlayer_UserId
+WHERE PendingPlayer_Id = @Id",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
+                }
+
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) return new PendingPlayer(reader);
+            }
+
+            throw new Exception($"No {nameof(BugReport)} with id: {id}");
+        }
+
         public async Task<string> Create(PendingPlayer entity)
         {
             string uuid = Guid.NewGuid().ToString();
