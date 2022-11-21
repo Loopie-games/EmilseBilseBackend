@@ -1,4 +1,6 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
     public class Lobby
     {
@@ -9,26 +11,17 @@
             Pin = pin;
         }
 
+        public Lobby(MySqlDataReader reader)
+        {
+            Id = reader.GetString("Lobby_Id");
+            Host = reader.GetString("Lobby_Host");
+            Pin = reader.GetString("Lobby_Pin");
+        }
+
         public string? Id { get; set; }
 
         public string Host { get; set; }
 
         public string? Pin { get; set; }
-    }
-
-    public class LobbyForUser
-    {
-        public LobbyForUser(string id, string hostNickname, string pin)
-        {
-            Id = id;
-            HostNickname = hostNickname;
-            Pin = pin;
-        }
-
-        public string Id { get; set; }
-
-        public string HostNickname { get; set; }
-
-        public string Pin { get; set; }
     }
 }

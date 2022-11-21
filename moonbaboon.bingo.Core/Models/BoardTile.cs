@@ -5,7 +5,7 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class BoardTile
     {
-        public BoardTile(string? id, BoardEntity boardEntity, ByTile byTile, UserSimple aboutUser, int position, bool isActivated)
+        public BoardTile(string? id, BoardEntity boardEntity, ByTile byTile, User aboutUser, int position, bool isActivated)
         {
             Id = id;
             BoardEntity = boardEntity;
@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.Core.Models
             Id = reader.GetString("BoardTile_Id");
             BoardEntity = new BoardEntity(reader);
             ByTile = new ByTile(reader);
-            AboutUser = new UserSimple(reader);
+            AboutUser = new User(reader);
             Position = reader.GetInt32("BoardTile_Position");
             IsActivated = Convert.ToBoolean(reader.GetInt32("BoardTile_IsActivated"));
         }
@@ -28,7 +28,7 @@ namespace moonbaboon.bingo.Core.Models
         public string? Id { get; set; }
         public BoardEntity BoardEntity { get; set; }
         public ByTile ByTile { get; set; }
-        public UserSimple AboutUser { get; set; }
+        public User AboutUser { get; set; }
         public int Position { get; set; }
         public bool IsActivated { get; set; }
     }

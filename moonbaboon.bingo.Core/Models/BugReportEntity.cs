@@ -26,12 +26,12 @@ namespace moonbaboon.bingo.Core.Models
             Id = reader.GetString("BugReport_Id");
             Title = reader.GetString("BugReport_Title");
             Description = reader.GetValue("BugReport_Description").ToString();
-            ReportingUser = new UserSimple(reader);
+            ReportingUser = new User(reader);
             StarId = reader.GetValue("StarredBugReport_Id").ToString();
         }
 
         public string? Id { get; set; }
-        public UserSimple? ReportingUser { get; set; }
+        public User? ReportingUser { get; set; }
         public string Title { get; set; }
         public string? Description { get; set; }
         public string? StarId { get; set; }

@@ -29,7 +29,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="gameId">Id specific for a Game</param>
         /// <param name="userId">Id specific for a User</param>
         /// <returns>List of Players participating in the game</returns>
-        public List<UserSimple> GetPlayers(string gameId, string userId);
+        public List<User> GetPlayers(string gameId, string userId);
 
         /// <summary>
         /// Deletes a game object, if given matching host and id of the game
@@ -37,7 +37,7 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="gameId">The id of the game</param>
         /// <param name="hostId">the id of the host</param>
         /// <returns>bool representing the completion of the deletion</returns>
-        public bool Delete(string gameId, string hostId);
+        public void Delete(string gameId, string hostId);
 
         /// <summary>
         /// Host can confirm that a game is won

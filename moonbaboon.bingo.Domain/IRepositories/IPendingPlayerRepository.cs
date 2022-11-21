@@ -9,9 +9,9 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <summary>
         ///     Creates PendingPlayer in Database
         /// </summary>
-        /// <param name="toCreate"> PendingPlayer to insert in the database</param>
+        /// <param name="entity"> PendingPlayer to insert in the database</param>
         /// <returns></returns>
-        public Task<PendingPlayer> Create(PendingPlayer toCreate);
+        public Task<string> Create(PendingPlayer entity);
 
         public Task<PendingPlayer> GetByUserId(string userId);
 
@@ -24,8 +24,8 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <returns>Pending player if such exists with given ids, else null</returns>
         public Task<PendingPlayer?> IsPlayerInLobby(string userId);
 
-        public Task<bool> DeleteWithLobbyId(string lobbyId);
-        public Task<bool> Delete(string? ppId);
-        public Task<PendingPlayer> Update(PendingPlayer toUpdate);
+        public Task DeleteWithLobbyId(string lobbyId);
+        public Task Delete(string Id);
+        public Task Update(PendingPlayer entity);
     }
 }

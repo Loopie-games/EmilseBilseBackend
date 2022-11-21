@@ -65,7 +65,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         private static TopPlayer ReaderToEnt(IDataRecord reader)
         {
-            var user = new UserSimple(reader.GetString(3), reader.GetString(4),
+            var user = new User(reader.GetString(3), reader.GetString(4),
                 reader.GetString(5), reader.GetValue(6).ToString());
             TopPlayer ent = new(reader.GetString(0), reader.GetString(1), user, reader.GetInt32(2));
 

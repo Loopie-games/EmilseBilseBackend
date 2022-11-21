@@ -2,7 +2,7 @@
 {
     public class TopPlayer
     {
-        public TopPlayer(string? id, string gameId, UserSimple user, int turnedTiles)
+        public TopPlayer(string? id, string gameId, User user, int turnedTiles)
         {
             Id = id;
             GameId = gameId;
@@ -12,7 +12,7 @@
 
         public string? Id { get; set; }
         public string GameId { get; set; }
-        public UserSimple User { get; set; }
+        public User User { get; set; }
         public int TurnedTiles { get; set; }
     }
 }

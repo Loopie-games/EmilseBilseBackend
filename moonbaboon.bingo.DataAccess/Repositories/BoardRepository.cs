@@ -10,9 +10,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class BoardRepository : IBoardRepository
     {
         private readonly MySqlConnection _connection;
+
         public BoardRepository(MySqlConnection connection)
         {
-            _connection = connection.Clone();
+            _connection = connection;
         }
 
 
@@ -61,7 +62,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId)
         {
-            
             await using var con = _connection.Clone();
             {
                 con.Open();
@@ -90,12 +90,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command = new(
-                    "SELECT((SELECT COUNT(*) " +
-                    $"FROM {DbStrings.BoardTileTable} " +
-                    $"WHERE {DbStrings.BoardTileTable}.{DbStrings.IsActivated} = '1' " +
-                    $"AND {DbStrings.BoardTileTable}.{DbStrings.BoardId} ='{boardId}') " +
-                    "= 24 IS true)",
+                    @"SELECT((SELECT COUNT(*) FROM BoardTile WHERE BoardTile_IsActivated = '1' AND BoardTile_BoardId = @Board_Id) = 24 IS true)",
                     con);
+                {
+                    command.Parameters.Add("@Board_Id", MySqlDbType.VarChar).Value = boardId;
+                }
                 await using MySqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync()) b = reader.GetBoolean(0);
             }
@@ -110,7 +109,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command = new(
-                    @"SELECT *, (SELECT COUNT(BT.Id) FROM BoardTile AS BT WHERE BT.IsActivated = '1' && BT.BoardId = Board_Id) AS Board_TurnedTiles
+                    @"SELECT *, (SELECT COUNT(BoardTile_Id) FROM BoardTile WHERE BoardTile_IsActivated = '1' && BoardTile_BoardId= Board_Id) AS Board_TurnedTiles
                         FROM Board 
                             WHERE Board_GameId = @Game_Id
                             ORDER BY Board_TurnedTiles DESC 

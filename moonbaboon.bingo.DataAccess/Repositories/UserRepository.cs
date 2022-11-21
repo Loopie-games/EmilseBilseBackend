@@ -19,10 +19,28 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             _connection = connection.Clone();
         }
-
-        public async Task<List<UserSimple>> Search(string searchString)
+        
+        public async Task<List<User>> GetPlayers(string gameId)
         {
-            var list = new List<UserSimple>();
+            var list = new List<User>();
+            await using var con = _connection.Clone();
+            con.Open();
+
+            await using var command = new MySqlCommand(
+                @"SELECT * From (SELECT Board_UserId as u1 FROM `Game` JOIN Board ON Board_GameId = @GameId) As b JOIN User ON b.u1 = User.User_id",
+                con);
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                list.Add(new User(reader));
+            }
+
+            return list;
+        }
+
+        public async Task<List<User>> Search(string searchString)
+        {
+            var list = new List<User>();
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
@@ -40,9 +58,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public async Task<List<UserSimple>> SearchID(string searchString)
+        public async Task<List<User>> SearchID(string searchString)
         {
-            var list = new List<UserSimple>();
+            var list = new List<User>();
             await _connection.OpenAsync();
 
             await using var command = new MySqlCommand(
@@ -60,9 +78,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return list;
         }
 
-        public async Task<UserSimple> Login(string dtoUsername, string dtoPassword)
+        public async Task<User> Login(string dtoUsername, string dtoPassword)
         {
-            UserSimple? user = null;
+            User? user = null;
             await _connection.OpenAsync();
 
             await using var command =
@@ -83,9 +101,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         /// <param name="id">unique user Identification</param>
         /// <returns>A Task containing the user</returns>
         /// <exception cref="Exception">No user with given id</exception>
-        public async Task<UserSimple> ReadById(string id)
+        public async Task<User> ReadById(string id)
         {
-            UserSimple? user = null;
+            User? user = null;
             await _connection.OpenAsync();
 
             await using var command =
@@ -99,9 +117,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return user ?? throw new Exception("No user found with id: " + id);
         }
 
-        public async Task<UserSimple> Create(User user)
+        public async Task<User> Create(User user)
         {
-            UserSimple? ent = null;
+            User? ent = null;
             string uuid = Guid.NewGuid().ToString();
             await _connection.OpenAsync();
 
@@ -171,15 +189,15 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"FROM {from} ";
         }
 
-        private static UserSimple ReaderToEnt(MySqlDataReader reader)
+        private static User ReaderToEnt(MySqlDataReader reader)
         {
             var ent =
-                new UserSimple(reader.GetString(0), reader.GetString(1),
+                new User(reader.GetString(0), reader.GetString(1),
                     reader.GetString(2), reader.GetValue(3).ToString());
             return ent;
         }
 
-        public async Task<UserSimple> UpdateUser(string id, UserSimple user)
+        public async Task<User> UpdateUser(string id, User user)
         {
 
             await _connection.OpenAsync();
@@ -196,7 +214,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var reader = await command.ExecuteReaderAsync();
             await _connection.CloseAsync();
 
-            return new UserSimple(user.Id, user.Username, user.Nickname, user.ProfilePicUrl);
+            return new User(user.Id, user.Username, user.Nickname, user.ProfilePicUrl);
         }
 
         public async Task<bool> RemoveBanner(string uuid)

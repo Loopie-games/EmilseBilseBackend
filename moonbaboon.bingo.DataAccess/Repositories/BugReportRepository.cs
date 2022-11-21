@@ -24,10 +24,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command = new(
-                    @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
+                    @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, User_Id, User_Username, User_Nickname, User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
-                            JOIN User U on BugReport_ReportingUserId = U.id
-                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id",
+                            JOIN User on BugReport_ReportingUserId = User.User_id
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.StarredBugReport_BugReportId AND StarredBugReport_AdminId = @Admin_Id",
                     _connection);
                 {
                     command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
@@ -35,7 +35,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 await using MySqlDataReader reader = await command.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                     list.Add(new BugReport(reader));
-                
             }
             return list;
         }
@@ -69,10 +68,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
+                        @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, User_Id, User_Username, User_Nickname, User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
-                            JOIN User U on BugReport_ReportingUserId = U.id
-                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id
+                            JOIN User on BugReport_ReportingUserId = User_id
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.StarredBugReport_BugReportId AND StarredBugReport_AdminId = @Admin_Id
                         WHERE BugReport.BugReport_Id = @Id",
                         con);
                 {
@@ -95,13 +94,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "INSERT INTO StarredBugReport (StarredBugReport_Id, Admin_Id, BugReport_Id) SELECT @Id,@AdminId, @BugReportId WHERE NOT EXISTS (SELECT * FROM StarredBugReport WHERE Admin_Id = @AdminId AND BugReport_Id = @BugReportId);",
+                        @"INSERT INTO StarredBugReport (StarredBugReport_Id, StarredBugReport_AdminId, StarredBugReport_BugReportId) 
+                        SELECT @Id,@AdminId, @BugReportId 
+                        WHERE NOT EXISTS (SELECT * FROM StarredBugReport WHERE StarredBugReport_AdminId = @AdminId AND StarredBugReport_BugReportId = @BugReportId);",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
                     command.Parameters.Add("@AdminId", MySqlDbType.VarChar).Value = entity.AdminId;
                     command.Parameters.Add("@BugReportId", MySqlDbType.VarChar).Value = entity.BugReportId;
-                    
                 }
                 command.ExecuteNonQuery();
             }

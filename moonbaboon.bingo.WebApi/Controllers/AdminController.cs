@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize(Roles = nameof(Admin))]
         [HttpGet(nameof(GetLogged))]
-        public ActionResult<UserSimple> GetLogged()
+        public ActionResult<User> GetLogged()
         {
             try
             {

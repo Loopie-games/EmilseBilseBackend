@@ -21,18 +21,18 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet(nameof(Search) + "/{searchStr}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<List<UserSimple>> Search(string searchStr)
+        public ActionResult<List<User>> Search(string searchStr)
         {
             if (searchStr.Length > 2) return Ok(_userService.Search(searchStr));
             return BadRequest("use at last 3 characters in your search");
         }
 
         [HttpGet(nameof(SearchID) + "/{searchStr}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<List<UserSimple>> SearchID(string searchStr)
+        public ActionResult<List<User>> SearchID(string searchStr)
         {
             if (searchStr.Length > 2) return Ok(_userService.SearchID(searchStr));
             return BadRequest("use at last 3 characters in your search");
@@ -40,7 +40,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpGet(nameof(GetLogged))]
-        public ActionResult<UserSimple> GetLogged()
+        public ActionResult<User> GetLogged()
         {
             try
             {
@@ -55,9 +55,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserSimple))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<UserSimple> GetById(string id)
+        public ActionResult<User> GetById(string id)
         {
             try
             {
@@ -81,9 +81,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [AllowAnonymous]
         [HttpPost(nameof(CreateUser))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserSimple))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<UserSimple> CreateUser(User user)
+        public ActionResult<User> CreateUser(User user)
         {
             try
             {
@@ -115,12 +115,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<UserSimple> UpdateUser(string id, UserSimple user) {
+        public ActionResult<User> UpdateUser(string id, User user) {
 
             if (id != user.Id)
                 return BadRequest("User ID mismatch...");
 
-            UserSimple res = _userService.UpdateUser(id, user);
+            User res = _userService.UpdateUser(id, user);
 
 
             return Ok(res);

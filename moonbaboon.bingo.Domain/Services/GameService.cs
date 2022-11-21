@@ -200,20 +200,26 @@ namespace moonbaboon.bingo.Domain.Services
 
 
         /// <exception cref="Exception">if the user is not on the list</exception>
-        public List<UserSimple> GetPlayers(string gameId, string userId)
+        public List<User> GetPlayers(string gameId, string userId)
         {
-            var players = _gameRepository.GetPlayers(gameId).Result;
+            var players = _userRepository.GetPlayers(gameId).Result;
 
             if (players.Any(u => u.Id == userId)) return players;
 
             throw new Exception("You cannot get player list for a game, that you are not a part of");
         }
 
-        public bool Delete(string gameId, string hostId)
+        public void Delete(string gameId, string hostId)
         {
             var game = _gameRepository.FindById(gameId).Result;
-            if (game.Host.Id == hostId) return _gameRepository.Delete(gameId).Result;
-            throw new Exception("You have to be the host of a game to delete it");
+            if (game.Host.Id == hostId)
+            {
+                _gameRepository.Delete(gameId);
+            }
+            else
+            {
+                throw new Exception("You have to be the host of a game to delete it");
+            }
         }
 
         public Game ConfirmWin(string gameId, string hostId)
@@ -226,7 +232,7 @@ namespace moonbaboon.bingo.Domain.Services
             foreach (var board in topRanked)
             {
                 var user = _userRepository.ReadById(board.UserId).Result;
-                var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles))
+                var unused = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles))
                     .Result;
             }
 
@@ -235,7 +241,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Game PauseGame(Game game, string userId)
         {
-            if (!_gameRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
+            if (!_userRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
                 throw new Exception("You cant pause games that you are not apart of");
 
 

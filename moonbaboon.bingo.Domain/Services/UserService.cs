@@ -16,29 +16,27 @@ namespace moonbaboon.bingo.Domain.Services
             _adminRepository = adminRepository;
         }
 
-        public List<UserSimple> Search(string searchStr)
+        public List<User> Search(string searchStr)
         {
             return _userRepository.Search(searchStr).Result;
         }
 
-        public List<UserSimple> SearchID(string searchStr)
+        public List<User> SearchID(string searchStr)
         {
             return _userRepository.SearchID(searchStr).Result;
         }
 
-        public UserSimple Login(string dtoUsername, string dtoPassword)
+        public User Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
 
-        public UserSimple GetById(string id)
+        public User GetById(string id)
         {
-            var u = _userRepository.ReadById(id).Result;
-            var a = _adminRepository.IsAdmin(u.Id).Result;
-            return a ?? u;
+            return _userRepository.ReadById(id).Result;
         }
 
-        public UserSimple CreateUser(User user)
+        public User CreateUser(User user)
         {
             return _userRepository.Create(user).Result;
         }
@@ -53,14 +51,14 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.GetSalt(username).Result;
         }
 
-        public UserSimple UpdateUser(string id, UserSimple user)
+        public User UpdateUser(string id, User user)
         {
             return _userRepository.UpdateUser(id, user).Result;
         }
 
         public bool RemoveBanner(string uuid, string adminUUID)
         {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+            if(_adminRepository.FindByUserId(adminUUID).Result != null){
                 return _userRepository.RemoveBanner(uuid).Result;       
             }
             return false;
@@ -68,7 +66,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public bool RemoveIcon(string uuid, string adminUUID)
         {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+            if(_adminRepository.FindByUserId(adminUUID).Result != null){
                 return _userRepository.RemoveIcon(uuid).Result;       
             }
             return false;
@@ -76,7 +74,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public bool RemoveName(string uuid, string adminUUID)
         {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
+            if(_adminRepository.FindByUserId(adminUUID).Result != null){
                 return _userRepository.RemoveName(uuid).Result;       
             }
             return false;

@@ -1,21 +1,17 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using System.Data;
+using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
-    public class Admin : UserSimple
+    public class Admin
     {
-        public Admin(string? adminId, UserSimple userSimple) : base(userSimple.Id, userSimple.Username,
-            userSimple.Nickname, userSimple.ProfilePicUrl)
+        public Admin(MySqlDataReader reader)
         {
-            AdminId = adminId;
-            Id = userSimple.Id;
-            Username = userSimple.Username;
-            Nickname = userSimple.Nickname;
-            ProfilePicUrl = userSimple.ProfilePicUrl;
+            Id = reader.GetString("Admin_Id");
+            User = new User(reader);
         }
 
-        public string? AdminId { get; set; }
         public string? Id { get; set; }
-        public string Username { get; set; }
-        public string Nickname { get; set; }
-        public string? ProfilePicUrl { get; set; }
+        public User User { get; set; }
     }
 }

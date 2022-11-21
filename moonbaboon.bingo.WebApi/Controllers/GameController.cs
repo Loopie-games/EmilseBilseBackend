@@ -40,7 +40,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]
-        public ActionResult<List<UserSimple>> GetPlayers(string gameId)
+        public ActionResult<List<User>> GetPlayers(string gameId)
         {
             try
             {

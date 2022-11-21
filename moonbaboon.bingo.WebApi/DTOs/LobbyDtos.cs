@@ -4,7 +4,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class LobbyForPlayerDto
     {
-        public LobbyForPlayerDto(string lobbyId, string pin, UserSimple host)
+        public LobbyForPlayerDto(string lobbyId, string pin, User host)
         {
             LobbyId = lobbyId;
             Pin = pin;
@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.WebApi.DTOs
         }
 
         public string LobbyId { get; set; }
-        public UserSimple Host { get; set; }
+        public User Host { get; set; }
         public string Pin { get; set; }
     }
 }

@@ -24,7 +24,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT GameMode.Id AS GameMode_Id, GameMode.Name AS GameMode_Name FROM GameMode;",
+                        @"SELECT GameMode_Id, GameMode_Name FROM GameMode;",
                         con);
                 
 
