@@ -10,7 +10,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class TilePackRepository : ITilePackRepository
     {
         private const string Table = DbStrings.TilePackTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public TilePackRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<List<TilePack>> FindAll()
         {

@@ -55,6 +55,7 @@ namespace moonbaboon.bingo.Domain.Services
             if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
 
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            Console.WriteLine(gameId);
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
             
             //Check ownership over chosen packages
@@ -70,7 +71,7 @@ namespace moonbaboon.bingo.Domain.Services
             var boardTilesPack = new List<BoardTile>();
             foreach (var player in players)
             {
-                var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                var board = _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
                 var boardTilesPlayer = new List<BoardTile>();
                 var packTilesTemp = new List<PackTile>(packTiles);
                 while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
@@ -109,7 +110,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     //Create board for player
-                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
 
                     //get tiles about other players
                     List<BoardTile> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
@@ -170,7 +171,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
                     var boardTilesPlayer = new List<BoardTile>();
                     var packTilesTemp = new List<PackTile>(packTiles);
                     while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)

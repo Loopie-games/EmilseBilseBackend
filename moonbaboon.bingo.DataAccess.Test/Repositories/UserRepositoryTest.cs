@@ -6,6 +6,7 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
 {
     public class UserRepositoryTest
     {
+        /*
         private readonly UserRepository _userRepository = new();
 
         [Fact]
@@ -13,5 +14,6 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
         {
             Assert.IsAssignableFrom<IUserRepository>(_userRepository);
         }
+        */
     }
 }

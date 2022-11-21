@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public TileRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
         public async Task<List<Tile>> GetAll()

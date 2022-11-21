@@ -9,7 +9,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class FriendshipRepository : IFriendshipRepository
     {
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public FriendshipRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
         public async Task<List<Friendship>> FindAll()
         {

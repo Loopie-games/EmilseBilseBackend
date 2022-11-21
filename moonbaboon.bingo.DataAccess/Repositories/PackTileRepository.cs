@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public PackTileRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
         public async Task<List<PackTile>> GetByPackId(string packId)

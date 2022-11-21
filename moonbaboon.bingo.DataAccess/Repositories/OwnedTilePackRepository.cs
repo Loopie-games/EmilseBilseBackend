@@ -10,7 +10,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class OwnedTilePackRepository : IOwnedTilePackRepository
     {
         private const string Table = DbStrings.OwnedTilePackTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public OwnedTilePackRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<List<OwnedTilePack>> GetOwnedTilePacks(string userId)
         {

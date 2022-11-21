@@ -2,8 +2,6 @@
 {
     public static class DbStrings
     {
-        public const string SqlConnection =
-            "Server=185.51.76.204; Database=emilse_bilse_bingo; Uid=root; PWD=hemmeligt;";
 
         //generally used
         public const string Id = "Id";

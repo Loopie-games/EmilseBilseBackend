@@ -16,12 +16,12 @@ namespace moonbaboon.bingo.Domain.Services
             _gameRepository = gameRepository;
         }
 
-        public Board GetById(string id)
+        public BoardEntity GetById(string id)
         {
             return _boardRepository.FindById(id).Result;
         }
 
-        public Board? GetByUserAndGameId(string userId, string gameId)
+        public BoardEntity? GetByUserAndGameId(string userId, string gameId)
         {
             try
             {
@@ -34,11 +34,11 @@ namespace moonbaboon.bingo.Domain.Services
             }
         }
 
-        public Board? CreateBoard(string userId, string gameId)
+        public BoardEntity? CreateBoard(string userId, string gameId)
         {
             var game = _gameRepository.FindById(gameId).Result;
 
-            return game.Winner is not null ? null : _boardRepository.Create(userId, gameId).Result;
+            return game.Winner is not null ? null : _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
         }
 
         public bool IsBoardFilled(string? boardId)

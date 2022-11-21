@@ -36,10 +36,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             //checks that the user trying to turn the tile is owner of the board, else Error
             var boardTile = _boardTileRepository.ReadById(boardTileId).Result;
-            if (boardTile.Board.UserId != userId)
+            if (boardTile.BoardEntity.UserId != userId)
                 throw new Exception("You do not own this board, and can not turn the tiles!");
 
-            var game = _gameRepository.FindById(boardTile.Board.GameId).Result;
+            var game = _gameRepository.FindById(boardTile.BoardEntity.GameId).Result;
             if (game.State != State.Ongoing)
                 throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
 

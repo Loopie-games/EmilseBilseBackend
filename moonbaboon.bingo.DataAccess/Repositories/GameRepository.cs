@@ -16,7 +16,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public GameRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
         public async Task<Game> FindById(string id)
@@ -46,9 +46,9 @@ FROM Game
 
         public async Task<string> Create(GameEntity toCreate)
         {
-            toCreate.Id = Guid.NewGuid().ToString();
             await using var con = _connection.Clone();
             {
+                toCreate.Id = Guid.NewGuid().ToString();
                 con.Open();
                 await using MySqlCommand command =
                     new("INSERT INTO Game(Id, HostId, WinnerId, State) VALUES (@Id,@HostId, @WinnerId, @State);", con);
@@ -67,13 +67,13 @@ FROM Game
         public async Task<List<UserSimple>> GetPlayers(string gameId)
         {
             var list = new List<UserSimple>();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             con.Open();
 
             await using var command = new MySqlCommand(
                 "SELECT User.id, User.username, User.nickname, User.ProfilePicURL " +
-                "From (SELECT Board.UserId as u1 FROM `Game` " +
-                "JOIN Board ON Board.GameId = Game.Id " +
+                "From (SELECT Board_UserId as u1 FROM `Game` " +
+                "JOIN Board ON Board_GameId = Game.Id " +
                 $"WHERE Game.Id = '{gameId}') As b " +
                 "JOIN User ON b.u1 = User.id",
                 con);
@@ -91,7 +91,7 @@ FROM Game
         public async Task<bool> Delete(string gameId)
         {
             var b = false;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
 
             con.Open();
 
@@ -118,7 +118,7 @@ FROM Game
 
             var ent = await GameEnt(update +
                                     sql_select(Table) +
-                                    $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'");
+                                    $"WHERE {Table}.{DbStrings.Id} = '{game.Id}'", _connection.Clone());
             return ent ?? throw new InvalidDataException("ERROR in updating game with id: " + game.Id);
         }
 
@@ -149,10 +149,10 @@ FROM Game
             return ent;
         }
 
-        private static async Task<Game?> GameEnt(string sqlCommand)
+        private static async Task<Game?> GameEnt(string sqlCommand, MySqlConnection _connection)
         {
             Game? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             con.Open();
 
             await using var command = new MySqlCommand(sqlCommand, con);

@@ -12,8 +12,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class UserRepository : IUserRepository
     {
         private const string Table = DbStrings.UserTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
         private readonly Random _random = new();
+
+        public UserRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<List<UserSimple>> Search(string searchString)
         {

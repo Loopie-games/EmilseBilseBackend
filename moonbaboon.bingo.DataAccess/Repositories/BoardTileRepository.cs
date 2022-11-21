@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public BoardTileRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
 
@@ -24,13 +24,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
             await using MySqlCommand command = new(
                 @"SELECT BoardTile.Id AS BoardTile_Id, 
-       Board.Id AS Board_Id, Board.GameId AS Board_GameId, Board.UserId AS Board_UserId, 
+       Board_Id, Board_GameId, Board_UserId, 
        BoardTile.TileId AS ByTile_Id, Tile.Id AS Tile_Id, Tile.Action AS Tile_Action, 
        CASE WHEN PackTile.TileId IS NULL THEN '0' ELSE '1' END AS ByTile_Type, 
        User.id AS User_Id, User.username AS User_Username, User.nickname AS User_Nickname, User.ProfilePicURL AS User_ProfilePicUrl, 
        BoardTile.Position AS BoardTile_Position, BoardTile.IsActivated AS BoardTile_IsActivated 
 FROM BoardTile 
-    JOIN Board ON BoardTile.BoardId = Board.Id 
+    JOIN Board ON BoardTile.BoardId = Board.Board_Id
     JOIN User ON BoardTile.AboutUserId = User.id 
     LEFT JOIN PackTile ON BoardTile.TileId = PackTile.Id 
     LEFT JOIN TilePack ON PackTile.PackId = TilePack.Id 
@@ -41,8 +41,6 @@ WHERE BoardTile.Id = @Id;",
             command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) return new BoardTile(reader);
-
-            await con.CloseAsync();
             throw new Exception($"no {nameof(BoardTile)} with id: " + id);
         }
 
@@ -78,13 +76,13 @@ WHERE BoardTile.Id = @Id;",
 
             await using MySqlCommand command = new(
                 @"SELECT BoardTile.Id AS BoardTile_Id, 
-       Board.Id AS Board_Id, Board.GameId AS Board_GameId, Board.UserId AS Board_UserId, 
+       Board_Id, Board_GameId, Board_UserId, 
        BoardTile.TileId AS ByTile_Id, Tile.Id AS Tile_Id, Tile.Action AS Tile_Action, 
        CASE WHEN PackTile.TileId IS NULL THEN '0' ELSE '1' END AS ByTile_Type, 
        User.id AS User_Id, User.username AS User_Username, User.nickname AS User_Nickname, User.ProfilePicURL AS User_ProfilePicUrl, 
        BoardTile.Position AS BoardTile_Position, BoardTile.IsActivated AS BoardTile_IsActivated 
 FROM BoardTile 
-    JOIN Board ON BoardTile.BoardId = Board.Id 
+    JOIN Board ON BoardTile.BoardId = Board.Board_Id 
     JOIN User ON BoardTile.AboutUserId = User.id 
     LEFT JOIN PackTile ON BoardTile.TileId = PackTile.Id 
     LEFT JOIN TilePack ON PackTile.PackId = TilePack.Id 
@@ -95,9 +93,6 @@ WHERE BoardTile.BoardId = @boardId;",
             command.Parameters.Add("@boardId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new BoardTile(reader));
-
-
-            await con.CloseAsync();
             return list;
         }
 

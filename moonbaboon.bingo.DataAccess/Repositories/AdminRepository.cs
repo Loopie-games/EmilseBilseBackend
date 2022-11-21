@@ -8,21 +8,24 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class AdminRepository : IAdminRepository
     {
         private const string Table = DbStrings.AdminTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public AdminRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<Admin?> IsAdmin(string userId)
         {
             Admin? ent = null;
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using MySqlCommand command = new(
                 sql_select(Table) +
                 $"WHERE {Table}.{DbStrings.UserId} = '{userId}'"
-                , _connection);
+                , con);
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
-
-            await _connection.CloseAsync();
             return ent;
         }
 

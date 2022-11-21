@@ -12,6 +12,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class TopPlayerRepository : ITopPlayerRepository
     {
         private const string Table = DbStrings.TopPlayerTable;
+        private readonly MySqlConnection _connection;
+
+        public TopPlayerRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<TopPlayer> Create(TopPlayer toCreate)
         {
@@ -20,7 +26,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 $"INSERT INTO `{Table}` " +
                 $"VALUES ('{uuid}','{toCreate.GameId}','{toCreate.User.Id}','{toCreate.TurnedTiles}'); " +
                 sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
+                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'", _connection.Clone());
             return ent ??
                    throw new InvalidDataException($"ERROR in creating {Table} with User: " + toCreate.User.Username);
         }
@@ -28,7 +34,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         public async Task<List<TopPlayer>> FindTop(string gameId, int limit)
         {
             List<TopPlayer> list = new();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             con.Open();
 
             string sqlCommand =
@@ -66,11 +72,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return ent;
         }
 
-        private static async Task<TopPlayer?> Ent(string sqlCommand)
+        private static async Task<TopPlayer?> Ent(string sqlCommand, MySqlConnection connection)
         {
             TopPlayer? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
+            await using var con = connection;
+                con.Open();
 
             await using var command = new MySqlCommand(sqlCommand, con);
             await using var reader = await command.ExecuteReaderAsync();

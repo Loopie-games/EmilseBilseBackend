@@ -13,29 +13,30 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public BugReportRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
         public async Task<List<BugReport>> FindAll(string adminId)
         {
             var list = new List<BugReport>();
 
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command = new(
+                    @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, U.id AS User_Id, U.username As User_Username, U.nickname As User_Nickname, U.ProfilePicURL as User_ProfilePicUrl, StarredBugReport_Id
                         FROM BugReport 
                             JOIN User U on BugReport_ReportingUserId = U.id
                             Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.BugReport_Id AND StarredBugReport.Admin_Id = @Admin_Id",
-                _connection);
-            {
-                command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
+                    _connection);
+                {
+                    command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
+                }
+                await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    list.Add(new BugReport(reader));
+                
             }
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-                list.Add(new BugReport(reader));
-
-            await _connection.CloseAsync();
             return list;
         }
 

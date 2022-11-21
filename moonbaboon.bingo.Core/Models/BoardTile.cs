@@ -5,10 +5,10 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class BoardTile
     {
-        public BoardTile(string? id, Board board, ByTile byTile, UserSimple aboutUser, int position, bool isActivated)
+        public BoardTile(string? id, BoardEntity boardEntity, ByTile byTile, UserSimple aboutUser, int position, bool isActivated)
         {
             Id = id;
-            Board = board;
+            BoardEntity = boardEntity;
             ByTile = byTile;
             AboutUser = aboutUser;
             Position = position;
@@ -18,7 +18,7 @@ namespace moonbaboon.bingo.Core.Models
         public BoardTile(MySqlDataReader reader)
         {
             Id = reader.GetString("BoardTile_Id");
-            Board = new Board(reader);
+            BoardEntity = new BoardEntity(reader);
             ByTile = new ByTile(reader);
             AboutUser = new UserSimple(reader);
             Position = reader.GetInt32("BoardTile_Position");
@@ -26,7 +26,7 @@ namespace moonbaboon.bingo.Core.Models
         }
 
         public string? Id { get; set; }
-        public Board Board { get; set; }
+        public BoardEntity BoardEntity { get; set; }
         public ByTile ByTile { get; set; }
         public UserSimple AboutUser { get; set; }
         public int Position { get; set; }
@@ -50,7 +50,7 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = boardTile.Id;
             AboutUserId = boardTile.AboutUser.Id;
-            BoardId = boardTile.Board.Id;
+            BoardId = boardTile.BoardEntity.Id;
             TileId = boardTile.ByTile.Id;
             Position = boardTile.Position;
             IsActivated = boardTile.IsActivated;

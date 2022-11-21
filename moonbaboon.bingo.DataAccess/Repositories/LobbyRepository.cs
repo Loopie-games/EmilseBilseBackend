@@ -11,7 +11,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class LobbyRepository : ILobbyRepository
     {
         private static readonly Random Random = new();
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public LobbyRepository(MySqlConnection connection)
+        {
+            _connection = connection.Clone();
+        }
 
         public async Task<Lobby?> Create(Lobby lobbyToCreate)
         {
