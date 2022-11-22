@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 
@@ -10,9 +11,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class BugReportRepository : IBugReportRepository
     {
         private readonly MySqlConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public BugReportRepository(MySqlConnection connection)
+        public BugReportRepository(MySqlConnection connection, IDbConnectionFactory connectionFactory)
         {
+            _connectionFactory = connectionFactory;
             _connection = connection.Clone();
         }
 
@@ -105,6 +108,27 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
                 command.ExecuteNonQuery();
             }
+        }
+
+        public void RemoveStar(string starId, string? adminId)
+        {
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"Delete from StarredBugReport where StarredBugReport_AdminId = @adminId AND StarredBugReport_Id = @starId";
+
+            con.Open();
+            
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "@adminId";
+            param1.Value = adminId;
+            command.Parameters.Add(param1);
+
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "@starId";
+            param2.Value = starId;
+            command.Parameters.Add(param2);
+
+            command.ExecuteNonQuery();
         }
     }
 }

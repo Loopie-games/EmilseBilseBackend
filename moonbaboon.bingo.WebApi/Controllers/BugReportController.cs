@@ -88,5 +88,21 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
+
+        [Authorize]
+        [HttpDelete(nameof(RemoveStar))]
+        public ActionResult RemoveStar(string starId)
+        {
+            try
+            {
+                _bugReportService.RemoveStar(starId, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
     }
 }
