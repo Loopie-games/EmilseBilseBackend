@@ -5,14 +5,6 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class Game
     {
-        public Game(string? id, User host, User? winner, State state)
-        {
-            Id = id;
-            Host = host;
-            Winner = winner;
-            State = state;
-        }
-
         public Game(MySqlDataReader reader)
         {
             Id = reader.GetString("Game_Id");
@@ -26,7 +18,7 @@ namespace moonbaboon.bingo.Core.Models
             State = (State) reader.GetInt32("Game_State");
         }
 
-        public string? Id { get; set; }
+        public string Id { get; set; }
         public User Host { get; set; }
         public User? Winner { get; set; }
 

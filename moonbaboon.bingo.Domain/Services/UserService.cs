@@ -8,62 +8,58 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class UserService : IUserService
     {
-        private readonly IAdminRepository _adminRepository;
+        
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository, IAdminRepository adminRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _adminRepository = adminRepository;
         }
+        
 
         public List<User> Search(string searchStr)
         {
-            return _userRepository.Search(searchStr).Result;
+            return _userRepository.Search(searchStr);
         }
 
         public User Login(string dtoUsername, string dtoPassword)
         {
-            return _userRepository.Login(dtoUsername, dtoPassword).Result;
+            return _userRepository.Login(dtoUsername, dtoPassword);
         }
 
         public User GetById(string id)
         {
-            return _userRepository.ReadById(id).Result;
+            return _userRepository.ReadById(id);
         }
 
         public string CreateUser(User user)
         {
-            return _userRepository.Create(user).Result;
+            return _userRepository.Insert(user);
         }
 
         public bool UsernameExists(string username)
         {
-            var b = _userRepository.GetUserIdByUsername(username).Result;
+            var b = _userRepository.GetUserIdByUsername(username);
             return b is not null;
         }
 
         public string GetSalt(string userId)
         {
-            return _userRepository.GetSalt(userId).Result;
+            return _userRepository.GetSalt(userId);
         }
 
         public void UpdateUser(string id, User user)
         {
             if (id == user.Id)
-                _userRepository.UpdateUser(user).Wait();
+                _userRepository.UpdateUser(user);
             else
                 throw new Exception("You can only change your own profile");
         }
 
         public string? GetUserIdByUsername(string username)
         {
-            return _userRepository.GetUserIdByUsername(username).Result;
+            return _userRepository.GetUserIdByUsername(username);
         }
-
-        public void RemoveName(string uuid, string adminUUID)
-        {
-            if (_adminRepository.FindByUserId(adminUUID).Result != null) _userRepository.RemoveName(uuid).Wait();
-        }
+        
     }
 }

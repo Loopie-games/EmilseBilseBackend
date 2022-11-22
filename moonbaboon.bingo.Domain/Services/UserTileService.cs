@@ -38,7 +38,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public UserTile NewTile(UserTileEntity toCreate)
         {
-            var user = _userRepository.ReadById(toCreate.AboutUserId).Result;
+            var user = _userRepository.ReadById(toCreate.AboutUserId);
             if (user.Id is null)
                 throw new Exception(
                     $"The {nameof(User)} you are trying to add a {nameof(UserTile)} to, does not exist");
