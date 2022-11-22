@@ -37,6 +37,23 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return NotFound(e.Message);
             }
         }
+        
+        [Authorize]
+        [HttpGet(nameof(GetSavedGames))]
+        public ActionResult<Game> GetSavedGames()
+        {
+            try
+            {
+                var games = _gameService.GetSavedGames(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return Ok(games);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return NotFound(e.Message);
+            }
+        }
+        
 
         [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]

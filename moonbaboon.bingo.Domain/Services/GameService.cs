@@ -47,6 +47,11 @@ namespace moonbaboon.bingo.Domain.Services
             return _gameRepository.FindById(id).Result;
         }
 
+        public List<Game> GetSavedGames(string userId)
+        {
+            return _gameRepository.GetByHostId(userId);
+        }
+
         public string NewFreeForAll(string lobbyId, string userId, string[] tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id

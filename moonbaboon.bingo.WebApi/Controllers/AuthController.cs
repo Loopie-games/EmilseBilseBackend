@@ -24,7 +24,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost(nameof(LoginSwagger))]
         public ActionResult<AuthResponse> LoginSwagger(UserDtos.LoginDto loginInformation)
         {
-            var salt = _service.GetSalt(loginInformation.Username);
+            var salt = _service.GetSalt(_service.GetUserIdByUsername(loginInformation.Username));
             var password = BCrypt.Net.BCrypt.HashPassword(loginInformation.Password, salt);
             var user = _service.Login(loginInformation.Username, password);
             if (user == null)

@@ -12,6 +12,8 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>Game with the given id</returns>
         public Game GetById(string id);
 
+        public List<Game> GetSavedGames(string userId);
+
         /// <summary>
         ///     Creates a new Game from lobby, if provided with id from matching lobby and host.
         /// </summary>

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Domain.IRepositories
@@ -32,5 +33,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="game">game to update</param>
         /// <returns>the updated game</returns>
         public Task Update(Game game);
+
+        List<Game> GetByHostId(string userId);
     }
 }

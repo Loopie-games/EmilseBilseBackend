@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 
@@ -9,9 +11,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class GameRepository : IGameRepository
     {
         private readonly MySqlConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public GameRepository(MySqlConnection connection)
+        public GameRepository(MySqlConnection connection, IDbConnectionFactory connectionFactory)
         {
+            _connectionFactory = connectionFactory;
             _connection = connection.Clone();
         }
 
@@ -89,6 +93,38 @@ FROM Game
                 }
                 command.ExecuteNonQuery();
             }
+        }
+
+        public List<Game> GetByHostId(string userId)
+        {
+            var games = new List<Game>();
+
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+
+            command.CommandText = @"SELECT  Game_Id,  Game_State, 
+       HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
+       Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
+FROM Game 
+    JOIN User AS HOST ON HOST.User_id = Game.Game_HostId
+    LEFT OUTER JOIN User AS Winner ON Winner.User_id = Game.Game_WinnerId 
+WHERE Game_HostId = @HostId";
+
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "@HostId";
+            parameter.Value = userId;
+            command.Parameters.Add(parameter);
+
+            con.Open();
+
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                games.Add(new Game(reader));
+            }
+
+            return games;
         }
     }
 }
