@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -13,7 +10,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class UserRepository : IUserRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly Random _random = new();
 
         public UserRepository(IDbConnectionFactory connection)
         {
