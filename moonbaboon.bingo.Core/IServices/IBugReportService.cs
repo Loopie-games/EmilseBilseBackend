@@ -10,5 +10,6 @@ namespace moonbaboon.bingo.Core.IServices
         public BugReportEntity Create(BugReportEntity bugReportEntity);
         public BugReport GetById(string id, string userId);
         public void AddStar(string userId, string bugReportId);
+        void RemoveStar(string starId, string userId);
     }
 }

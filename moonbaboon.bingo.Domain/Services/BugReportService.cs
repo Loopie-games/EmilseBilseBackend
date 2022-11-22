@@ -43,5 +43,12 @@ namespace moonbaboon.bingo.Domain.Services
 
             _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.Id, bugReportId)).Wait();
         }
+
+        public void RemoveStar(string starId, string userId)
+        {
+            var admin = _adminRepository.FindByUserId(userId).Result;
+
+            _bugReportRepository.RemoveStar(starId, admin.Id);
+        }
     }
 }
