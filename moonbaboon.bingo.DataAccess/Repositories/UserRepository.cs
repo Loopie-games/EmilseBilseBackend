@@ -93,7 +93,10 @@ WHERE User_Username = @username AND  Auth_Password = @password";
 
             con.Open();
             using var reader = command.ExecuteReader();
-            while (reader.Read()) return new User(reader);
+            while (reader.Read())
+            {
+                return new User(reader);
+            }
 
             throw new Exception("No user found with id: " + id);
         }
@@ -106,6 +109,8 @@ WHERE User_Username = @username AND  Auth_Password = @password";
             using var command = con.CreateCommand();
             command.CommandText = @"Insert into User VALUES (@id, @username, @nickname, @profilePic)";
 
+            con.Open();
+            
             var param1 = command.CreateParameter();
             param1.ParameterName = "@id";
             param1.Value = entity.Id;
@@ -125,8 +130,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
             param4.ParameterName = "@profilePic";
             param4.Value = entity.ProfilePicUrl;
             command.Parameters.Add(param4);
-
-            con.Open();
+            
             command.ExecuteNonQuery();
             return entity.Id;
         }
