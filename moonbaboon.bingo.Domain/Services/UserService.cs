@@ -8,13 +8,12 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class UserService : IUserService
     {
-        private readonly IAdminRepository _adminRepository;
+        
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository, IAdminRepository adminRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _adminRepository = adminRepository;
         }
 
         public List<User> Search(string searchStr)
@@ -59,11 +58,6 @@ namespace moonbaboon.bingo.Domain.Services
         public string? GetUserIdByUsername(string username)
         {
             return _userRepository.GetUserIdByUsername(username).Result;
-        }
-
-        public void RemoveName(string uuid, string adminUUID)
-        {
-            if (_adminRepository.FindByUserId(adminUUID).Result != null) _userRepository.RemoveName(uuid).Wait();
         }
     }
 }
