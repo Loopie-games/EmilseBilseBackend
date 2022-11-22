@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -26,9 +25,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 .Select(s => s[Random.Next(s.Length)]).ToArray());
 
             await using var con = _connection.Clone();
-
+            con.Open();
             await using var command = new MySqlCommand(
-                @"INSERT INTO Lobby VALUES (@Id,@Host,@Pin); " +
+                @"INSERT INTO Lobby VALUES (@Id,@Host,@Pin); ",
                 con);
             {
                 command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = uuid;
@@ -41,8 +40,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public async Task<Lobby> FindById(string id)
         {
-            await using var con =_connection.Clone();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
                 @"SELECT * FROM Lobby WHERE Lobby_Id = @Id",
                 con);
@@ -50,10 +49,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new Lobby(reader);
-            }
+            while (await reader.ReadAsync()) return new Lobby(reader);
 
             throw new Exception("ERROR in creating lobby");
         }
@@ -62,7 +58,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         {
             Lobby? ent = null;
             await using var con = _connection.Clone();
-
+            con.Open();
             await using var command = new MySqlCommand(
                 @"SELECT * FROM Lobby WHERE Lobby_Host = @Host",
                 con);
@@ -73,7 +69,6 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             while (await reader.ReadAsync())
                 if (reader.HasRows)
                     ent = new Lobby(reader);
-            await _connection.CloseAsync();
             return ent;
         }
 
@@ -85,26 +80,27 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         /// <exception cref="Exception">If No lobby with given Pin Exists</exception>
         public async Task<Lobby> FindByPin(string pin)
         {
-            
-            await using var con  = _connection.Clone();
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
                 @"SELECT * FROM Lobby WHERE Lobby_Pin = @Pin",
-                _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+                con);
             {
-                return new Lobby(reader);
+                command.Parameters.Add("@Pin", MySqlDbType.VarChar).Value = pin;
             }
-            throw new Exception("No Lobby with given Id");
+            await using var reader = await command.ExecuteReaderAsync();
+            while (reader.Read()) return new Lobby(reader);
+
+            throw new Exception("No Lobby with given Pin: " + pin);
         }
 
         public async Task DeleteLobby(string lobbyId)
         {
-           await using var con =_connection.Clone();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                @"DELETE FROM Lobby WHERE Lobby_Id = @LobbyId; " +
-                _connection);
+                @"DELETE FROM Lobby WHERE Lobby_Id = @LobbyId; ",
+                con);
             {
                 command.Parameters.Add("@LobbyId", MySqlDbType.VarChar).Value = lobbyId;
             }

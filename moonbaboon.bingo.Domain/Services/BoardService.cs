@@ -38,7 +38,9 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var game = _gameRepository.FindById(gameId).Result;
 
-            return game.Winner is not null ? null : _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
+            return game.Winner is not null
+                ? null
+                : _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
         }
 
         public bool IsBoardFilled(string? boardId)

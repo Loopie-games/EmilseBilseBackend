@@ -85,7 +85,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [Authorize]
         [HttpPost("/FFA")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -33,12 +31,8 @@ FROM Game
                 con);
             command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new Game(reader);
-            }
+            while (await reader.ReadAsync()) return new Game(reader);
 
-            await con.CloseAsync();
             throw new Exception($"no {nameof(Game)} with id: " + id);
         }
 
@@ -56,7 +50,7 @@ FROM Game
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toCreate.Id;
                     command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = toCreate.HostId;
                     command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = toCreate.WinnerId;
-                    command.Parameters.Add("@State", MySqlDbType.Int32).Value =  toCreate.State;
+                    command.Parameters.Add("@State", MySqlDbType.Int32).Value = toCreate.State;
                 }
                 command.ExecuteNonQuery();
             }

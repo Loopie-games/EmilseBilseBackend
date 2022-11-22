@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -33,16 +32,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@User_Id", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new Friend(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new Friend(reader));
             return list;
         }
 
         public async Task<bool> ValidateFriendship(string userId1, string userId2)
         {
-            await using var con =_connection.Clone();
+            await using var con = _connection.Clone();
 
             await using var command = new MySqlCommand(
                 @"SELECT COUNT(Friendship_Id) FROM Friendship 
@@ -92,10 +88,7 @@ WHERE ((Friendship_User1Id = @User1 AND Friendship_User2Id = @User2) OR (Friends
                 command.Parameters.Add("@User_Id", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new Friend(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new Friend(reader));
             return list;
         }
 
@@ -129,10 +122,7 @@ WHERE ((Friendship_User1Id = @User1 AND Friendship_User2Id = @User2) OR (Friends
                 command.Parameters.Add("@SearchStr", MySqlDbType.VarChar).Value = searchStr;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new Friend(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new Friend(reader));
             return list;
         }
     }

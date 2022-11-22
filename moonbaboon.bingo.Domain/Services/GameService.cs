@@ -57,7 +57,7 @@ namespace moonbaboon.bingo.Domain.Services
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
             Console.WriteLine(gameId);
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
-            
+
             //Check ownership over chosen packages
             if (tilePackIds.Any(tpId =>
                 !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
@@ -92,8 +92,8 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
-        
-        
+
+
         public string NewOG(string lobbyId, string userId, string[]? tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
@@ -196,7 +196,6 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
-        
 
 
         /// <exception cref="Exception">if the user is not on the list</exception>
@@ -213,13 +212,9 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var game = _gameRepository.FindById(gameId).Result;
             if (game.Host.Id == hostId)
-            {
                 _gameRepository.Delete(gameId);
-            }
             else
-            {
                 throw new Exception("You have to be the host of a game to delete it");
-            }
         }
 
         public Game ConfirmWin(string gameId, string hostId)

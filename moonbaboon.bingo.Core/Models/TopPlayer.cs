@@ -18,7 +18,6 @@ namespace moonbaboon.bingo.Core.Models
             Game = new Game(reader);
             User = new User(reader);
             TurnedTiles = reader.GetInt32("TopPlayer_TurnedTiles");
-
         }
 
         public string? Id { get; set; }
@@ -26,8 +25,9 @@ namespace moonbaboon.bingo.Core.Models
         public User User { get; set; }
         public int TurnedTiles { get; set; }
     }
-    
-    public class TopPlayerEntity{
+
+    public class TopPlayerEntity
+    {
         public TopPlayerEntity(string? id, string gameId, string userId, int turnedTiles)
         {
             Id = id;

@@ -44,10 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     JOIN User U on U.User_id = TopPlayer.TopPlayer_UserId
     JOIN Game G on G.Game_Id = TopPlayer.TopPlayer_GameId", con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                list.Add(new TopPlayer(reader));
-            }
+            while (reader.Read()) list.Add(new TopPlayer(reader));
 
             return list;
         }

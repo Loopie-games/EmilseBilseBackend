@@ -5,7 +5,8 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class BoardTile
     {
-        public BoardTile(string? id, BoardEntity boardEntity, ByTile byTile, User aboutUser, int position, bool isActivated)
+        public BoardTile(string? id, BoardEntity boardEntity, ByTile byTile, User aboutUser, int position,
+            bool isActivated)
         {
             Id = id;
             BoardEntity = boardEntity;

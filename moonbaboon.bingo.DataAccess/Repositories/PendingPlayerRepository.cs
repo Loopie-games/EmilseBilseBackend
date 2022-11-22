@@ -40,25 +40,21 @@ WHERE PendingPlayer_Id = @Id",
             throw new Exception($"No {nameof(BugReport)} with id: {id}");
         }
 
-        public async Task<string> Create(PendingPlayer entity)
+        public async Task<string> Create(PendingPlayerEntity entity)
         {
-            string uuid = Guid.NewGuid().ToString();
+            entity.Id = Guid.NewGuid().ToString();
             await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                @"INSERT INTO PendingPlayer VALUES (@Id,@UserId,@LobbyId); " +
+                @"INSERT INTO PendingPlayer VALUES (@Id,@UserId,@LobbyId); ",
                 con);
             {
-                command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = uuid;
-                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.Lobby;
-                command.Parameters.Add("@LobbyId", MySqlDbType.VarChar).Value = entity.User;
+                command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
+                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.User;
+                command.Parameters.Add("@LobbyId", MySqlDbType.VarChar).Value = entity.Lobby;
             }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return uuid;
-            }
-
-            throw new Exception($"ERROR: {nameof(PendingPlayer)} not created");
+            command.ExecuteNonQuery();
+            return entity.Id;
         }
 
         public async Task<PendingPlayer> GetByUserId(string userId)
@@ -71,10 +67,7 @@ WHERE PendingPlayer_Id = @Id",
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new PendingPlayer(reader);
-            }
+            while (await reader.ReadAsync()) return new PendingPlayer(reader);
 
             throw new Exception($"no {nameof(User)} found with User-id: {userId}");
         }
@@ -84,6 +77,7 @@ WHERE PendingPlayer_Id = @Id",
             List<PendingPlayer> list = new();
 
             await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
                 @"SELECT * FROM PendingPlayer 
                 JOIN User U on PendingPlayer.PendingPlayer_UserId = U.User_id 
@@ -94,10 +88,7 @@ WHERE PendingPlayer_Id = @Id",
                 command.Parameters.Add("@LobbyId", MySqlDbType.VarChar).Value = lobbyId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new PendingPlayer(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new PendingPlayer(reader));
 
             return list;
         }
@@ -106,6 +97,7 @@ WHERE PendingPlayer_Id = @Id",
         {
             PendingPlayer? pp = null;
             await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
                 @"SELECT * FROM PendingPlayer 
     JOIN User U on PendingPlayer.PendingPlayer_UserId = U.User_id 
@@ -116,10 +108,7 @@ WHERE PendingPlayer_UserId = @UserId",
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                pp = new PendingPlayer(reader);
-            }
+            while (await reader.ReadAsync()) pp = new PendingPlayer(reader);
 
             return pp;
         }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
@@ -29,10 +28,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 @"SELECT * From (SELECT Board_UserId as u1 FROM `Game` JOIN Board ON Board_GameId = @GameId) As b JOIN User ON b.u1 = User.User_id",
                 con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new User(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new User(reader));
 
             return list;
         }
@@ -48,10 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@searchString", MySqlDbType.VarChar).Value = searchString;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new User(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new User(reader));
 
             return list;
         }
@@ -71,10 +64,7 @@ WHERE User_Username = @username AND  Auth_Password = @password",
                 command.Parameters.Add("@password", MySqlDbType.VarChar).Value = dtoPassword;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new User(reader);
-            }
+            while (await reader.ReadAsync()) return new User(reader);
 
             throw new InvalidOperationException("Invalid Login");
         }
@@ -92,18 +82,18 @@ WHERE User_Username = @username AND  Auth_Password = @password",
             await using var command =
                 new MySqlCommand(@"select * from User WHERE User_id = @id;",
                     con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
             {
-                return new User(reader);
+                command.Parameters.Add("@id", MySqlDbType.VarChar).Value = id;
             }
+            await using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) return new User(reader);
 
             throw new Exception("No user found with id: " + id);
         }
 
         public async Task<string> Create(User entity)
         {
-            string uuid = Guid.NewGuid().ToString();
+            entity.Id = Guid.NewGuid().ToString();
             await using var con = _connection.Clone();
             con.Open();
             await using var command = new MySqlCommand(
@@ -115,25 +105,23 @@ WHERE User_Username = @username AND  Auth_Password = @password",
                 command.Parameters.Add("@profilePic", MySqlDbType.VarChar).Value = entity.ProfilePicUrl;
             }
             command.ExecuteNonQuery();
-            return uuid;
+            return entity.Id;
         }
 
-        public async Task<bool> UsernameExists(string username)
+        public async Task<string?> GetUserIdByUsername(string username)
         {
             username = username.ToLower();
             await using var con = _connection.Clone();
             con.Open();
             await using var command = new MySqlCommand(
-                @"SELECT COUNT(`User_id`) FROM User WHERE Lower(User_Username) = @username",
+                @"SELECT User_id FROM User WHERE Lower(User_Username) = @username",
                 con);
             {
                 command.Parameters.Add("@username", MySqlDbType.VarChar).Value = username.ToLower();
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return reader.GetInt32(0) > 0;
-
-            await _connection.CloseAsync();
-            throw new Exception("ERROR: " + nameof(UsernameExists));
+            while (await reader.ReadAsync()) return reader.GetString(0);
+            return null;
         }
 
         public async Task<string> GetSalt(string userId)
@@ -149,10 +137,7 @@ WHERE User_Username = @username AND  Auth_Password = @password",
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return reader.GetString(0);
-            }
+            while (await reader.ReadAsync()) return reader.GetString(0);
 
             throw new Exception("no user with given userId");
         }
@@ -176,12 +161,13 @@ WHERE User_Username = @username AND  Auth_Password = @password",
         public async Task RemoveName(string userId)
         {
             await using var con = _connection.Clone();
-
+            con.Open();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             string newRandomName = new(Enumerable.Repeat(chars, 16)
                 .Select(s => s[_random.Next(s.Length)]).ToArray());
 
-            await using var command = new MySqlCommand(@"UPDATE User SET User_Username = @RandomName WHERE User_id = @UserId", con);
+            await using var command =
+                new MySqlCommand(@"UPDATE User SET User_Username = @RandomName WHERE User_id = @UserId", con);
             {
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
                 command.Parameters.Add("@RandomName", MySqlDbType.VarChar).Value = newRandomName;

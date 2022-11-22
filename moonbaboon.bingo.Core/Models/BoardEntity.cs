@@ -1,5 +1,4 @@
-﻿using System.Data;
-using MySqlConnector;
+﻿using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
 {

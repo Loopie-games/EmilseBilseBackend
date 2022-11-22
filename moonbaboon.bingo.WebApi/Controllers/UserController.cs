@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.WebApi.DTOs;
 
 namespace moonbaboon.bingo.WebApi.Controllers
 {
@@ -13,11 +14,13 @@ namespace moonbaboon.bingo.WebApi.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
+        private readonly IAuthService _authService;
         private readonly IUserService _userService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IAuthService authService)
         {
             _userService = userService;
+            _authService = authService;
         }
 
         [HttpGet(nameof(Search) + "/{searchStr}")]
@@ -65,7 +68,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet(nameof(VerifyUsername))]
         public IActionResult VerifyUsername(string username)
         {
-            return !_userService.VerifyUsername(username)
+            return _userService.UsernameExists(username)
                 ? new JsonResult($"Username '{username}' is already in use.")
                 : new JsonResult(true);
         }
@@ -74,15 +77,16 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost(nameof(CreateUser))]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(User))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<User> CreateUser(User user)
+        public ActionResult<User> CreateUser(UserDtos.NewUserDto user)
         {
             try
             {
-                if (!_userService.VerifyUsername(user.Username))
+                if (_userService.UsernameExists(user.Username))
                     return BadRequest($"Username '{user.Username}' is already in use.");
 
-                var u = _userService.CreateUser(user);
-                return CreatedAtAction(nameof(GetById), new { id = u }, u);
+                var u = _userService.CreateUser(user.ToUser());
+                var a = _authService.Create(new AuthEntity(null, u, user.Password, user.Salt));
+                return CreatedAtAction(nameof(GetById), new {id = u}, u);
             }
             catch (Exception e)
             {
@@ -96,7 +100,10 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                return Ok(_userService.GetSalt(username));
+                var userId = _userService.GetUserIdByUsername(username);
+                if (userId != null) return Ok(_userService.GetSalt(userId));
+
+                return BadRequest("User with given username does not exist");
             }
             catch (Exception e)
             {
@@ -107,7 +114,8 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPut]
-        public ActionResult<User> UpdateUser(User user) {
+        public ActionResult<User> UpdateUser(User user)
+        {
             try
             {
                 _userService.UpdateUser(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, user);

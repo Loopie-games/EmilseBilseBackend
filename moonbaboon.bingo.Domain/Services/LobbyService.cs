@@ -24,11 +24,6 @@ namespace moonbaboon.bingo.Domain.Services
             return _lobbyRepository.FindById(id).Result;
         }
 
-        public Lobby? GetByHostId(string hostId)
-        {
-            return _lobbyRepository.FindByHostId(hostId).Result;
-        }
-
         public Lobby? Create(string hostId)
         {
             var lobby = GetByHostId(hostId);
@@ -44,7 +39,6 @@ namespace moonbaboon.bingo.Domain.Services
         {
             try
             {
-                var user = _userRepository.ReadById(userId).Result;
                 Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
                 var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
                 if (pp is not null && pp.Lobby.Id == lobby.Id) return pp;
@@ -55,7 +49,7 @@ namespace moonbaboon.bingo.Domain.Services
                 }
 
                 //if user already is in the lobby the PendingPlayer is returned, else a new is created
-                var newP = _pendingPlayerRepository.Create(new PendingPlayer(user, lobby)).Result;
+                var newP = _pendingPlayerRepository.Create(new PendingPlayerEntity(null, userId, lobby.Id)).Result;
                 return _pendingPlayerRepository.ReadById(newP).Result;
             }
             catch (Exception e)
@@ -76,10 +70,12 @@ namespace moonbaboon.bingo.Domain.Services
         public void LeaveLobby(string userId)
         {
             var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
-            if (pp is not null)
-            {
-                _pendingPlayerRepository.Delete(pp.Id).Wait();
-            }
+            if (pp is not null) _pendingPlayerRepository.Delete(pp.Id).Wait();
+        }
+
+        public Lobby? GetByHostId(string hostId)
+        {
+            return _lobbyRepository.FindByHostId(hostId).Result;
         }
     }
 }

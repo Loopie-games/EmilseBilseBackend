@@ -1,6 +1,4 @@
-﻿using MySqlConnector;
-
-namespace moonbaboon.bingo.Core.Models
+﻿namespace moonbaboon.bingo.Core.Models
 {
     public class FriendshipEntity
     {

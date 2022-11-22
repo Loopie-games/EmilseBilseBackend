@@ -37,34 +37,33 @@ namespace moonbaboon.bingo.Domain.Services
             return _userRepository.Create(user).Result;
         }
 
-        public bool VerifyUsername(string username)
+        public bool UsernameExists(string username)
         {
-            return _userRepository.UsernameExists(username).Result;
+            var b = _userRepository.GetUserIdByUsername(username).Result;
+            return b is not null;
         }
 
-        public string GetSalt(string username)
+        public string GetSalt(string userId)
         {
-            return _userRepository.GetSalt(username).Result;
+            return _userRepository.GetSalt(userId).Result;
         }
 
         public void UpdateUser(string id, User user)
         {
             if (id == user.Id)
-            {
                 _userRepository.UpdateUser(user).Wait();
-            }
             else
-            {
                 throw new Exception("You can only change your own profile");
-            }
+        }
 
+        public string? GetUserIdByUsername(string username)
+        {
+            return _userRepository.GetUserIdByUsername(username).Result;
         }
 
         public void RemoveName(string uuid, string adminUUID)
         {
-            if(_adminRepository.FindByUserId(adminUUID).Result != null){
-                 _userRepository.RemoveName(uuid).Wait();       
-            }
+            if (_adminRepository.FindByUserId(adminUUID).Result != null) _userRepository.RemoveName(uuid).Wait();
         }
     }
 }

@@ -99,7 +99,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 var lobbyId = _pendingPlayerService.GetByUserId(GetUserId(Context)).Lobby.Id;
                 try
                 {
-                    if (lobbyId is not null )
+                    if (lobbyId is not null)
                     {
                         _lobbyService.LeaveLobby(GetUserId(Context));
                         await Groups.RemoveFromGroupAsync(Context.ConnectionId, lobbyId);

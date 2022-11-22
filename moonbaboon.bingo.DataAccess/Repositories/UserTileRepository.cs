@@ -58,7 +58,7 @@ WHERE UserTile.UserTile_Id = @Id;"
             command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) return new UserTile(reader);
-            
+
             throw new Exception($"no {nameof(UserTile)} with id: " + id);
         }
 
@@ -82,8 +82,6 @@ WHERE UserTile.UserTile_About_UserId = @Id;"
             command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = aboutUserId;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new UserTile(reader));
-
-            await con.CloseAsync();
             return list;
         }
 
@@ -131,7 +129,7 @@ FROM (SELECT PendingPlayer.PendingPlayer_UserId As uId
             command.Parameters.Add("@userId", MySqlDbType.VarChar).Value = userId;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new UserTile(reader));
-            
+
             return list;
         }
 
@@ -155,8 +153,6 @@ WHERE UserTile.UserTile_AddedBy_UserId = @Id;"
             command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = userId;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync()) list.Add(new UserTile(reader));
-
-            await con.CloseAsync();
             return list;
         }
     }

@@ -22,10 +22,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var con = _connection.Clone();
             await using var command = new MySqlCommand(@"SELECT * FROM TilePack", _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new TilePack(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new TilePack(reader));
 
             return list;
         }
@@ -78,10 +75,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 @"SELECT * FROM TilePack WHERE TilePack_Name = 'Default' "
                 , con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new TilePack(reader);
-            }
+            while (await reader.ReadAsync()) return new TilePack(reader);
 
             throw new Exception("no Default Package found");
         }
@@ -97,10 +91,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@PackId", MySqlDbType.VarChar).Value = packId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return new TilePack(reader);
-            }
+            while (await reader.ReadAsync()) return new TilePack(reader);
 
             throw new Exception("no tilePackage found with id: " + packId);
         }
@@ -120,10 +111,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@Stripe", MySqlDbType.VarChar).Value = entity.PriceStripe;
             }
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                return uuid;
-            }
+            while (await reader.ReadAsync()) return uuid;
 
             throw new Exception($"Error i creating {nameof(TilePack)} with name: " + entity.Name);
         }

@@ -8,8 +8,8 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class BugReportService : IBugReportService
     {
-        private readonly IBugReportRepository _bugReportRepository;
         private readonly IAdminRepository _adminRepository;
+        private readonly IBugReportRepository _bugReportRepository;
 
         public BugReportService(IBugReportRepository bugReportRepository, IAdminRepository adminRepository)
         {
@@ -39,8 +39,6 @@ namespace moonbaboon.bingo.Domain.Services
 
         public void AddStar(string userId, string bugReportId)
         {
-            
-            
             var admin = _adminRepository.FindByUserId(userId).Result;
 
             _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.Id, bugReportId)).Wait();

@@ -26,7 +26,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     new(
                         @"SELECT GameMode_Id, GameMode_Name FROM GameMode;",
                         con);
-                
+
 
                 await using var reader = await command.ExecuteReaderAsync();
                 while (reader.Read()) list.Add(new GameMode(reader));

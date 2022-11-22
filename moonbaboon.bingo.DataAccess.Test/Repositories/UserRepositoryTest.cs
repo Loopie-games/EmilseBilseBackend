@@ -1,8 +1,4 @@
-﻿using moonbaboon.bingo.DataAccess.Repositories;
-using moonbaboon.bingo.Domain.IRepositories;
-using Xunit;
-
-namespace moonbaboon.bingo.DataAccess.Test.Repositories
+﻿namespace moonbaboon.bingo.DataAccess.Test.Repositories
 {
     public class UserRepositoryTest
     {

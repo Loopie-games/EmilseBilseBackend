@@ -7,12 +7,13 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IPendingPlayerRepository
     {
         public Task<PendingPlayer> ReadById(string id);
+
         /// <summary>
         ///     Creates PendingPlayer in Database
         /// </summary>
         /// <param name="entity"> PendingPlayer to insert in the database</param>
         /// <returns></returns>
-        public Task<string> Create(PendingPlayer entity);
+        public Task<string> Create(PendingPlayerEntity entity);
 
         public Task<PendingPlayer> GetByUserId(string userId);
 

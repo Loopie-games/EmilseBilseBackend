@@ -11,10 +11,12 @@ namespace moonbaboon.bingo.Domain.Services
     public class AuthService : IAuthService
     {
         private readonly IAdminRepository _adminRepository;
+        private readonly IAuthRepository _authRepository;
 
-        public AuthService(IAdminRepository adminRepository)
+        public AuthService(IAdminRepository adminRepository, IAuthRepository authRepository)
         {
             _adminRepository = adminRepository;
+            _authRepository = authRepository;
         }
 
         public string EncodeJwt(User user, byte[] tokenKey)
@@ -51,6 +53,11 @@ namespace moonbaboon.bingo.Domain.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public string Create(AuthEntity entity)
+        {
+            return _authRepository.Create(entity).Result;
         }
     }
 }

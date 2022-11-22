@@ -147,6 +147,7 @@ namespace moonbaboon.bingo.WebApi
             services.AddScoped<IUserService, UserService>();
 
             //Auth
+            services.AddScoped<IAuthRepository, AuthRepository>();
             services.AddScoped<IAuthService, AuthService>();
 
             //Tiles
@@ -172,7 +173,7 @@ namespace moonbaboon.bingo.WebApi
             //Game
             services.AddScoped<IGameRepository, GameRepository>();
             services.AddScoped<IGameService, GameService>();
-            
+
             //GameMode
             services.AddScoped<IGameModeRepository, GameModeRepository>();
             services.AddScoped<IGameModeService, GameModeService>();
@@ -200,7 +201,7 @@ namespace moonbaboon.bingo.WebApi
             //OwnedTilePacks
             services.AddScoped<IOwnedTilePackRepository, OwnedTilePackRepository>();
             services.AddScoped<IOwnedTilePackService, OwnedTilePackService>();
-            
+
             //BugReport
             services.AddScoped<IBugReportRepository, BugReportRepository>();
             services.AddScoped<IBugReportService, BugReportService>();

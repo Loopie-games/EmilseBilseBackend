@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using MySqlConnector;
 
 namespace moonbaboon.bingo.Core.Models
@@ -24,7 +23,7 @@ namespace moonbaboon.bingo.Core.Models
                 Winner = new User(reader.GetString("Winner_Id"), reader.GetString("Winner_Username"),
                     reader.GetString("Winner_Nickname"),
                     reader.GetValue("Winner_ProfilePic").ToString());
-            State = Enum.Parse<State>(reader.GetString("Game_State"));
+            State = (State) reader.GetInt32("Game_State");
         }
 
         public string? Id { get; set; }

@@ -11,12 +11,13 @@ namespace moonbaboon.bingo.WebApi.Test.Controllers
 {
     public class UserControllerTest
     {
+        private readonly Mock<IAuthService> _authService = new();
         private readonly UserController _userController;
         private readonly Mock<IUserService> _userService = new();
 
         public UserControllerTest()
         {
-            _userController = new UserController(_userService.Object);
+            _userController = new UserController(_userService.Object, _authService.Object);
         }
 
         [Fact]

@@ -30,10 +30,7 @@ WHERE OwnedTilePack_OwnerId = @UserId", con);
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
             }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                list.Add(new OwnedTilePack(reader));
-            }
+            while (await reader.ReadAsync()) list.Add(new OwnedTilePack(reader));
 
             return list;
         }
