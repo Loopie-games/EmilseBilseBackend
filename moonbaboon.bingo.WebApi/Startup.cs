@@ -10,7 +10,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using moonbaboon.bingo.Core.IServices;
+using moonbaboon.bingo.DataAccess;
 using moonbaboon.bingo.DataAccess.Repositories;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using moonbaboon.bingo.Domain.Services;
 using moonbaboon.bingo.WebApi.SignalR;
@@ -141,6 +143,7 @@ namespace moonbaboon.bingo.WebApi
             //Setting up dependency injection
             //Database
             services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings:Default"]));
+            services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
             //Users
             services.AddScoped<IUserRepository, UserRepository>();

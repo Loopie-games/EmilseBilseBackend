@@ -201,7 +201,7 @@ namespace moonbaboon.bingo.Domain.Services
         /// <exception cref="Exception">if the user is not on the list</exception>
         public List<User> GetPlayers(string gameId, string userId)
         {
-            var players = _userRepository.GetPlayers(gameId).Result;
+            var players = _userRepository.GetPlayers(gameId);
 
             if (players.Any(u => u.Id == userId)) return players;
 
@@ -226,7 +226,7 @@ namespace moonbaboon.bingo.Domain.Services
             var topRanked = _boardRepository.FindTopRanking(gameId, 3).Result;
             foreach (var board in topRanked)
             {
-                var user = _userRepository.ReadById(board.UserId).Result;
+                var user = _userRepository.ReadById(board.UserId);
                 var unused = _topPlayerRepository.Create(new TopPlayerEntity(null, gameId, user.Id, board.TurnedTiles))
                     .Result;
             }
@@ -237,12 +237,12 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Game PauseGame(Game game, string userId)
         {
-            if (!_userRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
+            if (!_userRepository.GetPlayers(game.Id).Any(u => u.Id == userId))
                 throw new Exception("You cant pause games that you are not apart of");
 
 
             game.State = State.Paused;
-            game.Winner = _userRepository.ReadById(userId).Result;
+            game.Winner = _userRepository.ReadById(userId);
 
             _gameRepository.Update(game).Wait();
             return _gameRepository.FindById(game.Id).Result;

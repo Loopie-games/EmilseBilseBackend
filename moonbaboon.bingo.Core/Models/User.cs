@@ -13,12 +13,12 @@ namespace moonbaboon.bingo.Core.Models
             ProfilePicUrl = profilePicUrl;
         }
 
-        public User(MySqlDataReader reader)
+        public User(IDataReader reader)
         {
-            Id = reader.GetString("User_Id");
-            Username = reader.GetString("User_Username");
-            Nickname = reader.GetString("User_Nickname");
-            ProfilePicUrl = reader.GetValue("User_ProfilePicUrl").ToString();
+            Id = reader.GetString(reader.GetOrdinal("User_Id"));
+            Username = reader.GetString(reader.GetOrdinal("User_Username"));
+            Nickname = reader.GetString(reader.GetOrdinal("User_Nickname"));
+            ProfilePicUrl = reader.GetValue(reader.GetOrdinal("User_ProfilePicUrl")).ToString();
         }
 
         public string? Id { get; set; }

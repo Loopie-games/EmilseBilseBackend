@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 
@@ -10,61 +12,64 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly MySqlConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
         private readonly Random _random = new();
 
-        public UserRepository(MySqlConnection connection)
+        public UserRepository(IDbConnectionFactory connection)
         {
-            _connection = connection;
+            _connectionFactory = connection;
         }
 
-        public async Task<List<User>> GetPlayers(string gameId)
+        public List<User> GetPlayers(string gameId)
         {
             var list = new List<User>();
-            await using var con = _connection.Clone();
-            con.Open();
-
-            await using var command = new MySqlCommand(
-                @"SELECT * From (SELECT Board_UserId as u1 FROM `Game` JOIN Board ON Board_GameId = @GameId) As b JOIN User ON b.u1 = User.User_id",
-                con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) list.Add(new User(reader));
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText =
+                @"SELECT * From (SELECT Board_UserId as u1 FROM `Game` JOIN Board ON Board_GameId = @GameId) As b JOIN User ON b.u1 = User.User_id";
+            command.Parameters.Add(new MySqlParameter("@GameId", MySqlDbType.VarChar).Value = gameId);
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) list.Add(new User(reader));
 
             return list;
         }
 
-        public async Task<List<User>> Search(string searchString)
+        public List<User> Search(string searchString)
         {
             var list = new List<User>();
-            await using var con = _connection.Clone();
-            con.Open();
-            await using var command = new MySqlCommand(
-                @"Select * from User WHERE User.User_Username LIKE @searchString", _connection);
-            {
-                command.Parameters.Add("@searchString", MySqlDbType.VarChar).Value = searchString;
-            }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) list.Add(new User(reader));
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"Select * from User WHERE User.User_Username LIKE @searchString";
+            var param = command.CreateParameter();
+            param.ParameterName = "@searchString";
+            param.Value = searchString;
+            command.Parameters.Add(param);
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) list.Add(new User(reader));
 
             return list;
         }
 
-        public async Task<User> Login(string dtoUsername, string dtoPassword)
+        public User Login(string username, string password)
         {
-            await using var con = _connection.Clone();
-            con.Open();
-            await using var command =
-                new MySqlCommand(
-                    @"Select * from User 
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"Select * from User 
 JOIN Auth A on User.User_id = A.Auth_UserId
-WHERE User_Username = @username AND  Auth_Password = @password",
-                    con);
-            {
-                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = dtoUsername;
-                command.Parameters.Add("@password", MySqlDbType.VarChar).Value = dtoPassword;
-            }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return new User(reader);
+WHERE User_Username = @username AND  Auth_Password = @password";
+
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "@username";
+            param1.Value = username;
+            command.Parameters.Add(param1);
+
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "@password";
+            param2.Value = password;
+            command.Parameters.Add(param2);
+            con.Open();
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) return new User(reader);
 
             throw new InvalidOperationException("Invalid Login");
         }
@@ -75,103 +80,123 @@ WHERE User_Username = @username AND  Auth_Password = @password",
         /// <param name="id">unique user Identification</param>
         /// <returns>A Task containing the user</returns>
         /// <exception cref="Exception">No user with given id</exception>
-        public async Task<User> ReadById(string id)
+        public User ReadById(string id)
         {
-            await using var con = _connection.Clone();
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"select * from User WHERE User_id = @id;";
+
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "@id";
+            parameter.Value = id;
+            command.Parameters.Add(parameter);
+
             con.Open();
-            await using var command =
-                new MySqlCommand(@"select * from User WHERE User_id = @id;",
-                    con);
-            {
-                command.Parameters.Add("@id", MySqlDbType.VarChar).Value = id;
-            }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return new User(reader);
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) return new User(reader);
 
             throw new Exception("No user found with id: " + id);
         }
 
-        public async Task<string> Create(User entity)
+        public string Insert(User entity)
         {
             entity.Id = Guid.NewGuid().ToString();
-            await using var con = _connection.Clone();
+
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"Insert into User VALUES (@id, @username, @nickname, @profilePic)";
+
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "@id";
+            param1.Value = entity.Id;
+            command.Parameters.Add(param1);
+
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "@username";
+            param2.Value = entity.Username;
+            command.Parameters.Add(param2);
+
+            var param3 = command.CreateParameter();
+            param3.ParameterName = "@nickname";
+            param3.Value = entity.Nickname;
+            command.Parameters.Add(param3);
+
+            var param4 = command.CreateParameter();
+            param4.ParameterName = "@profilePic";
+            param4.Value = entity.ProfilePicUrl;
+            command.Parameters.Add(param4);
+
             con.Open();
-            await using var command = new MySqlCommand(
-                @"Insert into User VALUES (@id, @username, @nickname, @profilePic)", con);
-            {
-                command.Parameters.Add("@id", MySqlDbType.VarChar).Value = entity.Id;
-                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = entity.Username;
-                command.Parameters.Add("@nickname", MySqlDbType.VarChar).Value = entity.Nickname;
-                command.Parameters.Add("@profilePic", MySqlDbType.VarChar).Value = entity.ProfilePicUrl;
-            }
             command.ExecuteNonQuery();
             return entity.Id;
         }
 
-        public async Task<string?> GetUserIdByUsername(string username)
+        public string? GetUserIdByUsername(string username)
         {
-            username = username.ToLower();
-            await using var con = _connection.Clone();
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = 
+                @"SELECT User_id FROM User WHERE Lower(User_Username) = @username";
+
+            var paramUsername = command.CreateParameter();
+            paramUsername.ParameterName = "@username";
+            paramUsername.Value = username;
+            command.Parameters.Add(paramUsername);
+
             con.Open();
-            await using var command = new MySqlCommand(
-                @"SELECT User_id FROM User WHERE Lower(User_Username) = @username",
-                con);
-            {
-                command.Parameters.Add("@username", MySqlDbType.VarChar).Value = username.ToLower();
-            }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return reader.GetString(0);
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) return reader.GetString(0);
+
             return null;
         }
 
-        public async Task<string> GetSalt(string userId)
+        public string GetSalt(string userId)
         {
-            await using var con = _connection.Clone();
-            con.Open();
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = 
+                @"SELECT Auth_Salt FROM Auth WHERE Auth_UserId = @UserId";
 
-            await using var command =
-                new MySqlCommand(
-                    @"SELECT Auth_Salt FROM Auth WHERE Auth_UserId = @UserId",
-                    con);
-            {
-                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
-            }
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return reader.GetString(0);
+            var paramUsername = command.CreateParameter();
+            paramUsername.ParameterName = "@UserId";
+            paramUsername.Value = userId;
+            command.Parameters.Add(paramUsername);
+
+            con.Open();
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) return reader.GetString(0);
 
             throw new Exception("no user with given userId");
         }
 
-        public async Task UpdateUser(User entity)
+        public void UpdateUser(User entity)
         {
-            await using var con = _connection.Clone();
-            con.Open();
-            await using var command = new MySqlCommand(
-                @"UPDATE `User` SET `User_Username`=@Username,`User_Nickname`=@Password,`User_ProfilePicURL`= @ProfilePic WHERE User_id = @UserId",
-                con);
-            {
-                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.Id;
-                command.Parameters.Add("@Username", MySqlDbType.VarChar).Value = entity.Username;
-                command.Parameters.Add("@Password", MySqlDbType.VarChar).Value = entity.Nickname;
-                command.Parameters.Add("@ProfilePic", MySqlDbType.VarChar).Value = entity.ProfilePicUrl;
-            }
-            command.ExecuteNonQuery();
-        }
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText =
+                @"UPDATE `User` SET `User_Username`=@Username,`User_Nickname`=@Password,`User_ProfilePicURL`= @ProfilePic WHERE User_id = @UserId";
 
-        public async Task RemoveName(string userId)
-        {
-            await using var con = _connection.Clone();
-            con.Open();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            string newRandomName = new(Enumerable.Repeat(chars, 16)
-                .Select(s => s[_random.Next(s.Length)]).ToArray());
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "@id";
+            param1.Value = entity.Id;
+            command.Parameters.Add(param1);
 
-            await using var command =
-                new MySqlCommand(@"UPDATE User SET User_Username = @RandomName WHERE User_id = @UserId", con);
-            {
-                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
-                command.Parameters.Add("@RandomName", MySqlDbType.VarChar).Value = newRandomName;
-            }
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "@username";
+            param2.Value = entity.Username;
+            command.Parameters.Add(param2);
+
+            var param3 = command.CreateParameter();
+            param3.ParameterName = "@nickname";
+            param3.Value = entity.Nickname;
+            command.Parameters.Add(param3);
+
+            var param4 = command.CreateParameter();
+            param4.ParameterName = "@profilePic";
+            param4.Value = entity.ProfilePicUrl;
+            command.Parameters.Add(param4);
+
+            con.Open();
             command.ExecuteNonQuery();
         }
     }
