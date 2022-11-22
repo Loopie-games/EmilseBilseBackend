@@ -17,17 +17,11 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<TopPlayer> FindTop(string gameId, int limit)
         {
-            try
-            {
+            
                 return _topPlayerRepository.FindTop(gameId, limit).Result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-
-            ;
+            
+            
+            
         }
     }
 }

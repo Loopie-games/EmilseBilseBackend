@@ -9,14 +9,11 @@ namespace moonbaboon.bingo.Domain.Services
     {
         private readonly ILobbyRepository _lobbyRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
-        private readonly IUserRepository _userRepository;
 
-        public LobbyService(ILobbyRepository lobbyRepository, IPendingPlayerRepository pendingPlayerRepository,
-            IUserRepository userRepository)
+        public LobbyService(ILobbyRepository lobbyRepository, IPendingPlayerRepository pendingPlayerRepository)
         {
             _lobbyRepository = lobbyRepository;
             _pendingPlayerRepository = pendingPlayerRepository;
-            _userRepository = userRepository;
         }
 
         public Lobby GetById(string id)
@@ -37,9 +34,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public PendingPlayer JoinLobby(string userId, string pin)
         {
-            try
-            {
-                Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
+            Lobby lobby = _lobbyRepository.FindByPin(pin).Result;
                 var pp = _pendingPlayerRepository.IsPlayerInLobby(userId).Result;
                 if (pp is not null && pp.Lobby.Id == lobby.Id) return pp;
                 if (pp is not null && pp.Lobby.Id != lobby.Id)
@@ -51,12 +46,6 @@ namespace moonbaboon.bingo.Domain.Services
                 //if user already is in the lobby the PendingPlayer is returned, else a new is created
                 var newP = _pendingPlayerRepository.Create(new PendingPlayerEntity(null, userId, lobby.Id)).Result;
                 return _pendingPlayerRepository.ReadById(newP).Result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
         }
 
         public void CloseLobby(string lobbyId, string hostId)

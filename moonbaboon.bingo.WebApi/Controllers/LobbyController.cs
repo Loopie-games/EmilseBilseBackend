@@ -16,14 +16,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
     {
         private readonly ILobbyService _lobbyService;
         private readonly IPendingPlayerService _pendingPlayerService;
-        private readonly IUserService _userService;
 
-        public LobbyController(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService,
-            IUserService userService)
+        public LobbyController(ILobbyService lobbyService, IPendingPlayerService pendingPlayerService)
         {
             _lobbyService = lobbyService;
             _pendingPlayerService = pendingPlayerService;
-            _userService = userService;
         }
 
         [HttpGet("{lobbyId}")]

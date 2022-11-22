@@ -115,7 +115,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             }
             catch (Exception e)
             {
-                Console.WriteLine("no lobby");
+                Console.WriteLine(e);
             }
         }
 

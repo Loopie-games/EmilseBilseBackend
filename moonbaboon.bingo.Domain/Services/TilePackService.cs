@@ -17,17 +17,11 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<TilePack> GetAll(string? userId)
         {
-            try
-            {
-                return userId == null
+              return userId == null
                     ? _tilePackRepository.FindAll().Result
                     : _tilePackRepository.FindAll_LoggedUser(userId).Result;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            
+            
         }
 
         public List<TilePack> GetOwned(string userId)

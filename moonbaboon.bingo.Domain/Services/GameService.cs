@@ -55,7 +55,7 @@ namespace moonbaboon.bingo.Domain.Services
             if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
 
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
-            Console.WriteLine(gameId);
+            
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
             //Check ownership over chosen packages
@@ -155,8 +155,7 @@ namespace moonbaboon.bingo.Domain.Services
             }
             else
             {
-                Console.WriteLine(tilePackIds[0]);
-
+                
                 //Check ownership over chosen packages
                 if (tilePackIds.Any(tpId =>
                     !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
