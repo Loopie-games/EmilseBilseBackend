@@ -54,14 +54,14 @@ namespace moonbaboon.bingo.Domain.Services
             if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
             if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
 
-            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
-            
-            var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
-
             //Check ownership over chosen packages
             if (tilePackIds.Any(tpId =>
                 !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
                 throw new Exception("You dont have ownership over one or more of the tilepacks");
+            
+            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            
+            var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
             var packTiles = new List<PackTile>();
 
