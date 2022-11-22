@@ -40,7 +40,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpGet(nameof(GetPlayers) + "/{gameId}")]
-        public ActionResult<List<UserSimple>> GetPlayers(string gameId)
+        public ActionResult<List<User>> GetPlayers(string gameId)
         {
             try
             {
@@ -54,11 +54,12 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpDelete]
-        public ActionResult<bool> DeleteGame(string gameId)
+        public ActionResult DeleteGame(string gameId)
         {
             try
             {
-                return Ok(_gameService.Delete(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+                _gameService.Delete(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -84,7 +85,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [Authorize]
         [HttpPost("/FFA")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]

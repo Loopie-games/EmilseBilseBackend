@@ -5,7 +5,7 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class UserTile : ByTile
     {
-        public UserTile(string id, Tile tile, UserSimple user, UserSimple addedByUser) : base(id, tile,
+        public UserTile(string id, Tile tile, User user, User addedByUser) : base(id, tile,
             Models.TileType.UserTile)
         {
             Id = id;
@@ -19,14 +19,14 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = reader.GetString("UserTile_Id");
             Tile = new Tile(reader);
-            User = new UserSimple(reader.GetString("About_Id"), reader.GetString("About_Username"),
+            User = new User(reader.GetString("About_Id"), reader.GetString("About_Username"),
                 reader.GetString("About_Nickname"), reader.GetValue("About_ProfilePicUrl").ToString());
-            AddedByUser = new UserSimple(reader.GetString("AddedBy_Id"), reader.GetString("AddedBy_Username"),
+            AddedByUser = new User(reader.GetString("AddedBy_Id"), reader.GetString("AddedBy_Username"),
                 reader.GetString("AddedBy_Nickname"), reader.GetValue("AddedBy_ProfilePicUrl").ToString());
         }
 
-        public UserSimple User { get; set; }
-        public UserSimple AddedByUser { get; set; }
+        public User User { get; set; }
+        public User AddedByUser { get; set; }
     }
 
     public class UserTileEntity

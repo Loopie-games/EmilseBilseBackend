@@ -20,12 +20,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
             _friendshipService = friendshipService;
         }
 
-        [HttpGet]
-        public ActionResult<List<Friendship>> GetAll()
-        {
-            return Ok(_friendshipService.GetAll());
-        }
-
         [HttpGet(nameof(GetFriendsByUserId))]
         public ActionResult<List<Friend>> GetFriendsByUserId(string userId)
         {
@@ -34,7 +28,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpGet(nameof(SearchUsers) + "/{searchStr}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<UserSimple>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<User>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<List<Friend>> SearchUsers(string searchStr)
         {
@@ -69,14 +63,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPut(nameof(AcceptFriendRequest) + "/{friendshipId}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Friend))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Friend> AcceptFriendRequest(string friendshipId)
+        public ActionResult AcceptFriendRequest(string friendshipId)
         {
             try
             {
-                return _friendshipService.AcceptFriendRequest(friendshipId,
+                _friendshipService.AcceptFriendRequest(friendshipId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return Ok();
             }
             catch (Exception e)
             {

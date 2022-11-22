@@ -15,11 +15,6 @@ namespace moonbaboon.bingo.Domain.Services
             _topPlayerRepository = topPlayerRepository;
         }
 
-        public TopPlayer Create(TopPlayer toCreate)
-        {
-            return _topPlayerRepository.Create(toCreate).Result;
-        }
-
         public List<TopPlayer> FindTop(string gameId, int limit)
         {
             try

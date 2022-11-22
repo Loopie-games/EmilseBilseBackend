@@ -8,8 +8,8 @@ namespace moonbaboon.bingo.Domain.Services
 {
     public class BugReportService : IBugReportService
     {
-        private readonly IBugReportRepository _bugReportRepository;
         private readonly IAdminRepository _adminRepository;
+        private readonly IBugReportRepository _bugReportRepository;
 
         public BugReportService(IBugReportRepository bugReportRepository, IAdminRepository adminRepository)
         {
@@ -19,9 +19,9 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<BugReport> GetAll(string userId)
         {
-            var admin = _adminRepository.IsAdmin(userId).Result;
+            var admin = _adminRepository.FindByUserId(userId).Result;
 
-            if (admin?.AdminId != null) return _bugReportRepository.FindAll(admin.AdminId).Result;
+            if (admin?.Id != null) return _bugReportRepository.FindAll(admin.Id).Result;
             throw new Exception("U need to be an Admin to excess this");
         }
 
@@ -32,18 +32,16 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BugReport GetById(string id, string userId)
         {
-            var admin = _adminRepository.IsAdmin(userId).Result;
-            if (admin?.AdminId != null) return _bugReportRepository.ReadById(id, admin.AdminId).Result;
+            var admin = _adminRepository.FindByUserId(userId).Result;
+            if (admin?.Id != null) return _bugReportRepository.ReadById(id, admin.Id).Result;
             throw new Exception("U need to be an Admin to excess this");
         }
 
         public void AddStar(string userId, string bugReportId)
         {
-            
-            
-            var admin = _adminRepository.IsAdmin(userId).Result;
+            var admin = _adminRepository.FindByUserId(userId).Result;
 
-            _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.AdminId, bugReportId)).Wait();
+            _bugReportRepository.AddStar(new StarredBugReportEntity(null, admin.Id, bugReportId)).Wait();
         }
     }
 }

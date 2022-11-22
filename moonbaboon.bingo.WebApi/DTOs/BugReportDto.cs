@@ -1,6 +1,4 @@
-﻿using moonbaboon.bingo.Core.Models;
-
-namespace moonbaboon.bingo.WebApi.DTOs
+﻿namespace moonbaboon.bingo.WebApi.DTOs
 {
     public class UserBugReportDto
     {

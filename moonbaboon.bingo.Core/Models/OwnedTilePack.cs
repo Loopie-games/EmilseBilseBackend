@@ -1,14 +1,22 @@
-﻿namespace moonbaboon.bingo.Core.Models
+﻿using MySqlConnector;
+
+namespace moonbaboon.bingo.Core.Models
 {
     public class OwnedTilePack
     {
-        public OwnedTilePack(UserSimple owner, TilePack tilePack)
+        public OwnedTilePack(User owner, TilePack tilePack)
         {
             Owner = owner;
             TilePack = tilePack;
         }
 
-        public UserSimple Owner { get; set; }
+        public OwnedTilePack(MySqlDataReader reader)
+        {
+            Owner = new User(reader);
+            TilePack = new TilePack(reader);
+        }
+
+        public User Owner { get; set; }
         public TilePack TilePack { get; set; }
     }
 

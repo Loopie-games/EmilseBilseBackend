@@ -55,8 +55,9 @@ namespace moonbaboon.bingo.Domain.Services
             if (tilePackIds.Length <= 0) throw new Exception("You need to choose tilepacks for this gamemode");
 
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            Console.WriteLine(gameId);
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
-            
+
             //Check ownership over chosen packages
             if (tilePackIds.Any(tpId =>
                 !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
@@ -70,7 +71,7 @@ namespace moonbaboon.bingo.Domain.Services
             var boardTilesPack = new List<BoardTile>();
             foreach (var player in players)
             {
-                var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                var board = _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
                 var boardTilesPlayer = new List<BoardTile>();
                 var packTilesTemp = new List<PackTile>(packTiles);
                 while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
@@ -91,8 +92,8 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
-        
-        
+
+
         public string NewOG(string lobbyId, string userId, string[]? tilePackIds)
         {
             //Get lobby and throw exception if not provided with correct host id
@@ -109,7 +110,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     //Create board for player
-                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
 
                     //get tiles about other players
                     List<BoardTile> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
@@ -170,7 +171,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var board = _boardRepository.Create(player.User.Id, gameId).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
                     var boardTilesPlayer = new List<BoardTile>();
                     var packTilesTemp = new List<PackTile>(packTiles);
                     while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
@@ -195,24 +196,25 @@ namespace moonbaboon.bingo.Domain.Services
 
             return gameId;
         }
-        
 
 
         /// <exception cref="Exception">if the user is not on the list</exception>
-        public List<UserSimple> GetPlayers(string gameId, string userId)
+        public List<User> GetPlayers(string gameId, string userId)
         {
-            var players = _gameRepository.GetPlayers(gameId).Result;
+            var players = _userRepository.GetPlayers(gameId).Result;
 
             if (players.Any(u => u.Id == userId)) return players;
 
             throw new Exception("You cannot get player list for a game, that you are not a part of");
         }
 
-        public bool Delete(string gameId, string hostId)
+        public void Delete(string gameId, string hostId)
         {
             var game = _gameRepository.FindById(gameId).Result;
-            if (game.Host.Id == hostId) return _gameRepository.Delete(gameId).Result;
-            throw new Exception("You have to be the host of a game to delete it");
+            if (game.Host.Id == hostId)
+                _gameRepository.Delete(gameId);
+            else
+                throw new Exception("You have to be the host of a game to delete it");
         }
 
         public Game ConfirmWin(string gameId, string hostId)
@@ -225,23 +227,25 @@ namespace moonbaboon.bingo.Domain.Services
             foreach (var board in topRanked)
             {
                 var user = _userRepository.ReadById(board.UserId).Result;
-                var topPlayer = _topPlayerRepository.Create(new TopPlayer(null, gameId, user, board.TurnedTiles))
+                var unused = _topPlayerRepository.Create(new TopPlayerEntity(null, gameId, user.Id, board.TurnedTiles))
                     .Result;
             }
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(gameId).Result;
         }
 
         public Game PauseGame(Game game, string userId)
         {
-            if (!_gameRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
+            if (!_userRepository.GetPlayers(game.Id).Result.Any(u => u.Id == userId))
                 throw new Exception("You cant pause games that you are not apart of");
 
 
             game.State = State.Paused;
             game.Winner = _userRepository.ReadById(userId).Result;
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(game.Id).Result;
         }
 
         public Game DenyWin(string gameId, string userId)
@@ -253,7 +257,8 @@ namespace moonbaboon.bingo.Domain.Services
             game.State = State.Ongoing;
             game.Winner = null;
 
-            return _gameRepository.Update(game).Result;
+            _gameRepository.Update(game).Wait();
+            return _gameRepository.FindById(gameId).Result;
         }
 
         private List<PackTile> GetDefaultTiles()

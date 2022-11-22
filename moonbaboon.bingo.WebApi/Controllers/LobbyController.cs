@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,14 +29,11 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpGet("{lobbyId}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(LobbyForPlayerDto))]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<LobbyForPlayerDto> GetById(string lobbyId)
+        public ActionResult<Lobby> GetById(string lobbyId)
         {
             var lobby = _lobbyService.GetById(lobbyId);
-            if (lobby?.Id is null || lobby.Pin is null) return NotFound("lobby not found");
-            var host = _userService.GetById(lobby.Host);
-            if (host is null) return NotFound("host not found");
-            host.Id = null;
-            return Ok(new LobbyForPlayerDto(lobby.Id, lobby.Pin, host));
+            if (lobby?.Id is null) return NotFound("lobby not found");
+            return Ok(lobby);
         }
 
         [HttpGet(nameof(GetPlayersInLobby))]
@@ -48,14 +46,32 @@ namespace moonbaboon.bingo.WebApi.Controllers
         [HttpPost]
         public ActionResult<Lobby> Create()
         {
-            return _lobbyService.Create(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                var l = _lobbyService.Create(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return CreatedAtAction(nameof(GetById), new {lobbyId = l}, l);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
         }
 
         [Authorize]
         [HttpDelete(nameof(CloseLobby))]
-        public ActionResult<bool> CloseLobby(string lobbyId)
+        public ActionResult CloseLobby(string lobbyId)
         {
-            return _lobbyService.CloseLobby(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            try
+            {
+                _lobbyService.CloseLobby(lobbyId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
         }
     }
 }

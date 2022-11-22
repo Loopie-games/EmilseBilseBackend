@@ -9,120 +9,121 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class BoardRepository : IBoardRepository
     {
-        private const string Table = DbStrings.BoardTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
 
-        public async Task<Board> FindById(string id)
+        public BoardRepository(MySqlConnection connection)
         {
-            Board? ent = null;
-
-            await _connection.OpenAsync();
-            await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE `{DbStrings.Id}`='{id}';",
-                _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
-
-            await _connection.CloseAsync();
-
-            return ent ?? throw new Exception($"no {Table} found with id: " + id);
+            _connection = connection;
         }
 
-        public async Task<Board> Create(string userId, string gameId)
+
+        public async Task<BoardEntity> FindById(string id)
         {
-            Board? ent = null;
-            string uuid = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
 
-            await _connection.OpenAsync();
+                await using MySqlCommand command =
+                    new(
+                        @"SELECT * 
+                        FROM Board 
+                        WHERE Board_Id = @Id",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
+                }
 
-            await using var command = new MySqlCommand(
-                $"INSERT INTO {Table} (`{DbStrings.Id}`, `{DbStrings.GameId}`, `{DbStrings.UserId}`) " +
-                $"VALUES ('{uuid}','{gameId}','{userId}'); " +
-                sql_select(Table) +
-                $"WHERE `{DbStrings.Id}`='{uuid}';",
-                _connection);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) return new BoardEntity(reader);
+            }
 
-            await _connection.CloseAsync();
-
-            return ent ??
-                   throw new Exception("Error in creating board for user: " + userId + " and game id: " + gameId);
+            throw new Exception($"No {nameof(BoardEntity)} with id: {id}");
         }
 
-        public async Task<Board?> FindByUserAndGameId(string userId, string gameId)
+        public async Task<BoardEntity> Create(BoardEntity entity)
         {
-            Board? ent = null;
-            await _connection.OpenAsync();
+            entity.Id = Guid.NewGuid().ToString();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command =
+                    new(
+                        "INSERT INTO Board VALUES (@Id, @GameId, @UserId)",
+                        con);
+                {
+                    command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
+                    command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.UserId;
+                    command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = entity.GameId;
+                }
+                command.ExecuteNonQuery();
+            }
+            return entity;
+        }
 
-            await using MySqlCommand command = new(
-                sql_select(Table) +
-                $"WHERE `{DbStrings.UserId}`='{userId}' AND {DbStrings.BoardTable}.{DbStrings.GameId} = '{gameId}';",
-                _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
+        public async Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId)
+        {
+            await using var con = _connection.Clone();
+            {
+                con.Open();
 
-            await _connection.CloseAsync();
+                await using MySqlCommand command = new(
+                    @"SELECT * 
+                        FROM Board 
+                        WHERE Board_UserId = @UserId AND Board_GameId = @GameId",
+                    con);
+                {
+                    command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
+                    command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = gameId;
+                }
 
-            return ent;
+                await using var reader = await command.ExecuteReaderAsync();
+                while (reader.Read()) return new BoardEntity(reader);
+            }
+
+            throw new Exception($"No {nameof(BoardEntity)} found");
         }
 
         public async Task<bool> IsBoardFilled(string boardId)
         {
             var b = false;
-            await _connection.OpenAsync();
-
-            await using MySqlCommand command = new(
-                "SELECT((SELECT COUNT(*) " +
-                $"FROM {DbStrings.BoardTileTable} " +
-                $"WHERE {DbStrings.BoardTileTable}.{DbStrings.IsActivated} = '1' " +
-                $"AND {DbStrings.BoardTileTable}.{DbStrings.BoardId} ='{boardId}') " +
-                "= 24 IS true)",
-                _connection);
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) b = reader.GetBoolean(0);
-
-            await _connection.CloseAsync();
+            await using var con = _connection.Clone();
+            {
+                con.Open();
+                await using MySqlCommand command = new(
+                    @"SELECT((SELECT COUNT(*) FROM BoardTile WHERE BoardTile_IsActivated = '1' AND BoardTile_BoardId = @Board_Id) = 24 IS true)",
+                    con);
+                {
+                    command.Parameters.Add("@Board_Id", MySqlDbType.VarChar).Value = boardId;
+                }
+                await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync()) b = reader.GetBoolean(0);
+            }
             return b;
         }
 
-        public async Task<List<Board>> FindTopRanking(string gameId, int limit)
+        public async Task<List<BoardEntity>> FindTopRanking(string gameId, int limit)
         {
-            var list = new List<Board>();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
+            var list = new List<BoardEntity>();
 
-            string sqlCommand =
-                sql_select(Table) +
-                $"WHERE Board.GameId = '{gameId}' " +
-                "ORDER BY TT DESC " +
-                $"Limit {limit};";
-
-            await using var command = new MySqlCommand(sqlCommand, con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
+            await using var con = _connection.Clone();
             {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
+                con.Open();
+                await using MySqlCommand command = new(
+                    @"SELECT *, (SELECT COUNT(BoardTile_Id) FROM BoardTile WHERE BoardTile_IsActivated = '1' && BoardTile_BoardId= Board_Id) AS Board_TurnedTiles
+                        FROM Board 
+                            WHERE Board_GameId = @Game_Id
+                            ORDER BY Board_TurnedTiles DESC 
+                            LIMIT @Limit",
+                    con);
+                {
+                    command.Parameters.Add("@Game_Id", MySqlDbType.VarChar).Value = gameId;
+                    command.Parameters.Add("@Limit", MySqlDbType.Int24).Value = limit;
+                }
+                await using MySqlDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                    list.Add(new BoardEntity(reader));
             }
-
             return list;
-        }
-
-        private static string sql_select(string from)
-        {
-            return
-                "SELECT *, ( SELECT COUNT(BT.Id) FROM BoardTile AS BT WHERE BT.IsActivated = '1' && BT.BoardId = Board.Id ) AS TT " +
-                $"FROM {from} ";
-        }
-
-        private Board ReaderToEnt(MySqlDataReader reader)
-        {
-            return new Board(reader.GetString(0), reader.GetString(1), reader.GetString(2))
-            {
-                TurnedTiles = reader.GetInt32(3)
-            };
         }
     }
 }

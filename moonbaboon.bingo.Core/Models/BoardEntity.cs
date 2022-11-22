@@ -2,20 +2,21 @@
 
 namespace moonbaboon.bingo.Core.Models
 {
-    public class Board
+    public class BoardEntity
     {
-        public Board(string? id, string gameId, string userId)
+        public BoardEntity(string? id, string gameId, string userId)
         {
             Id = id;
             GameId = gameId;
             UserId = userId;
         }
 
-        public Board(MySqlDataReader reader)
+        public BoardEntity(MySqlDataReader reader)
         {
             Id = reader.GetString("Board_Id");
             GameId = reader.GetString("Board_GameId");
             UserId = reader.GetString("Board_UserId");
+            //TODO turnedtiles
         }
 
         public string? Id { get; set; }

@@ -9,55 +9,54 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TilePackRepository : ITilePackRepository
     {
-        private const string Table = DbStrings.TilePackTable;
-        private readonly MySqlConnection _connection = new(DbStrings.SqlConnection);
+        private readonly MySqlConnection _connection;
+
+        public TilePackRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
 
         public async Task<List<TilePack>> FindAll()
         {
             var list = new List<TilePack>();
-            await _connection.OpenAsync();
-            await using var command = new MySqlCommand(sql_select(Table), _connection);
+            await using var con = _connection.Clone();
+            await using var command = new MySqlCommand(@"SELECT * FROM TilePack", _connection);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
-            }
+            while (await reader.ReadAsync()) list.Add(new TilePack(reader));
 
-            await _connection.CloseAsync();
             return list;
         }
 
         public async Task<List<TilePack>> FindAll_LoggedUser(string userId)
         {
             var list = new List<TilePack>();
-            await _connection.OpenAsync();
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                $"SELECT TilePack.Id, TilePack.Name, TilePack.PicUrl, {DbStrings.PriceStripe}, " +
-                "CASE WHEN OwnedTilePack.OwnerId is Null THEN '0' ELSE '1' END as Owned " +
-                "FROM TilePack " +
-                $"LEFT JOIN OwnedTilePack ON OwnedTilePack.TilePackId = TilePack.Id && OwnedTilePack.OwnerId = '{userId}' ",
-                _connection);
+                @"SELECT *, IF(OwnedTilePack.OwnedTilePack_OwnerId is Null, '0', '1') as Owned 
+                FROM TilePack LEFT JOIN OwnedTilePack ON OwnedTilePack.OwnedTilePack_TilePackId = TilePack.TilePack_Id && OwnedTilePack.OwnedTilePack_OwnerId = @UserId ",
+                con);
             await using var reader = await command.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
-                var ent = ReaderToEnt(reader);
-                ent.IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(4)));
+                var ent = new TilePack(reader)
+                {
+                    IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(4)))
+                };
                 list.Add(ent);
             }
 
-            await _connection.CloseAsync();
             return list;
         }
 
         public async Task<List<TilePack>> GetOwnedTilePacks(string userId)
         {
             var list = new List<TilePack>();
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using MySqlCommand command = new(
-                "SELECT TilePack.Id AS TilePack_Id, TilePack.Name AS TilePack_Name, TilePack.PicUrl AS TilePack_Pic, TilePack.Stripe_PRICE AS TilePack_Stripe FROM `TilePack` JOIN OwnedTilePack ON TilePack.Id = OwnedTilePack.TilePackId WHERE OwnedTilePack.OwnerId = @ownerId;"
-                , _connection);
+                "SELECT * FROM TilePack JOIN OwnedTilePack OTP on TilePack.TilePack_Id = OTP.OwnedTilePack_TilePackId WHERE OTP.OwnedTilePack_OwnerId = @ownerId;"
+                , con);
             {
                 command.Parameters.Add("@ownerId", MySqlDbType.VarChar).Value = userId;
             }
@@ -65,71 +64,72 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             while (await reader.ReadAsync())
                 list.Add(new TilePack(reader));
 
-            await _connection.CloseAsync();
             return list;
         }
 
         public async Task<TilePack> FindDefault()
         {
-            TilePack? ent = null;
-            await _connection.OpenAsync();
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DbStrings.TilePackTable} " +
-                $"WHERE {DbStrings.TilePackTable}.{DbStrings.Name} = 'Default' "
-                , _connection);
+                @"SELECT * FROM TilePack WHERE TilePack_Name = 'Default' "
+                , con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("no Default Package found");
+            while (await reader.ReadAsync()) return new TilePack(reader);
+
+            throw new Exception("no Default Package found");
         }
 
         public async Task<TilePack> FindById(string packId)
         {
-            TilePack? ent = null;
-            await _connection.OpenAsync();
+            await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                $"SELECT * FROM {DbStrings.TilePackTable} " +
-                $"WHERE {DbStrings.TilePackTable}.{DbStrings.Id} = '{packId}' "
-                , _connection);
+                @"SELECT * FROM TilePack WHERE TilePack_Id = @PackId "
+                , con);
+            {
+                command.Parameters.Add("@PackId", MySqlDbType.VarChar).Value = packId;
+            }
             await using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception("no tilePackage found with id: " + packId);
+            while (await reader.ReadAsync()) return new TilePack(reader);
+
+            throw new Exception("no tilePackage found with id: " + packId);
         }
 
-        public async Task<TilePack> Create(TilePack toCreate)
+        public async Task<string> Create(TilePack entity)
         {
-            TilePack? ent = null;
             var uuid = Guid.NewGuid().ToString();
-            await _connection.OpenAsync();
-
+            await using var con = _connection.Clone();
+            con.Open();
             await using MySqlCommand command = new(
-                $"INSERT INTO {Table} " +
-                $"VALUES ('{uuid}','{toCreate.Name}', '{toCreate.PicUrl ?? ""}', '{toCreate.PriceStripe ?? ""}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'"
-                , _connection);
+                @"INSERT INTO TilePack VALUES (@Id,@Name, @PicUrl, @Stripe); "
+                , con);
+            {
+                command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = uuid;
+                command.Parameters.Add("@Name", MySqlDbType.VarChar).Value = entity.Name;
+                command.Parameters.Add("@PicUrl", MySqlDbType.VarChar).Value = entity.PicUrl;
+                command.Parameters.Add("@Stripe", MySqlDbType.VarChar).Value = entity.PriceStripe;
+            }
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) ent = ReaderToEnt(reader);
+            while (await reader.ReadAsync()) return uuid;
 
-            await _connection.CloseAsync();
-            return ent ?? throw new Exception($"Error i creating {Table} with name: " + toCreate.Name);
+            throw new Exception($"Error i creating {nameof(TilePack)} with name: " + entity.Name);
         }
 
-        public async Task Update(TilePack toUpdate)
+        public async Task Update(TilePack entity)
         {
             await using var con = _connection;
             {
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "UPDATE TilePack SET Name = @name, PicUrl = @picUrl, Stripe_PRICE = @stripe WHERE Id = @packId;",
+                        "UPDATE TilePack SET TilePack_Name = @name, TilePack_PicUrl = @picUrl, TilePack_Stripe_PRICE = @stripe WHERE TilePack_Id = @packId;",
                         con);
                 {
-                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = toUpdate.Id;
-                    command.Parameters.Add("@name", MySqlDbType.VarChar).Value = toUpdate.Name;
-                    command.Parameters.Add("@picUrl", MySqlDbType.VarChar).Value = toUpdate.PicUrl;
-                    command.Parameters.Add("@stripe", MySqlDbType.VarChar).Value = toUpdate.PriceStripe;
+                    command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = entity.Id;
+                    command.Parameters.Add("@name", MySqlDbType.VarChar).Value = entity.Name;
+                    command.Parameters.Add("@picUrl", MySqlDbType.VarChar).Value = entity.PicUrl;
+                    command.Parameters.Add("@stripe", MySqlDbType.VarChar).Value = entity.PriceStripe;
                 }
                 command.ExecuteNonQuery();
             }
@@ -140,23 +140,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using var con = _connection;
             {
                 con.Open();
-                await using MySqlCommand command = new("DELETE FROM TilePack WHERE Id = @packId", con);
+                await using MySqlCommand command = new("DELETE FROM TilePack WHERE TilePack_Id = @packId", con);
                 {
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
                 }
                 command.ExecuteNonQuery();
             }
-        }
-
-        private static TilePack ReaderToEnt(MySqlDataReader reader)
-        {
-            return new TilePack(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(),
-                reader.GetValue(2).ToString(), reader.GetValue(3).ToString());
-        }
-
-        private static string sql_select(string from)
-        {
-            return $"SELECT * FROM {from} ";
         }
     }
 }

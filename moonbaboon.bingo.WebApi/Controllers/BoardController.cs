@@ -18,14 +18,14 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Board?> GetById(string id)
+        public ActionResult<BoardEntity?> GetById(string id)
         {
             return _boardService.GetById(id);
         }
 
         [Authorize]
         [HttpGet(nameof(GetByGameId) + "/{gameId}")]
-        public ActionResult<Board?> GetByGameId(string gameId)
+        public ActionResult<BoardEntity?> GetByGameId(string gameId)
         {
             return _boardService.GetByUserAndGameId(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                 gameId);
@@ -33,7 +33,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
 
         [HttpPost(nameof(Create))]
-        public ActionResult<Board?> Create(string userId, string gameId)
+        public ActionResult<BoardEntity?> Create(string userId, string gameId)
         {
             return _boardService.CreateBoard(userId, gameId);
         }

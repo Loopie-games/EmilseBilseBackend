@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -11,72 +9,44 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 {
     public class TopPlayerRepository : ITopPlayerRepository
     {
-        private const string Table = DbStrings.TopPlayerTable;
+        private readonly MySqlConnection _connection;
 
-        public async Task<TopPlayer> Create(TopPlayer toCreate)
+        public TopPlayerRepository(MySqlConnection connection)
+        {
+            _connection = connection;
+        }
+
+        public async Task<string> Create(TopPlayerEntity entity)
         {
             string uuid = Guid.NewGuid().ToString();
-            var ent = await Ent(
-                $"INSERT INTO `{Table}` " +
-                $"VALUES ('{uuid}','{toCreate.GameId}','{toCreate.User.Id}','{toCreate.TurnedTiles}'); " +
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.Id} = '{uuid}'");
-            return ent ??
-                   throw new InvalidDataException($"ERROR in creating {Table} with User: " + toCreate.User.Username);
+            await using var con = _connection.Clone();
+            con.Open();
+            await using MySqlCommand command = new(
+                @"INSERT INTO TopPlayer VALUES (@Id,@GameId,@UserId,@TurnedTiles);", con);
+            {
+                command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = uuid;
+                command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = entity.GameId;
+                command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.UserId;
+                command.Parameters.Add("@TurnedTiles", MySqlDbType.VarChar).Value = entity.TurnedTiles;
+            }
+            command.ExecuteNonQuery();
+            return uuid;
         }
 
         public async Task<List<TopPlayer>> FindTop(string gameId, int limit)
         {
             List<TopPlayer> list = new();
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
+            await using var con = _connection.Clone();
             con.Open();
 
-            string sqlCommand =
-                sql_select(Table) +
-                $"WHERE {Table}.{DbStrings.GameId} = '{gameId}' " +
-                $"ORDER BY {DbStrings.TurnedTiles} DESC " +
-                $"Limit {limit};";
-
-            await using var command = new MySqlCommand(sqlCommand, con);
+            await using var command = new MySqlCommand(
+                @"Select * from TopPlayer 
+    JOIN User U on U.User_id = TopPlayer.TopPlayer_UserId
+    JOIN Game G on G.Game_Id = TopPlayer.TopPlayer_GameId", con);
             await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read())
-            {
-                var ent = ReaderToEnt(reader);
-                list.Add(ent);
-            }
+            while (reader.Read()) list.Add(new TopPlayer(reader));
 
             return list;
-        }
-
-        private static string sql_select(string from)
-        {
-            return
-                $"SELECT {Table}.{DbStrings.Id}, {Table}.{DbStrings.GameId}, {Table}.{DbStrings.TurnedTiles}, " +
-                $"U.{DbStrings.Id}, U.{DbStrings.Username}, U.{DbStrings.Nickname}, U.{DbStrings.ProfilePic} " +
-                $"FROM {from} " +
-                $"JOIN {DbStrings.UserTable} AS U ON U.{DbStrings.Id} = {Table}.{DbStrings.UserId} ";
-        }
-
-        private static TopPlayer ReaderToEnt(IDataRecord reader)
-        {
-            var user = new UserSimple(reader.GetString(3), reader.GetString(4),
-                reader.GetString(5), reader.GetValue(6).ToString());
-            TopPlayer ent = new(reader.GetString(0), reader.GetString(1), user, reader.GetInt32(2));
-
-            return ent;
-        }
-
-        private static async Task<TopPlayer?> Ent(string sqlCommand)
-        {
-            TopPlayer? ent = null;
-            await using var con = new MySqlConnection(DbStrings.SqlConnection);
-            con.Open();
-
-            await using var command = new MySqlCommand(sqlCommand, con);
-            await using var reader = await command.ExecuteReaderAsync();
-            while (reader.Read()) ent = ReaderToEnt(reader);
-
-            return ent;
         }
     }
 }

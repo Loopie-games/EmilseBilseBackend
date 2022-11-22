@@ -25,12 +25,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT PackTile.Id As PackTile_Id, T.Id AS Tile_Id, T.Action AS Tile_Action, 
-                        TP.Id AS TilePack_Id, TP.Name AS TilePack_Name, TP.PicUrl AS TilePack_Pic, TP.Stripe_PRICE As TilePack_Stripe 
+                        @"SELECT *
                         FROM PackTile 
-                            JOIN Tile T on PackTile.TileId = T.Id 
-                            JOIN TilePack TP on TP.Id = PackTile.PackId 
-                        WHERE PackTile.PackId = @packId",
+                            JOIN Tile on PackTile.PackTile_TileId = Tile.Tile_Id 
+                            JOIN TilePack on  TilePack_Id= PackTile.PackTile_PackId
+                        WHERE PackTile.PackTile_PackId = @packId",
                         con);
                 {
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = packId;
@@ -50,12 +49,11 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT PackTile.Id As PackTileId, T.Id AS TileId, T.Action AS TileAction, 
-                        TP.Id AS TilePackId, TP.Name AS TilePackName, TP.PicUrl AS TilePackPic, TP.Stripe_PRICE As TilePackPrice 
+                        @"SELECT *
                         FROM PackTile 
-                            JOIN Tile T on PackTile.TileId = T.Id 
-                            JOIN TilePack TP on TP.Id = PackTile.PackId 
-                        WHERE PackTile.Id = @Id",
+                            JOIN Tile on PackTile.PackTile_TileId = Tile.Tile_Id 
+                            JOIN TilePack on TilePack_Id = PackTile.PackTile_PackId 
+                        WHERE PackTile.PackTile_Id = @Id",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
@@ -75,7 +73,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command =
-                    new("INSERT INTO PackTile(Id, TileId, PackId) VALUES (@Id,@tileId,@packId);", con);
+                    new("INSERT INTO PackTile VALUES (@Id,@tileId,@packId);", con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = pt.Id;
                     command.Parameters.Add("@tileId", MySqlDbType.VarChar).Value = pt.TileId;
@@ -92,7 +90,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command =
-                    new("DELETE FROM PackTile WHERE PackId = @packId;", con);
+                    new("DELETE FROM PackTile WHERE PackTile_Id = @packId;", con);
                 {
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
                 }

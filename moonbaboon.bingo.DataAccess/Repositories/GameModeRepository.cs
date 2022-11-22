@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
         public GameModeRepository(MySqlConnection connection)
         {
-            _connection = connection;
+            _connection = connection.Clone();
         }
 
         public async Task<List<GameMode>> FindAll()
@@ -24,9 +24,9 @@ namespace moonbaboon.bingo.DataAccess.Repositories
 
                 await using MySqlCommand command =
                     new(
-                        @"SELECT GameMode.Id AS GameMode_Id, GameMode.Name AS GameMode_Name FROM GameMode;",
+                        @"SELECT GameMode_Id, GameMode_Name FROM GameMode;",
                         con);
-                
+
 
                 await using var reader = await command.ExecuteReaderAsync();
                 while (reader.Read()) list.Add(new GameMode(reader));

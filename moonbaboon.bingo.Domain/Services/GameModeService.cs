@@ -5,7 +5,7 @@ using moonbaboon.bingo.Domain.IRepositories;
 
 namespace moonbaboon.bingo.Domain.Services
 {
-    public class GameModeService: IGameModeService
+    public class GameModeService : IGameModeService
     {
         private readonly IGameModeRepository _gameModeRepository;
 

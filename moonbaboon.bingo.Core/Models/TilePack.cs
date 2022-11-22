@@ -17,8 +17,8 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = reader.GetString("TilePack_Id");
             Name = reader.GetString("TilePack_Name");
-            PicUrl = reader.GetValue("TilePack_Pic").ToString();
-            PriceStripe = reader.GetValue("TilePack_Stripe").ToString();
+            PicUrl = reader.GetValue("TilePack_PicUrl").ToString();
+            PriceStripe = reader.GetValue("TilePack_Stripe_PRICE").ToString();
         }
 
         public string? Id { get; set; }

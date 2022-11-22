@@ -6,8 +6,8 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IBoardRepository
     {
-        public Task<Board> FindById(string id);
-        public Task<Board> Create(string userId, string gameId);
+        public Task<BoardEntity> FindById(string id);
+        public Task<BoardEntity> Create(BoardEntity entity);
 
         /// <summary>
         ///     Searches database for a board corresponding to the given game and player
@@ -15,10 +15,10 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="userId">userId for the player</param>
         /// <param name="gameId">id for the game</param>
         /// <returns>the board if it exist, else null</returns>
-        public Task<Board?> FindByUserAndGameId(string userId, string gameId);
+        public Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId);
 
         public Task<bool> IsBoardFilled(string boardId);
 
-        public Task<List<Board>> FindTopRanking(string gameId, int limit);
+        public Task<List<BoardEntity>> FindTopRanking(string gameId, int limit);
     }
 }

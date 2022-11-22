@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using moonbaboon.bingo.Core.IServices;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain.IRepositories;
@@ -16,70 +17,53 @@ namespace moonbaboon.bingo.Domain.Services
             _adminRepository = adminRepository;
         }
 
-        public List<UserSimple> Search(string searchStr)
+        public List<User> Search(string searchStr)
         {
             return _userRepository.Search(searchStr).Result;
         }
 
-        public List<UserSimple> SearchID(string searchStr)
-        {
-            return _userRepository.SearchID(searchStr).Result;
-        }
-
-        public UserSimple Login(string dtoUsername, string dtoPassword)
+        public User Login(string dtoUsername, string dtoPassword)
         {
             return _userRepository.Login(dtoUsername, dtoPassword).Result;
         }
 
-        public UserSimple GetById(string id)
+        public User GetById(string id)
         {
-            var u = _userRepository.ReadById(id).Result;
-            var a = _adminRepository.IsAdmin(u.Id).Result;
-            return a ?? u;
+            return _userRepository.ReadById(id).Result;
         }
 
-        public UserSimple CreateUser(User user)
+        public string CreateUser(User user)
         {
             return _userRepository.Create(user).Result;
         }
 
-        public bool VerifyUsername(string username)
+        public bool UsernameExists(string username)
         {
-            return _userRepository.VerifyUsername(username).Result;
+            var b = _userRepository.GetUserIdByUsername(username).Result;
+            return b is not null;
         }
 
-        public string GetSalt(string username)
+        public string GetSalt(string userId)
         {
-            return _userRepository.GetSalt(username).Result;
+            return _userRepository.GetSalt(userId).Result;
         }
 
-        public UserSimple UpdateUser(string id, UserSimple user)
+        public void UpdateUser(string id, User user)
         {
-            return _userRepository.UpdateUser(id, user).Result;
+            if (id == user.Id)
+                _userRepository.UpdateUser(user).Wait();
+            else
+                throw new Exception("You can only change your own profile");
         }
 
-        public bool RemoveBanner(string uuid, string adminUUID)
+        public string? GetUserIdByUsername(string username)
         {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
-                return _userRepository.RemoveBanner(uuid).Result;       
-            }
-            return false;
+            return _userRepository.GetUserIdByUsername(username).Result;
         }
 
-        public bool RemoveIcon(string uuid, string adminUUID)
+        public void RemoveName(string uuid, string adminUUID)
         {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
-                return _userRepository.RemoveIcon(uuid).Result;       
-            }
-            return false;
-        }
-
-        public bool RemoveName(string uuid, string adminUUID)
-        {
-            if(_adminRepository.IsAdmin(adminUUID).Result != null){
-                return _userRepository.RemoveName(uuid).Result;       
-            }
-            return false;
+            if (_adminRepository.FindByUserId(adminUUID).Result != null) _userRepository.RemoveName(uuid).Wait();
         }
     }
 }

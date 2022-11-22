@@ -11,17 +11,19 @@ namespace moonbaboon.bingo.Domain.Services
     public class AuthService : IAuthService
     {
         private readonly IAdminRepository _adminRepository;
+        private readonly IAuthRepository _authRepository;
 
-        public AuthService(IAdminRepository adminRepository)
+        public AuthService(IAdminRepository adminRepository, IAuthRepository authRepository)
         {
             _adminRepository = adminRepository;
+            _authRepository = authRepository;
         }
 
-        public string EncodeJwt(UserSimple user, byte[] tokenKey)
+        public string EncodeJwt(User user, byte[] tokenKey)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityTokenDescriptor tokenDescriptor;
-            var admin = _adminRepository.IsAdmin(user.Id).Result;
+            var admin = _adminRepository.FindByUserId(user.Id).Result;
             if (admin is not null)
                 tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -51,6 +53,11 @@ namespace moonbaboon.bingo.Domain.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public string Create(AuthEntity entity)
+        {
+            return _authRepository.Create(entity).Result;
         }
     }
 }

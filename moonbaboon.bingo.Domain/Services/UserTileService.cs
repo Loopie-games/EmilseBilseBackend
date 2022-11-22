@@ -50,7 +50,7 @@ namespace moonbaboon.bingo.Domain.Services
 
         public List<UserTile> GetMadeByUserId(string userId)
         {
-            return _userTileRepository.FindMadeByUserId(userId).Result;
+            return _userTileRepository.FindAddedByUserId(userId).Result;
         }
     }
 }

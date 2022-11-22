@@ -6,13 +6,6 @@ namespace moonbaboon.bingo.Core.IServices
     {
         public Lobby? GetById(string id);
 
-        /// <summary>
-        ///     Gets Lobby corresponding to the given hostId, if such exists
-        /// </summary>
-        /// <param name="hostId">UserId for host of the Lobby</param>
-        /// <returns>Lobby with given hostId if such exists, else null</returns>
-        public Lobby? GetByHostId(string hostId);
-
         public Lobby? Create(string HostId);
 
         /// <summary>
@@ -23,8 +16,8 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>A PendingPlayer containing the Lobby and User</returns>
         public PendingPlayer JoinLobby(string userId, string pin);
 
-        public bool CloseLobby(string lobbyId, string hostId);
+        public void CloseLobby(string lobbyId, string hostId);
 
-        public bool LeaveLobby(string userId);
+        public void LeaveLobby(string userId);
     }
 }

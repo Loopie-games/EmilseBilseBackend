@@ -8,9 +8,9 @@ namespace moonbaboon.bingo.Domain.IRepositories
     {
         public Task<UserTileEntity> Create(UserTileEntity toCreate);
         public Task<List<UserTile>> FindAll();
-        public Task<UserTile?> FindById(string id);
-        public Task<List<UserTile>> GetAboutUserById(string id);
+        public Task<UserTile> FindById(string id);
+        public Task<List<UserTile>> GetAboutUserById(string aboutUserId);
         public Task<List<UserTile>> GetTilesForBoard(string lobbyId, string userId);
-        public Task<List<UserTile>> FindMadeByUserId(string userId);
+        public Task<List<UserTile>> FindAddedByUserId(string userId);
     }
 }

@@ -12,7 +12,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class BugReportController: ControllerBase
+    public class BugReportController : ControllerBase
     {
         private readonly IBugReportService _bugReportService;
 
@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             _bugReportService = bugReportService;
         }
-        
+
         [Authorize(Roles = nameof(Admin))]
         [HttpGet]
         public ActionResult<List<BugReport>> GetAll()
@@ -35,14 +35,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [Authorize]
         [HttpPost(nameof(Create))]
         public ActionResult<BugReport> Create(UserBugReportDto pt)
         {
             try
             {
-                var created = _bugReportService.Create(new BugReportEntity(null, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, pt.Title, pt.Description));
+                var created = _bugReportService.Create(new BugReportEntity(null,
+                    HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, pt.Title, pt.Description));
                 return Ok(created);
             }
             catch (Exception e)
@@ -51,7 +52,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [Authorize(Roles = nameof(Admin))]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BugReport))]
@@ -68,7 +69,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
+
         [Authorize]
         [HttpPost(nameof(AddStar))]
         public ActionResult<BugReport> AddStar(string bugreportId)
@@ -80,7 +81,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 _bugReportService.AddStar(userId,
                     bugreportId);
                 return CreatedAtAction(nameof(GetById), new {id = bugreportId}, bugreportId);
-
             }
             catch (Exception e)
             {

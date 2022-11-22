@@ -5,11 +5,10 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IFriendshipService
     {
-        public List<Friendship> GetAll();
         public List<Friend> SearchUsers(string searchStr, string loggedUserId);
         public List<Friend> GetFriendsByUserId(string userId);
-        public Friend? SendFriendRequest(string fromUserId, string toUserId);
+        public string SendFriendRequest(string fromUserId, string toUserId);
         public List<Friend> GetFriendRequestsByUserId(string userId);
-        public Friend AcceptFriendRequest(string friendshipId, string value);
+        public void AcceptFriendRequest(string friendshipId, string acceptingId);
     }
 }

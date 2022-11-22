@@ -3,8 +3,8 @@ using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Domain.IRepositories
 {
-    public interface IAdminRepository
+    public interface IAuthRepository
     {
-        public Task<Admin?> FindByUserId(string userId);
+        public Task<string> Create(AuthEntity entity);
     }
 }
