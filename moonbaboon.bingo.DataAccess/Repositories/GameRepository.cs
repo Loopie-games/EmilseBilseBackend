@@ -102,7 +102,8 @@ FROM Game
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();
 
-            command.CommandText = @"SELECT  Game_Id,  Game_State, 
+            command.CommandText = @"
+SELECT  Game_Id,  Game_State, 
        HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
        Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
 FROM Game 
