@@ -16,7 +16,7 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IOwnedTilePackRepository _ownedTilePackRepository;
         private readonly IPackTileRepository _packTileRepository;
         private readonly IPendingPlayerRepository _pendingPlayerRepository;
-
+        private readonly IBoardMemberRepository _boardMemberRepository;
         private readonly Random _random = new();
         private readonly ITilePackRepository _tilePackRepository;
         private readonly ITopPlayerRepository _topPlayerRepository;
@@ -27,7 +27,7 @@ namespace moonbaboon.bingo.Domain.Services
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
             ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository,
-            ITopPlayerRepository topPlayerRepository, IOwnedTilePackRepository ownedTilePackRepository)
+            ITopPlayerRepository topPlayerRepository, IOwnedTilePackRepository ownedTilePackRepository, IBoardMemberRepository boardMemberRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -40,6 +40,7 @@ namespace moonbaboon.bingo.Domain.Services
             _userRepository = userRepository;
             _topPlayerRepository = topPlayerRepository;
             _ownedTilePackRepository = ownedTilePackRepository;
+            _boardMemberRepository = boardMemberRepository;
         }
 
         public Game GetById(string id)
@@ -73,16 +74,16 @@ namespace moonbaboon.bingo.Domain.Services
             foreach (var packId in tilePackIds)
                 packTiles.AddRange(_packTileRepository.GetByPackId(packId).Result);
 
-            var boardTilesPack = new List<BoardTile>();
+            var boardTilesPack = new List<BoardTileEntity>();
             foreach (var player in players)
             {
                 var board = _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
-                var boardTilesPlayer = new List<BoardTile>();
+                var boardTilesPlayer = new List<BoardTileEntity>();
                 var packTilesTemp = new List<PackTile>(packTiles);
                 while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
                 {
                     var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
-                    boardTilesPlayer.Add(new BoardTile(null, board, randomTile, player.User, boardTilesPlayer.Count,
+                    boardTilesPlayer.Add(new BoardTileEntity(null, player.User.Id, board, randomTile.Tile.Id, boardTilesPlayer.Count,
                         false));
                     packTilesTemp.Remove(randomTile);
                 }
@@ -92,7 +93,7 @@ namespace moonbaboon.bingo.Domain.Services
 
             //Insert all boardtiles in database
             var unused = boardTilesPack.Select(boardTile =>
-                    _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
+                    _boardTileRepository.Create(boardTile).Result)
                 .ToList();
 
             return gameId;
@@ -118,9 +119,9 @@ namespace moonbaboon.bingo.Domain.Services
                     var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
 
                     //get tiles about other players
-                    List<BoardTile> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
+                    List<BoardTileEntity> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
                         .Result
-                        .Select((t, i) => new BoardTile(null, board, t, t.User, i, false))
+                        .Select((t, i) => new BoardTileEntity(null, t.User.Id, board, t.Id,  i, false))
                         .ToList();
 
                     //if not enough boardtiles for users; fill with default tiles
@@ -145,7 +146,7 @@ namespace moonbaboon.bingo.Domain.Services
 
                             //Create new board tile
                             boardTilesUser.Add(
-                                new BoardTile(null, board, randomTile, rp, boardTilesUser.Count, false));
+                                new BoardTileEntity(null, rp.Id,board, randomTile.Tile.Id,  boardTilesUser.Count, false));
 
                             //remove random default tile after used, to avoid duplicate boardtiles
                             defaultTilesTemp.Remove(randomTile);
@@ -154,7 +155,7 @@ namespace moonbaboon.bingo.Domain.Services
 
                     //Insert all boardtiles in database
                     var unused = boardTilesUser.Select(boardTile =>
-                            _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
+                            _boardTileRepository.Create(boardTile).Result)
                         .ToList();
                 }
             }
@@ -171,12 +172,12 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var packId in tilePackIds)
                     packTiles.AddRange(_packTileRepository.GetByPackId(packId).Result);
 
-                var boardTilesPack = new List<BoardTile>();
+                var boardTilesPack = new List<BoardTileEntity>();
                 foreach (var player in players)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
                     var board = _boardRepository.Create(new BoardEntity(null, gameId, player.User.Id)).Result;
-                    var boardTilesPlayer = new List<BoardTile>();
+                    var boardTilesPlayer = new List<BoardTileEntity>();
                     var packTilesTemp = new List<PackTile>(packTiles);
                     while (boardTilesPlayer.Count < 24 && packTilesTemp.Count > 0)
                     {
@@ -184,8 +185,8 @@ namespace moonbaboon.bingo.Domain.Services
                         var rp = usablePlayers[_random.Next(0, usablePlayers.Count)].User;
 
                         var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
-                        boardTilesPlayer.Add(new BoardTile(null, board, randomTile, rp, boardTilesPlayer.Count,
-                            false));
+                        boardTilesPlayer.Add(new BoardTileEntity(id: null, aboutUserId: rp.Id, boardId: board, tileId: randomTile.Tile.Id, position: boardTilesPlayer.Count,
+                            isActivated: false));
                         packTilesTemp.Remove(randomTile);
                     }
 
@@ -194,8 +195,49 @@ namespace moonbaboon.bingo.Domain.Services
 
                 //Insert all boardtiles in database
                 var unused = boardTilesPack.Select(boardTile =>
-                        _boardTileRepository.Create(new BoardTileEntity(boardTile)).Result)
+                        _boardTileRepository.Create(boardTile).Result)
                     .ToList();
+            }
+
+            return gameId;
+        }
+
+        public string NewShared(Lobby lobby, List<TilePack> tilePacks)
+        {
+            if (tilePacks.Count < 1)
+            {
+                throw new Exception("At least one tilePack is needed to start this type of game");
+            }
+            
+            var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
+            var gameId = _gameRepository.Create(new GameEntity(null, lobby.Host, null, State.Ongoing)).Result;
+            var boardId = _boardRepository.Create(new BoardEntity(null, gameId, null)).Result;
+
+            var boardTiles = new List<BoardTileEntity>();
+            
+            var packTiles = new List<PackTile>();
+
+            foreach (var pack in tilePacks)
+                packTiles.AddRange(_packTileRepository.GetByPackId(pack.Id).Result);
+
+            while (boardTiles.Count <25)
+            {
+                if (boardTiles.Count == 13)
+                {
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, null, boardTiles.Count, true));
+                }
+                else
+                {
+                    var randomTile = packTiles[_random.Next(0, packTiles.Count)];
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, randomTile.Tile.Id, boardTiles.Count, false));
+                    
+                    packTiles.Remove(randomTile);
+                }
+            }
+            
+            foreach (var player in players)
+            {
+                var boardMemberId = _boardMemberRepository.Insert(new BoardMemberEntity(null, player.User.Id, boardId));
             }
 
             return gameId;

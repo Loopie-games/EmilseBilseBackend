@@ -40,7 +40,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             throw new Exception($"No {nameof(BoardEntity)} with id: {id}");
         }
 
-        public async Task<BoardEntity> Create(BoardEntity entity)
+        public async Task<string> Create(BoardEntity entity)
         {
             entity.Id = Guid.NewGuid().ToString();
             await using var con = _connection.Clone();
@@ -57,7 +57,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 }
                 command.ExecuteNonQuery();
             }
-            return entity;
+            return entity.Id;
         }
 
         public async Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId)

@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using moonbaboon.bingo.Core.IServices;
@@ -29,13 +30,6 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             return _boardService.GetByUserAndGameId(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value,
                 gameId);
-        }
-
-
-        [HttpPost(nameof(Create))]
-        public ActionResult<BoardEntity?> Create(string userId, string gameId)
-        {
-            return _boardService.CreateBoard(userId, gameId);
         }
     }
 }

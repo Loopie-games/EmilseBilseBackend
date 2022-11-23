@@ -7,7 +7,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
     public interface IBoardRepository
     {
         public Task<BoardEntity> FindById(string id);
-        public Task<BoardEntity> Create(BoardEntity entity);
+        public Task<string> Create(BoardEntity entity);
 
         /// <summary>
         ///     Searches database for a board corresponding to the given game and player

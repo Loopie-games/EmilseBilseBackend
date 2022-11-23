@@ -36,7 +36,7 @@ namespace moonbaboon.bingo.Core.Models
 
     public class BoardTileEntity
     {
-        public BoardTileEntity(string id, string aboutUserId, string boardId, string tileId, int position,
+        public BoardTileEntity(string? id, string? aboutUserId, string boardId, string? tileId, int position,
             bool isActivated)
         {
             Id = id;
@@ -58,9 +58,9 @@ namespace moonbaboon.bingo.Core.Models
         }
 
         public string? Id { get; set; }
-        public string AboutUserId { get; set; }
+        public string? AboutUserId { get; set; }
         public string BoardId { get; set; }
-        public string TileId { get; set; }
+        public string? TileId { get; set; }
         public int Position { get; set; }
         public bool IsActivated { get; set; }
     }
