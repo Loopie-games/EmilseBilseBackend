@@ -22,19 +22,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             con.Open();
 
             await using MySqlCommand command = new(
-                @"SELECT BoardTile_Id, 
-                       Board_Id, Board_GameId, Board_UserId, 
-                       BoardTile_TileId AS ByTile_Id, Tile_Id, Tile_Action, 
-                       IF(PackTile.PackTile_TileId IS NULL, '0', '1') AS ByTile_Type, 
-                       User_Id, User_Username, User_Nickname, User_ProfilePicUrl, 
-                       BoardTile_Position, BoardTile_IsActivated 
+                @"SELECT BoardTile.*, Board.*, Tile.*, U.User_id As ActivatedBy, U.*, U2.User_id As AboutUser, U2.*
                 FROM BoardTile 
-                    JOIN Board ON BoardTile_BoardId = Board.Board_Id
-                    JOIN User ON BoardTile_AboutUserId = User_id 
-                    LEFT JOIN PackTile ON BoardTile_TileId = PackTile_Id 
-                    LEFT JOIN TilePack ON PackTile_PackId = TilePack_Id 
-                    LEFT JOIN UserTile ON BoardTile_TileId = UserTile_Id 
-                    LEFT JOIN Tile ON PackTile_TileId = Tile_Id || UserTile_TileId = Tile_Id 
+                    JOIN Board ON BoardTile_BoardId = Board.Board_Id 
+                    LEFT JOIN User U on U.User_id = BoardTile.BoardTile_ActivatedBy
+                    LEFT JOIN User U2 on U2.User_id = BoardTile.BoardTile_AboutUserId
+                    LEFT JOIN Tile ON BoardTile_TileId = Tile.Tile_Id 
                 WHERE BoardTile_Id = @Id;",
                 con);
             command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
@@ -59,7 +52,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@BoardId", MySqlDbType.VarChar).Value = toCreate.BoardId;
                     command.Parameters.Add("@TileId", MySqlDbType.VarChar).Value = toCreate.TileId;
                     command.Parameters.Add("@Position", MySqlDbType.Int16).Value = toCreate.Position;
-                    command.Parameters.Add("@IsActivated", MySqlDbType.Bool).Value = toCreate.IsActivated;
+                    command.Parameters.Add("@IsActivated", MySqlDbType.VarChar).Value = toCreate.ActivatedBy;
                 }
                 command.ExecuteNonQuery();
             }
@@ -74,20 +67,14 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             con.Open();
 
             await using MySqlCommand command = new(
-                @"SELECT BoardTile_Id, 
-                       Board_Id, Board_GameId, Board_UserId, 
-                       BoardTile_TileId AS ByTile_Id, Tile_Id AS Tile_Id, Tile_Action, 
-                       IF(PackTile_TileId IS NULL, '0', '1') AS ByTile_Type, 
-                       User_Id, User_Username,  User_Nickname,  User_ProfilePicUrl, 
-                        BoardTile_Position,  BoardTile_IsActivated 
+                @"SELECT BoardTile.*, Board.*, Tile.*, U.User_id As ActivatedBy, U.*, U2.User_id As AboutUser, U2.*
                 FROM BoardTile 
                     JOIN Board ON BoardTile_BoardId = Board.Board_Id 
-                    Left JOIN User ON BoardTile_AboutUserId = User_id 
-                    LEFT JOIN PackTile ON BoardTile_TileId = PackTile_Id 
-                    LEFT JOIN TilePack ON PackTile_PackId = TilePack_Id 
-                    LEFT JOIN UserTile ON BoardTile_TileId = UserTile_Id 
-                    LEFT JOIN Tile ON PackTile_TileId = Tile_Id || UserTile_TileId = Tile_Id 
-                WHERE BoardTile_BoardId = @boardId;",
+                    LEFT JOIN User U on U.User_id = BoardTile.BoardTile_ActivatedBy
+                    LEFT JOIN User U2 on U2.User_id = BoardTile.BoardTile_AboutUserId
+                    LEFT JOIN Tile ON BoardTile_TileId = Tile.Tile_Id
+                WHERE BoardTile_BoardId = @boardId
+ORDER BY BoardTile_Position                 ",
                 con);
             command.Parameters.Add("@boardId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
@@ -95,6 +82,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 list.Add(new BoardTile(reader));
             }
+
             return list;
         }
 
@@ -105,7 +93,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "UPDATE BoardTile SET BoardTile_AboutUserId=@AboutUserId, BoardTile_BoardId=@BoardId,BoardTile_TileId=@TileId,BoardTile_Position=@Position,BoardTile_IsActivated=@IsActivated WHERE BoardTile_Id  = @Id",
+                        "UPDATE BoardTile SET BoardTile_AboutUserId=@AboutUserId, BoardTile_BoardId=@BoardId,BoardTile_TileId=@TileId,BoardTile_Position=@Position,BoardTile_ActivatedBy=@IsActivated WHERE BoardTile_Id  = @Id",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toUpdate.Id;
@@ -113,8 +101,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     command.Parameters.Add("@BoardId", MySqlDbType.VarChar).Value = toUpdate.BoardId;
                     command.Parameters.Add("@TileId", MySqlDbType.VarChar).Value = toUpdate.TileId;
                     command.Parameters.Add("@Position", MySqlDbType.Int16).Value = toUpdate.Position;
-                    command.Parameters.Add("@IsActivated", MySqlDbType.Int16).Value =
-                        Convert.ToByte(toUpdate.IsActivated);
+                    command.Parameters.Add("@IsActivated", MySqlDbType.VarChar).Value = toUpdate.ActivatedBy;
                 }
                 await command.ExecuteNonQueryAsync();
             }

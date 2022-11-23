@@ -108,7 +108,7 @@ WHERE Board_GameId = @gameId AND BoardMember_UserId = @userId";
             using var reader = command.ExecuteReader();
             while (reader.Read()) return new BoardEntity(reader);
 
-            throw new InvalidOperationException("Invalid Login");
+            throw new Exception($"No {nameof(BoardEntity)} found from userid: {userId} and gameId {gameId}");
         }
 
         public async Task<bool> IsBoardFilled(string boardId)
@@ -118,7 +118,7 @@ WHERE Board_GameId = @gameId AND BoardMember_UserId = @userId";
             {
                 con.Open();
                 await using MySqlCommand command = new(
-                    @"SELECT((SELECT COUNT(*) FROM BoardTile WHERE BoardTile_IsActivated = '1' AND BoardTile_BoardId = @Board_Id) = 24 IS true)",
+                    @"SELECT((SELECT COUNT(*) FROM BoardTile WHERE BoardTile_ActivatedBy Is not null AND BoardTile_BoardId = @Board_Id) = 24 IS true)",
                     con);
                 {
                     command.Parameters.Add("@Board_Id", MySqlDbType.VarChar).Value = boardId;
@@ -137,7 +137,7 @@ WHERE Board_GameId = @gameId AND BoardMember_UserId = @userId";
             {
                 con.Open();
                 await using MySqlCommand command = new(
-                    @"SELECT *, (SELECT COUNT(BoardTile_Id) FROM BoardTile WHERE BoardTile_IsActivated = '1' && BoardTile_BoardId= Board_Id) AS Board_TurnedTiles
+                    @"SELECT *, (SELECT COUNT(BoardTile_Id) FROM BoardTile WHERE BoardTile_ActivatedBy Is not null && BoardTile_BoardId= Board_Id) AS Board_TurnedTiles
                         FROM Board 
                             WHERE Board_GameId = @Game_Id
                             ORDER BY Board_TurnedTiles DESC 
