@@ -84,7 +84,7 @@ namespace moonbaboon.bingo.Domain.Services
                 {
                     var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
                     boardTilesPlayer.Add(new BoardTileEntity(null, player.User.Id, board, randomTile.Tile.Id, boardTilesPlayer.Count,
-                        false));
+                        null));
                     packTilesTemp.Remove(randomTile);
                 }
 
@@ -121,7 +121,7 @@ namespace moonbaboon.bingo.Domain.Services
                     //get tiles about other players
                     List<BoardTileEntity> boardTilesUser = _userTileRepository.GetTilesForBoard(lobbyId, player.User.Id)
                         .Result
-                        .Select((t, i) => new BoardTileEntity(null, t.User.Id, board, t.Id,  i, false))
+                        .Select((t, i) => new BoardTileEntity(null, t.User.Id, board, t.Id,  i, null))
                         .ToList();
 
                     //if not enough boardtiles for users; fill with default tiles
@@ -146,7 +146,7 @@ namespace moonbaboon.bingo.Domain.Services
 
                             //Create new board tile
                             boardTilesUser.Add(
-                                new BoardTileEntity(null, rp.Id,board, randomTile.Tile.Id,  boardTilesUser.Count, false));
+                                new BoardTileEntity(null, rp.Id,board, randomTile.Tile.Id,  boardTilesUser.Count, null));
 
                             //remove random default tile after used, to avoid duplicate boardtiles
                             defaultTilesTemp.Remove(randomTile);
@@ -186,7 +186,7 @@ namespace moonbaboon.bingo.Domain.Services
 
                         var randomTile = packTilesTemp[_random.Next(0, packTilesTemp.Count)];
                         boardTilesPlayer.Add(new BoardTileEntity(id: null, aboutUserId: rp.Id, boardId: board, tileId: randomTile.Tile.Id, position: boardTilesPlayer.Count,
-                            isActivated: false));
+                            activatedBy: null));
                         packTilesTemp.Remove(randomTile);
                     }
 
@@ -226,14 +226,14 @@ namespace moonbaboon.bingo.Domain.Services
 
             while (boardTiles.Count <25)
             {
-                if (boardTiles.Count == 13)
+                if (boardTiles.Count == 12)
                 {
-                    boardTiles.Add(new BoardTileEntity(null, null, boardId, "d03f51b6-6aca-11ed-9160-040300000000", boardTiles.Count, true));
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, null, boardTiles.Count, null));
                 }
                 else
                 {
                     var randomTile = packTiles[_random.Next(0, packTiles.Count)];
-                    boardTiles.Add(new BoardTileEntity(null, null, boardId, randomTile.Id, boardTiles.Count, false));
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, randomTile.Tile.Id, boardTiles.Count, null));
                     
                     packTiles.Remove(randomTile);
                 }

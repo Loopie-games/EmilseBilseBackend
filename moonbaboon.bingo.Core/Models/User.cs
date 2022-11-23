@@ -19,6 +19,14 @@ namespace moonbaboon.bingo.Core.Models
             Nickname = reader.GetString(reader.GetOrdinal("User_Nickname"));
             ProfilePicUrl = reader.GetValue(reader.GetOrdinal("User_ProfilePicUrl")).ToString();
         }
+        
+        public User(IDataReader reader, int start)
+        {
+            Id = reader.GetString(start);
+            Username = reader.GetString(start+1);
+            Nickname = reader.GetString(start+2);
+            ProfilePicUrl = reader.GetValue(start+3).ToString();
+        }
 
         public string? Id { get; set; }
         public string Username { get; set; }
