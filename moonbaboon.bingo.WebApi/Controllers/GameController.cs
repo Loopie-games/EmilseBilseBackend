@@ -65,6 +65,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
@@ -80,6 +81,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             }
             catch (Exception e)
             {
+                Console.WriteLine(e);
                 return BadRequest(e.Message);
             }
         }
@@ -114,6 +116,24 @@ namespace moonbaboon.bingo.WebApi.Controllers
                 var gameId = _gameService.NewFreeForAll(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
                 return _gameService.GetById(gameId);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        }
+        
+        [Authorize]
+        [HttpPost("/Shared")]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<string> CreateShared(GameDtos.CreateGameDto gameDto)
+        {
+            try
+            {
+                var gameId = _gameService.NewShared(gameDto.LobbyId,HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+                return Ok(gameId);
             }
             catch (Exception e)
             {

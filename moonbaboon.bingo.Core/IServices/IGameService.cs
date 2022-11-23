@@ -23,6 +23,8 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>the created game</returns>
         public string NewOG(string lobbyId, string hostId, string[]? tilePackIds);
 
+        public string NewShared(string lobbyId, string userId, string[] tilePacks);
+
         /// <summary>
         ///     Gets player list from game id
         ///     Checks if the user requesting the list is part of the game

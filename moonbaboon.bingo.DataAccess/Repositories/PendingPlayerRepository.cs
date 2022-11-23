@@ -60,8 +60,12 @@ WHERE PendingPlayer_Id = @Id",
         public async Task<PendingPlayer> GetByUserId(string userId)
         {
             await using var con = _connection.Clone();
+            con.Open();
             await using var command = new MySqlCommand(
-                @"SELECT * FROM PendingPlayer JOIN User U on PendingPlayer.PendingPlayer_UserId = U.User_id WHERE PendingPlayer_UserId = @UserId",
+                @"SELECT * FROM PendingPlayer 
+    JOIN User U on PendingPlayer.PendingPlayer_UserId = U.User_id
+JOIN Lobby L on L.Lobby_Id = PendingPlayer.PendingPlayer_LobbyId
+WHERE PendingPlayer_UserId = @UserId",
                 con);
             {
                 command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;

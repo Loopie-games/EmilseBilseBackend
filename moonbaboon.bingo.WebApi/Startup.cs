@@ -184,6 +184,9 @@ namespace moonbaboon.bingo.WebApi
             //Board
             services.AddScoped<IBoardRepository, BoardRepository>();
             services.AddScoped<IBoardService, BoardService>();
+            
+            //BoardMember
+            services.AddScoped<IBoardMemberRepository, BoardMemberRepository>();
 
             //BoardTile
             services.AddScoped<IBoardTileRepository, BoardTileRepository>();

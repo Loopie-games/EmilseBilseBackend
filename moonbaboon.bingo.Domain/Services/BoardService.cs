@@ -7,12 +7,10 @@ namespace moonbaboon.bingo.Domain.Services
     public class BoardService : IBoardService
     {
         private readonly IBoardRepository _boardRepository;
-        private readonly IGameRepository _gameRepository;
 
-        public BoardService(IBoardRepository boardRepository, IGameRepository gameRepository)
+        public BoardService(IBoardRepository boardRepository)
         {
             _boardRepository = boardRepository;
-            _gameRepository = gameRepository;
         }
 
         public BoardEntity GetById(string id)
@@ -22,19 +20,13 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardEntity? GetByUserAndGameId(string userId, string gameId)
         {
-            
-                return _boardRepository.FindByUserAndGameId(userId, gameId).Result;
-            
-            
-        }
+            var ent = _boardRepository.FindByUserAndGameId(userId, gameId).Result;
+            if (ent is null)
+            {
+                ent = _boardRepository.FindByUserAndGameId2(userId, gameId);
+            }
 
-        public BoardEntity? CreateBoard(string userId, string gameId)
-        {
-            var game = _gameRepository.FindById(gameId).Result;
-
-            return game.Winner is not null
-                ? null
-                : _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
+            return ent;
         }
 
         public bool IsBoardFilled(string? boardId)
