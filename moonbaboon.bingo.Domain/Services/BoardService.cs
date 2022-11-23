@@ -20,10 +20,13 @@ namespace moonbaboon.bingo.Domain.Services
 
         public BoardEntity? GetByUserAndGameId(string userId, string gameId)
         {
-            
-                return _boardRepository.FindByUserAndGameId(userId, gameId).Result;
-            
-            
+            var ent = _boardRepository.FindByUserAndGameId(userId, gameId).Result;
+            if (ent is null)
+            {
+                ent = _boardRepository.FindByUserAndGameId2(userId, gameId);
+            }
+
+            return ent;
         }
 
         public bool IsBoardFilled(string? boardId)

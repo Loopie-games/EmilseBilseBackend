@@ -22,8 +22,16 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();
             command.CommandText =
-                @"SELECT * From (SELECT Board_UserId as u1 FROM `Game` JOIN Board ON Board_GameId = @GameId) As b JOIN User ON b.u1 = User.User_id";
-            command.Parameters.Add(new MySqlParameter("@GameId", MySqlDbType.VarChar).Value = gameId);
+                @"SELECT * FROM `User` 
+JOIN BoardMember On User_id = BoardMember.BoardMember_UserId
+JOIN Board ON BoardMember.BoardMember_BoardId = Board.Board_Id AND Board.Board_GameId = @gameId ";
+            
+            var param = command.CreateParameter();
+            param.ParameterName = "@gameId";
+            param.Value = gameId;
+            command.Parameters.Add(param);
+            con.Open();
+            
             using var reader = command.ExecuteReader();
             while (reader.Read()) list.Add(new User(reader));
 

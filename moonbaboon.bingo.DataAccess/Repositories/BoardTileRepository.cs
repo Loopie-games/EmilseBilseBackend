@@ -82,7 +82,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                         BoardTile_Position,  BoardTile_IsActivated 
                 FROM BoardTile 
                     JOIN Board ON BoardTile_BoardId = Board.Board_Id 
-                    JOIN User ON BoardTile_AboutUserId = User_id 
+                    Left JOIN User ON BoardTile_AboutUserId = User_id 
                     LEFT JOIN PackTile ON BoardTile_TileId = PackTile_Id 
                     LEFT JOIN TilePack ON PackTile_PackId = TilePack_Id 
                     LEFT JOIN UserTile ON BoardTile_TileId = UserTile_Id 
@@ -91,7 +91,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con);
             command.Parameters.Add("@boardId", MySqlDbType.VarChar).Value = id;
             await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) list.Add(new BoardTile(reader));
+            while (await reader.ReadAsync())
+            {
+                list.Add(new BoardTile(reader));
+            }
             return list;
         }
 

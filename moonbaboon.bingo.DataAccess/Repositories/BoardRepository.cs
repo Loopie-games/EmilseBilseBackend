@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 
@@ -10,10 +11,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class BoardRepository : IBoardRepository
     {
         private readonly MySqlConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public BoardRepository(MySqlConnection connection)
+        public BoardRepository(MySqlConnection connection, IDbConnectionFactory connectionFactory)
         {
             _connection = connection;
+            _connectionFactory = connectionFactory;
         }
 
 
@@ -80,7 +83,32 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 while (reader.Read()) return new BoardEntity(reader);
             }
 
+            return null;
             throw new Exception($"No {nameof(BoardEntity)} found");
+        }
+
+        public BoardEntity FindByUserAndGameId2(string userId, string gameId)
+        {
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText = @"Select * from Board 
+Join BoardMember BM on Board.Board_Id = BM.BoardMember_BoardId
+WHERE Board_GameId = @gameId AND BoardMember_UserId = @userId";
+
+            var param1 = command.CreateParameter();
+            param1.ParameterName = "@gameId";
+            param1.Value = gameId;
+            command.Parameters.Add(param1);
+
+            var param2 = command.CreateParameter();
+            param2.ParameterName = "@userId";
+            param2.Value = userId;
+            command.Parameters.Add(param2);
+            con.Open();
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) return new BoardEntity(reader);
+
+            throw new InvalidOperationException("Invalid Login");
         }
 
         public async Task<bool> IsBoardFilled(string boardId)

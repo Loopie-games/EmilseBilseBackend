@@ -202,9 +202,13 @@ namespace moonbaboon.bingo.Domain.Services
             return gameId;
         }
 
-        public string NewShared(Lobby lobby, List<TilePack> tilePacks)
+        public string NewShared(string lobbyId, string userId, string[] tilePacks)
         {
-            if (tilePacks.Count < 1)
+            //Get lobby and throw exception if not provided with correct host id
+            var lobby = _lobbyRepository.FindById(lobbyId).Result;
+            if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
+            
+            if (tilePacks.Length < 1)
             {
                 throw new Exception("At least one tilePack is needed to start this type of game");
             }
@@ -218,22 +222,27 @@ namespace moonbaboon.bingo.Domain.Services
             var packTiles = new List<PackTile>();
 
             foreach (var pack in tilePacks)
-                packTiles.AddRange(_packTileRepository.GetByPackId(pack.Id).Result);
+                packTiles.AddRange(_packTileRepository.GetByPackId(pack).Result);
 
             while (boardTiles.Count <25)
             {
                 if (boardTiles.Count == 13)
                 {
-                    boardTiles.Add(new BoardTileEntity(null, null, boardId, null, boardTiles.Count, true));
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, "d03f51b6-6aca-11ed-9160-040300000000", boardTiles.Count, true));
                 }
                 else
                 {
                     var randomTile = packTiles[_random.Next(0, packTiles.Count)];
-                    boardTiles.Add(new BoardTileEntity(null, null, boardId, randomTile.Tile.Id, boardTiles.Count, false));
+                    boardTiles.Add(new BoardTileEntity(null, null, boardId, randomTile.Id, boardTiles.Count, false));
                     
                     packTiles.Remove(randomTile);
                 }
             }
+            
+            //Insert all boardtiles in database
+            var unused = boardTiles.Select(boardTile =>
+                    _boardTileRepository.Create(boardTile).Result)
+                .ToList();
             
             foreach (var player in players)
             {

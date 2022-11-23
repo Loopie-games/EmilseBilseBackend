@@ -16,9 +16,12 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="gameId">id for the game</param>
         /// <returns>the board if it exist, else null</returns>
         public Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId);
+        
+        BoardEntity FindByUserAndGameId2(string userId, string gameId);
 
         public Task<bool> IsBoardFilled(string boardId);
 
         public Task<List<BoardEntity>> FindTopRanking(string gameId, int limit);
+        
     }
 }

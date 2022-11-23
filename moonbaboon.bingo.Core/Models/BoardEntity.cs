@@ -16,7 +16,7 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = reader.GetString("Board_Id");
             GameId = reader.GetString("Board_GameId");
-            UserId = reader.GetString("Board_UserId");
+            UserId = reader.GetValue("Board_UserId").ToString();
             //TODO turnedtiles
         }
 
@@ -24,7 +24,7 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = reader.GetString(reader.GetOrdinal("Board_Id"));
             GameId = reader.GetString(reader.GetOrdinal("Board_GameId"));
-            UserId = reader.GetString(reader.GetOrdinal("Board_UserId"));
+            UserId = reader.GetValue(reader.GetOrdinal("Board_UserId")).ToString();
             //Todo turnedtiles
         }
 
