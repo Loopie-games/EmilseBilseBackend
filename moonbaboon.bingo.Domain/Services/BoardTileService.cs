@@ -46,10 +46,8 @@ namespace moonbaboon.bingo.Domain.Services
             if (game.State != State.Ongoing)
                 throw new Exception("You cannot turn tiles when game is " + Enum.GetName(game.State));
 
-            var bt = new BoardTileEntity(boardTile)
-            {
-                ActivatedBy = userId
-            };
+            var bt = new BoardTileEntity(boardTile);
+            bt.ActivatedBy = bt.ActivatedBy == userId ? null : userId;
             var tile = _boardTileRepository.Update(bt).Result;
             return tile;
         }

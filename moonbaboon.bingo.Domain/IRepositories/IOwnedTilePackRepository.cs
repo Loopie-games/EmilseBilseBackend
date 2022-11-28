@@ -6,7 +6,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
 {
     public interface IOwnedTilePackRepository
     {
-        public Task<List<OwnedTilePack>> GetOwnedTilePacks(string userId);
-        public Task<bool> ConfirmOwnership(OwnedTilePackEntity entity);
+        public List<OwnedTilePack> GetOwnedTilePacks(string userId);
+        public bool ConfirmOwnership(OwnedTilePackEntity entity);
     }
 }

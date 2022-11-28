@@ -62,7 +62,7 @@ namespace moonbaboon.bingo.Domain.Services
 
             //Check ownership over chosen packages
             if (tilePackIds.Any(tpId =>
-                !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
+                !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId))))
                 throw new Exception("You dont have ownership over one or more of the tilepacks");
             
             var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
@@ -164,7 +164,7 @@ namespace moonbaboon.bingo.Domain.Services
                 
                 //Check ownership over chosen packages
                 if (tilePackIds.Any(tpId =>
-                    !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId)).Result))
+                    !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(userId, tpId))))
                     throw new Exception("You dont have ownership over one or more of the tilepacks");
 
                 var packTiles = new List<PackTile>();
