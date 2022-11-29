@@ -68,5 +68,6 @@ namespace moonbaboon.bingo.Core.IServices
         public Game DenyWin(string gameId, string userId);
 
         string NewFreeForAll(string gameDtoLobbyId, string value, string[] gameDtoTpIds);
+        void SetName(string gameId, string userId, string? name);
     }
 }
