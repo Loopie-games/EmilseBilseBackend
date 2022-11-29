@@ -25,7 +25,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await con.OpenAsync();
 
             await using MySqlCommand command = new(@"
-SELECT  Game_Id,  Game_State, 
+SELECT  Game.*,
        HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
        Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
 FROM Game 
@@ -48,10 +48,11 @@ FROM Game
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "INSERT INTO Game(Game_Id, Game_HostId, Game_WinnerId, Game_State) VALUES (@Id,@HostId, @WinnerId, @State);",
+                        "INSERT INTO Game(Game_Id, Game_Name, Game_HostId, Game_WinnerId, Game_State) VALUES (@Id,@Name, @HostId, @WinnerId, @State);",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = toCreate.Id;
+                    command.Parameters.Add("@Name", MySqlDbType.VarChar).Value = toCreate.Name;
                     command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = toCreate.HostId;
                     command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = toCreate.WinnerId;
                     command.Parameters.Add("@State", MySqlDbType.Int32).Value = toCreate.State;
@@ -83,12 +84,13 @@ FROM Game
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "UPDATE Game SET `Game_HostId`= @HostId,`Game_WinnerId`= @WinnerId,`Game_State`=@GameState WHERE Game_Id = @Id",
+                        "UPDATE Game SET Game_Name = @Game_Name, `Game_HostId`= @HostId,`Game_WinnerId`= @WinnerId,`Game_State`=@GameState WHERE Game_Id = @Id",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
-                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = entity.Host;
-                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = entity.Winner;
+                    command.Parameters.Add("@Game_Name", MySqlDbType.VarChar).Value = entity.Name;
+                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = entity.Host.Id;
+                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = entity.Winner?.Id;
                     command.Parameters.Add("@GameState", MySqlDbType.Int32).Value = entity.State;
                 }
                 command.ExecuteNonQuery();
@@ -103,7 +105,7 @@ FROM Game
             using var command = con.CreateCommand();
 
             command.CommandText = @"
-SELECT  Game_Id,  Game_State, 
+SELECT  Game.*,
        HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
        Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
 FROM Game 

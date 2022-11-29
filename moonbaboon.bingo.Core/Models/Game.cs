@@ -8,6 +8,7 @@ namespace moonbaboon.bingo.Core.Models
         public Game(MySqlDataReader reader)
         {
             Id = reader.GetString("Game_Id");
+            Name = reader.GetValue("Game_Name").ToString();
             Host = new User(reader.GetString("Host_Id"), reader.GetString("Host_Username"),
                 reader.GetString("Host_Nickname"),
                 reader.GetValue("Host_ProfilePic").ToString());
@@ -21,6 +22,7 @@ namespace moonbaboon.bingo.Core.Models
         public Game(IDataRecord reader)
         {
             Id = reader.GetString(reader.GetOrdinal("Game_Id"));
+            Name = reader.GetValue(reader.GetOrdinal("Game_Name")).ToString();
             Host = new User(reader.GetString(reader.GetOrdinal("Host_Id")), reader.GetString(reader.GetOrdinal("Host_Username")),
                 reader.GetString(reader.GetOrdinal("Host_Nickname")),
                 reader.GetValue(reader.GetOrdinal("Host_ProfilePic")).ToString());
@@ -32,6 +34,7 @@ namespace moonbaboon.bingo.Core.Models
         }
 
         public string Id { get; set; }
+        public string? Name { get; set; }
         public User Host { get; set; }
         public User? Winner { get; set; }
 
@@ -40,15 +43,17 @@ namespace moonbaboon.bingo.Core.Models
 
     public class GameEntity
     {
-        public GameEntity(string? id, string hostId, string? winnerId, State state)
+        public GameEntity(string? id, string name, string hostId, string? winnerId, State state)
         {
             Id = id;
             HostId = hostId;
             WinnerId = winnerId;
             State = state;
+            Name = name;
         }
 
         public string? Id { get; set; }
+        public string? Name { get; set; }
         public string HostId { get; set; }
         public string? WinnerId { get; set; }
 

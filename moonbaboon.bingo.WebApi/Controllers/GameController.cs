@@ -87,16 +87,34 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [Authorize]
+        [HttpPut(nameof(SetName))]
+        public ActionResult<Game> SetName(GameDtos.GameNameChangeDto gN)
+        {
+            try
+            {
+                _gameService.SetName(gN.GameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gN.Name);
+                return CreatedAtAction(nameof(GetById), new {id = gN.GameId}, gN);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+        } 
+
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Game> Create(GameDtos.CreateGameDto gameDto)
+        public ActionResult<string> Create(GameDtos.CreateGameDto gameDto)
         {
             try
             {
                 var gameId = _gameService.NewOG(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                return _gameService.GetById(gameId);
+                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
+                
+                return gameId;
             }
             catch (Exception e)
             {
@@ -107,15 +125,15 @@ namespace moonbaboon.bingo.WebApi.Controllers
 
         [Authorize]
         [HttpPost("/FFA")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Game))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Game> CreateFreeForAll(GameDtos.CreateGameDto gameDto)
+        public ActionResult<string> CreateFreeForAll(GameDtos.CreateGameDto gameDto)
         {
             try
             {
                 var gameId = _gameService.NewFreeForAll(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                return _gameService.GetById(gameId);
+                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
+                return gameId;
             }
             catch (Exception e)
             {
@@ -133,6 +151,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var gameId = _gameService.NewShared(gameDto.LobbyId,HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
+                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
                 return Ok(gameId);
             }
             catch (Exception e)

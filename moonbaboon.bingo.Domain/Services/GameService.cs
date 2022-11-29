@@ -65,7 +65,7 @@ namespace moonbaboon.bingo.Domain.Services
                 !_ownedTilePackRepository.ConfirmOwnership(new OwnedTilePackEntity(null, userId, tpId))))
                 throw new Exception("You dont have ownership over one or more of the tilepacks");
             
-            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            var gameId = _gameRepository.Create(new GameEntity(null, null, userId, null, State.Ongoing)).Result;
             
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
@@ -109,6 +109,18 @@ namespace moonbaboon.bingo.Domain.Services
             return gameId;
         }
 
+        public void SetName(string gameId, string userId, string? name)
+        {
+            var game = _gameRepository.FindById(gameId).Result;
+            if (game.Host.Id != userId)
+            {
+                throw new Exception("You cant change the name of a game you dont host");
+            }
+
+            game.Name = name;
+            _gameRepository.Update(game).Wait();
+        }
+
 
         public string NewOG(string lobbyId, string userId, string[]? tilePackIds)
         {
@@ -116,7 +128,7 @@ namespace moonbaboon.bingo.Domain.Services
             var lobby = _lobbyRepository.FindById(lobbyId).Result;
             if (lobby.Host != userId) throw new Exception("only the host of the lobby can start the game");
 
-            var gameId = _gameRepository.Create(new GameEntity(null, userId, null, State.Ongoing)).Result;
+            var gameId = _gameRepository.Create(new GameEntity(null, null, userId, null, State.Ongoing)).Result;
             var players = _pendingPlayerRepository.GetByLobbyId(lobbyId).Result;
 
 
@@ -243,7 +255,7 @@ namespace moonbaboon.bingo.Domain.Services
             }
             
             var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
-            var gameId = _gameRepository.Create(new GameEntity(null, lobby.Host, null, State.Ongoing)).Result;
+            var gameId = _gameRepository.Create(new GameEntity(null, null,lobby.Host, null, State.Ongoing)).Result;
             var boardId = _boardRepository.Create(new BoardEntity(null, gameId, null)).Result;
 
             var boardTiles = new List<BoardTileEntity>();
