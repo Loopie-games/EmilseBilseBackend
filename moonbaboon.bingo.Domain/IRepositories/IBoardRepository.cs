@@ -9,15 +9,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         public Task<BoardEntity> FindById(string id);
         public Task<string> Create(BoardEntity entity);
 
-        /// <summary>
-        ///     Searches database for a board corresponding to the given game and player
-        /// </summary>
-        /// <param name="userId">userId for the player</param>
-        /// <param name="gameId">id for the game</param>
-        /// <returns>the board if it exist, else null</returns>
-        public Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId);
-        
-        BoardEntity FindByUserAndGameId2(string userId, string gameId);
+        BoardEntity FindByUserAndGameId(string userId, string gameId);
 
         public Task<bool> IsBoardFilled(string boardId);
 
