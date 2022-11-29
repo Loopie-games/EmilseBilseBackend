@@ -303,6 +303,9 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Game ConfirmWin(string gameId, string hostId)
         {
+            throw new NotImplementedException();
+            
+            /*
             var game = _gameRepository.FindById(gameId).Result;
             if (game.Host.Id != hostId) throw new Exception("Only the host can Confirm a win");
 
@@ -317,6 +320,7 @@ namespace moonbaboon.bingo.Domain.Services
 
             _gameRepository.Update(game).Wait();
             return _gameRepository.FindById(gameId).Result;
+            */
         }
 
         public Game PauseGame(Game game, string userId)

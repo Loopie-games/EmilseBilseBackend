@@ -51,11 +51,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 con.Open();
                 await using MySqlCommand command =
                     new(
-                        "INSERT INTO Board VALUES (@Id, @GameId, @UserId)",
+                        "INSERT INTO Board VALUES (@Id, @GameId)",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
-                    command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = entity.UserId;
                     command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = entity.GameId;
                 }
                 command.ExecuteNonQuery();
@@ -63,31 +62,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             return entity.Id;
         }
 
-        public async Task<BoardEntity?> FindByUserAndGameId(string userId, string gameId)
-        {
-            await using var con = _connection.Clone();
-            {
-                con.Open();
-
-                await using MySqlCommand command = new(
-                    @"SELECT * 
-                        FROM Board 
-                        WHERE Board_UserId = @UserId AND Board_GameId = @GameId",
-                    con);
-                {
-                    command.Parameters.Add("@UserId", MySqlDbType.VarChar).Value = userId;
-                    command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = gameId;
-                }
-
-                await using var reader = await command.ExecuteReaderAsync();
-                while (reader.Read()) return new BoardEntity(reader);
-            }
-
-            return null;
-            throw new Exception($"No {nameof(BoardEntity)} found");
-        }
-
-        public BoardEntity FindByUserAndGameId2(string userId, string gameId)
+        public BoardEntity FindByUserAndGameId(string userId, string gameId)
         {
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();

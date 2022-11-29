@@ -14,6 +14,6 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>Board for the player</returns>
         public BoardEntity? GetByUserAndGameId(string userId, string gameId);
 
-        public bool IsBoardFilled(string? boardId);
+        public bool IsBoardFilled(string boardId);
     }
 }
