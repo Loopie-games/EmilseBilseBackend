@@ -13,7 +13,7 @@ namespace moonbaboon.bingo.Domain.Services
             _boardRepository = boardRepository;
         }
 
-        public BoardEntity GetById(string id)
+        public Board GetById(string id)
         {
             return _boardRepository.FindById(id).Result;
         }

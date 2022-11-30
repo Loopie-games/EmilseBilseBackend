@@ -92,7 +92,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
         {
             try
             {
-                _gameService.SetName(gN.GameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gN.Name);
+                var game = new GameEntity(_gameService.GetById(gN.GameId));
+                game.Name = gN.Name;
+                _gameService.Update(game);
                 return CreatedAtAction(nameof(GetById), new {id = gN.GameId}, gN);
             }
             catch (Exception e)
@@ -112,7 +114,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var gameId = _gameService.NewOG(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
+                var game = new GameEntity(_gameService.GetById(gameId));
+                game.Name = gameDto.Name;
+                _gameService.Update(game);
                 
                 return gameId;
             }
@@ -132,7 +136,9 @@ namespace moonbaboon.bingo.WebApi.Controllers
             {
                 var gameId = _gameService.NewFreeForAll(gameDto.LobbyId,
                     HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
+                var game = new GameEntity(_gameService.GetById(gameId));
+                game.Name = gameDto.Name;
+                _gameService.Update(game);
                 return gameId;
             }
             catch (Exception e)
@@ -151,7 +157,10 @@ namespace moonbaboon.bingo.WebApi.Controllers
             try
             {
                 var gameId = _gameService.NewShared(gameDto.LobbyId,HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.TpIds);
-                _gameService.SetName(gameId, HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value, gameDto.Name);
+                var temp = _gameService.GetById(gameId);
+                var game = new GameEntity(temp);
+                game.Name = gameDto.Name;
+                _gameService.Update(game);
                 return Ok(gameId);
             }
             catch (Exception e)

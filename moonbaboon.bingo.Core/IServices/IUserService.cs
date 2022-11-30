@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.Core.IServices
@@ -13,5 +14,6 @@ namespace moonbaboon.bingo.Core.IServices
         public string GetSalt(string userId);
         public void UpdateUser(string id, User user);
         public string? GetUserIdByUsername(string username);
+        public List<User> GetBoardMembers(string boardId);
     }
 }

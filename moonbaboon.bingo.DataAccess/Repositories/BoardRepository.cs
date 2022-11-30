@@ -20,7 +20,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
         }
 
 
-        public async Task<BoardEntity> FindById(string id)
+        public async Task<Board> FindById(string id)
         {
             await using var con = _connection.Clone();
             {
@@ -30,14 +30,17 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                     new(
                         @"SELECT * 
                         FROM Board 
-                        WHERE Board_Id = @Id",
+JOIN Game G on G.Game_Id = Board.Board_GameId
+JOIN User U on U.User_id = G.Game_HostId
+                        WHERE Board_Id = @Id
+                       ",
                         con);
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = id;
                 }
 
                 await using var reader = await command.ExecuteReaderAsync();
-                while (reader.Read()) return new BoardEntity(reader);
+                while (reader.Read()) return new Board(reader);
             }
 
             throw new Exception($"No {nameof(BoardEntity)} with id: {id}");

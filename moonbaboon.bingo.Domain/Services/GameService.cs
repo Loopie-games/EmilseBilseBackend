@@ -77,7 +77,7 @@ namespace moonbaboon.bingo.Domain.Services
             var boardTilesPack = new List<BoardTileEntity>();
             foreach (var player in players)
             {
-                var board = _boardRepository.Create(new BoardEntity(null, gameId, userId)).Result;
+                var board = _boardRepository.Create(new BoardEntity(null, gameId)).Result;
                 var boardMemberId = _boardMemberRepository.Insert(new BoardMemberEntity(null, player.User.Id, board));
                 var boardTilesPlayer = new List<BoardTileEntity>();
                 var packTilesTemp = new List<PackTile>(packTiles);
@@ -109,16 +109,9 @@ namespace moonbaboon.bingo.Domain.Services
             return gameId;
         }
 
-        public void SetName(string gameId, string userId, string? name)
+        public void Update(GameEntity game)
         {
-            var game = _gameRepository.FindById(gameId).Result;
-            if (game.Host.Id != userId)
-            {
-                throw new Exception("You cant change the name of a game you dont host");
-            }
-
-            game.Name = name;
-            _gameRepository.Update(game).Wait();
+            _gameRepository.Update(game);
         }
 
 
@@ -138,7 +131,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     //Create board for player
-                    var board = _boardRepository.Create(new BoardEntity(null, gameId, null)).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId)).Result;
                     var boardMemberId = _boardMemberRepository.Insert(new BoardMemberEntity(null, player.User.Id, board));
 
                     //get tiles about other players
@@ -208,7 +201,7 @@ namespace moonbaboon.bingo.Domain.Services
                 foreach (var player in players)
                 {
                     List<PendingPlayer> usablePlayers = players.Where(pp => pp.Id != player.Id).ToList();
-                    var board = _boardRepository.Create(new BoardEntity(null, gameId, null)).Result;
+                    var board = _boardRepository.Create(new BoardEntity(null, gameId)).Result;
                     var boardTilesPlayer = new List<BoardTileEntity>();
                     var packTilesTemp = new List<PackTile>(packTiles);
                     var boardMemberId = _boardMemberRepository.Insert(new BoardMemberEntity(null, player.User.Id, board));
@@ -256,7 +249,7 @@ namespace moonbaboon.bingo.Domain.Services
             
             var players = _pendingPlayerRepository.GetByLobbyId(lobby.Id).Result;
             var gameId = _gameRepository.Create(new GameEntity(null, null,lobby.Host, null, State.Ongoing)).Result;
-            var boardId = _boardRepository.Create(new BoardEntity(null, gameId, null)).Result;
+            var boardId = _boardRepository.Create(new BoardEntity(null, gameId)).Result;
 
             var boardTiles = new List<BoardTileEntity>();
             
@@ -335,17 +328,11 @@ namespace moonbaboon.bingo.Domain.Services
             */
         }
 
-        public Game PauseGame(Game game, string userId)
+        public void PauseGame(GameEntity game)
         {
-            if (!_userRepository.GetPlayers(game.Id).Any(u => u.Id == userId))
-                throw new Exception("You cant pause games that you are not apart of");
-
-
             game.State = State.Paused;
-            game.Winner = _userRepository.ReadById(userId);
 
             _gameRepository.Update(game).Wait();
-            return _gameRepository.FindById(game.Id).Result;
         }
 
         public Game DenyWin(string gameId, string userId)
@@ -355,9 +342,9 @@ namespace moonbaboon.bingo.Domain.Services
             if (game.Host.Id != userId) throw new Exception("Only the host can deny wins");
 
             game.State = State.Ongoing;
-            game.Winner = null;
+            game.WinnerId = null;
 
-            _gameRepository.Update(game).Wait();
+            _gameRepository.Update(new GameEntity(game)).Wait();
             return _gameRepository.FindById(gameId).Result;
         }
 

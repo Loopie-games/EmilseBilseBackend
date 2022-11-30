@@ -38,6 +38,27 @@ JOIN Board ON BoardMember.BoardMember_BoardId = Board.Board_Id AND Board.Board_G
             return list;
         }
 
+        public List<User> GetBoardMembers(string boardId)
+        {
+            var list = new List<User>();
+            using var con = _connectionFactory.CreateConnection();
+            using var command = con.CreateCommand();
+            command.CommandText =
+                @"SELECT * FROM `User` 
+JOIN BoardMember On User_id = BoardMember.BoardMember_UserId And BoardMember_BoardId = @Board_Id ";
+            
+            var param = command.CreateParameter();
+            param.ParameterName = "@Board_Id";
+            param.Value = boardId;
+            command.Parameters.Add(param);
+            con.Open();
+            
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) list.Add(new User(reader));
+
+            return list;
+        }
+
         public List<User> Search(string searchString)
         {
             var list = new List<User>();

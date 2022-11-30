@@ -60,6 +60,10 @@ namespace moonbaboon.bingo.Domain.Services
         {
             return _userRepository.GetUserIdByUsername(username);
         }
-        
+
+        public List<User> GetBoardMembers(string boardId)
+        {
+            return _userRepository.GetBoardMembers(boardId);
+        }
     }
 }

@@ -9,34 +9,26 @@ namespace moonbaboon.bingo.Core.Models
         {
             Id = reader.GetString("Game_Id");
             Name = reader.GetValue("Game_Name").ToString();
-            Host = new User(reader.GetString("Host_Id"), reader.GetString("Host_Username"),
-                reader.GetString("Host_Nickname"),
-                reader.GetValue("Host_ProfilePic").ToString());
-            if (!string.IsNullOrEmpty(reader.GetValue("Winner_Id").ToString()))
-                Winner = new User(reader.GetString("Winner_Id"), reader.GetString("Winner_Username"),
-                    reader.GetString("Winner_Nickname"),
-                    reader.GetValue("Winner_ProfilePic").ToString());
+            Host = new User(reader);
             State = (State) reader.GetInt32("Game_State");
+            if (!string.IsNullOrEmpty(reader.GetValue("Board_Id").ToString()))
+                WinnerId = reader.GetString(reader.GetOrdinal("Board_Id"));
         }
 
-        public Game(IDataRecord reader)
+        public Game(IDataReader reader)
         {
             Id = reader.GetString(reader.GetOrdinal("Game_Id"));
             Name = reader.GetValue(reader.GetOrdinal("Game_Name")).ToString();
-            Host = new User(reader.GetString(reader.GetOrdinal("Host_Id")), reader.GetString(reader.GetOrdinal("Host_Username")),
-                reader.GetString(reader.GetOrdinal("Host_Nickname")),
-                reader.GetValue(reader.GetOrdinal("Host_ProfilePic")).ToString());
-            if (!string.IsNullOrEmpty(reader.GetValue(reader.GetOrdinal("Winner_Id")).ToString()))
-                Winner = new User(reader.GetString(reader.GetOrdinal("Winner_Id")), reader.GetString(reader.GetOrdinal("Winner_Username")),
-                    reader.GetString(reader.GetOrdinal("Winner_Nickname")),
-                    reader.GetValue(reader.GetOrdinal("Winner_ProfilePic")).ToString());
+            Host = new User(reader);
             State = (State) reader.GetInt32(reader.GetOrdinal("Game_State"));
+            if (!string.IsNullOrEmpty(reader.GetValue(reader.GetOrdinal("Board_Id")).ToString()))
+                WinnerId = reader.GetString(reader.GetOrdinal("Board_Id"));
         }
 
         public string Id { get; set; }
         public string? Name { get; set; }
         public User Host { get; set; }
-        public User? Winner { get; set; }
+        public string? WinnerId { get; set; }
 
         public State State { get; set; }
     }
@@ -50,6 +42,15 @@ namespace moonbaboon.bingo.Core.Models
             WinnerId = winnerId;
             State = state;
             Name = name;
+        }
+
+        public GameEntity(Game game)
+        {
+            Id = game.Id;
+            HostId = game.Host.Id;
+            WinnerId = game.WinnerId;
+            State = game.State;
+            Name = game.Name;
         }
 
         public string? Id { get; set; }
