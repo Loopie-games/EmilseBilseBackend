@@ -19,7 +19,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<BoardEntity?> GetById(string id)
+        public ActionResult<Board> GetById(string id)
         {
             return _boardService.GetById(id);
         }

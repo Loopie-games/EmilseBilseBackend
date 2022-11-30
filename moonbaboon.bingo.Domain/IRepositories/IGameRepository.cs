@@ -32,7 +32,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// </summary>
         /// <param name="game">game to update</param>
         /// <returns>the updated game</returns>
-        public Task Update(Game game);
+        public Task Update(GameEntity game);
 
         List<Game> GetByHostId(string userId);
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,13 +15,15 @@ namespace moonbaboon.bingo.WebApi.SignalR
         private readonly IBoardService _boardService;
         private readonly IBoardTileService _boardTileService;
         private readonly IGameService _gameService;
+        private readonly IUserService _userService;
 
         public GameHub(IGameService gameService,
-            IBoardService boardService, IBoardTileService boardTileService)
+            IBoardService boardService, IBoardTileService boardTileService, IUserService userService)
         {
             _gameService = gameService;
             _boardService = boardService;
             _boardTileService = boardTileService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -100,21 +103,21 @@ namespace moonbaboon.bingo.WebApi.SignalR
         /// <param name="boardId">Id of the board the user wants to claim is won</param>
         public async Task ClaimWin(string boardId)
         {
-            throw new NotImplementedException();
-            /*
             try
             {
-                var board = _boardService.GetById(boardId);
-                if (board.UserId != GetUserId(Context))
+                var boardMembers = _userService.GetBoardMembers(boardId);
+                if (boardMembers.All(u => u.Id != GetUserId(Context)))
                 {
-                    await SendError("This is not your board");
+                    await SendError("You are not a member of this board");
                 }
                 else
                 {
-                    var game = _gameService.GetById(board.GameId);
-                    game = _gameService.PauseGame(game, GetUserId(Context));
+                    var board = _boardService.GetById(boardId);
+                    var game = _gameService.GetById(board.Game.Id);
+                    game.WinnerId = board.Id;
+                    _gameService.PauseGame(new GameEntity(game));
                     await Clients.Group(game.Id).SendAsync("updateGame", game);
-                    await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", board);
+                    await Clients.User(game.Host.Id!).SendAsync("winnerClaimed", boardMembers);
                 }
             }
             catch (Exception e)
@@ -122,7 +125,6 @@ namespace moonbaboon.bingo.WebApi.SignalR
                 Console.WriteLine(e);
                 await SendError(e.Message);
             }
-            */
         }
 
         public async Task ConfirmWin(string gameId)

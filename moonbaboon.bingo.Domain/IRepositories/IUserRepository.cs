@@ -26,5 +26,7 @@ namespace moonbaboon.bingo.Domain.IRepositories
         /// <param name="gameId">Id specific for game</param>
         /// <returns>Player list</returns>
         public List<User> GetPlayers(string gameId);
+
+        List<User> GetBoardMembers(string boardId);
     }
 }

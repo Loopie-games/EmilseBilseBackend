@@ -55,9 +55,7 @@ namespace moonbaboon.bingo.Core.IServices
         ///     Pauses the game
         /// </summary>
         /// <param name="game">the game</param>
-        /// <param name="userId"> id of the player that wants to pause</param>
-        /// <returns>The paused game</returns>
-        public Game PauseGame(Game game, string userId);
+        public void PauseGame(GameEntity game);
 
         /// <summary>
         ///     The host can deny that a game is won
@@ -68,6 +66,6 @@ namespace moonbaboon.bingo.Core.IServices
         public Game DenyWin(string gameId, string userId);
 
         string NewFreeForAll(string gameDtoLobbyId, string value, string[] gameDtoTpIds);
-        void SetName(string gameId, string userId, string? name);
+        void Update(GameEntity game);
     }
 }

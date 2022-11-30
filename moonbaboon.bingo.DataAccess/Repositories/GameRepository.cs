@@ -25,12 +25,10 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await con.OpenAsync();
 
             await using MySqlCommand command = new(@"
-SELECT  Game.*,
-       HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
-       Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
+SELECT * 
 FROM Game 
-    JOIN User AS HOST ON HOST.User_id = Game.Game_HostId
-    LEFT OUTER JOIN User AS Winner ON Winner.User_id = Game.Game_WinnerId
+    JOIN User on User.User_id = Game.Game_HostId
+    LEFT OUTER JOIN Board B on Game.Game_WinnerId = B.Board_Id
     WHERE Game.Game_Id = @GameId",
                 con);
             command.Parameters.Add("@GameId", MySqlDbType.VarChar).Value = id;
@@ -77,7 +75,7 @@ FROM Game
             command.ExecuteNonQuery();
         }
 
-        public async Task Update(Game entity)
+        public async Task Update(GameEntity entity)
         {
             await using var con = _connection.Clone();
             {
@@ -89,8 +87,8 @@ FROM Game
                 {
                     command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = entity.Id;
                     command.Parameters.Add("@Game_Name", MySqlDbType.VarChar).Value = entity.Name;
-                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = entity.Host.Id;
-                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = entity.Winner?.Id;
+                    command.Parameters.Add("@HostId", MySqlDbType.VarChar).Value = entity.HostId;
+                    command.Parameters.Add("@WinnerId", MySqlDbType.VarChar).Value = entity.WinnerId;
                     command.Parameters.Add("@GameState", MySqlDbType.Int32).Value = entity.State;
                 }
                 command.ExecuteNonQuery();

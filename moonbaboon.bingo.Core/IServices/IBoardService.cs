@@ -4,7 +4,7 @@ namespace moonbaboon.bingo.Core.IServices
 {
     public interface IBoardService
     {
-        public BoardEntity GetById(string id);
+        public Board GetById(string id);
 
         /// <summary>
         ///     Get the board for a player of a game, if such exists
