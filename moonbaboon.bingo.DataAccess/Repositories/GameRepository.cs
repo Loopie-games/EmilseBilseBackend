@@ -63,11 +63,10 @@ FROM Game
         public async Task Delete(string gameId)
         {
             await using var con = _connection.Clone();
-
             con.Open();
 
             await using var command = new MySqlCommand(
-                @"DELETE FROM Game WHERE Game_Id = @Id; " +
+                @"DELETE FROM Game WHERE Game_Id = @Id; ",
                 con);
             {
                 command.Parameters.Add("@Id", MySqlDbType.VarChar).Value = gameId;
@@ -103,12 +102,10 @@ FROM Game
             using var command = con.CreateCommand();
 
             command.CommandText = @"
-SELECT  Game.*,
-       HOST.User_id AS Host_Id, HOST.User_Username AS Host_Username, HOST.User_Nickname AS Host_Nickname, HOST.User_ProfilePicURL AS Host_ProfilePic, 
-       Winner.User_id AS Winner_Id, Winner.User_Username AS Winner_Username, Winner.User_Nickname AS Winner_Nickname, Winner.User_ProfilePicURL AS Winner_ProfilePic 
+SELECT  *
 FROM Game 
     JOIN User AS HOST ON HOST.User_id = Game.Game_HostId
-    LEFT OUTER JOIN User AS Winner ON Winner.User_id = Game.Game_WinnerId 
+    LEFT OUTER JOIN Board B on Game.Game_WinnerId = B.Board_Id
 WHERE Game_HostId = @HostId";
 
             var parameter = command.CreateParameter();
