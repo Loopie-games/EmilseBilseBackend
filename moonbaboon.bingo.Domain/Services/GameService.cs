@@ -308,24 +308,23 @@ namespace moonbaboon.bingo.Domain.Services
 
         public Game ConfirmWin(string gameId, string hostId)
         {
-            throw new NotImplementedException();
-            
-            /*
             var game = _gameRepository.FindById(gameId).Result;
             if (game.Host.Id != hostId) throw new Exception("Only the host can Confirm a win");
 
             game.State = State.Ended;
             var topRanked = _boardRepository.FindTopRanking(gameId, 3).Result;
+            /*
             foreach (var board in topRanked)
             {
                 var user = _userRepository.ReadById(board.UserId);
                 var unused = _topPlayerRepository.Create(new TopPlayerEntity(null, gameId, user.Id, board.TurnedTiles))
                     .Result;
             }
-
-            _gameRepository.Update(game).Wait();
-            return _gameRepository.FindById(gameId).Result;
             */
+                Console.WriteLine("ended");
+            _gameRepository.Update(new GameEntity(game)).Wait();
+            return _gameRepository.FindById(gameId).Result;
+            
         }
 
         public void PauseGame(GameEntity game)
