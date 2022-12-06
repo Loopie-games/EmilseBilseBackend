@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using moonbaboon.bingo.Core.Models;
 using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
-using MySqlConnector;
 
 namespace moonbaboon.bingo.DataAccess.Repositories
 {
@@ -25,13 +24,13 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 @"SELECT * FROM `User` 
 JOIN BoardMember On User_id = BoardMember.BoardMember_UserId
 JOIN Board ON BoardMember.BoardMember_BoardId = Board.Board_Id AND Board.Board_GameId = @gameId ";
-            
+
             var param = command.CreateParameter();
             param.ParameterName = "@gameId";
             param.Value = gameId;
             command.Parameters.Add(param);
             con.Open();
-            
+
             using var reader = command.ExecuteReader();
             while (reader.Read()) list.Add(new User(reader));
 
@@ -46,13 +45,13 @@ JOIN Board ON BoardMember.BoardMember_BoardId = Board.Board_Id AND Board.Board_G
             command.CommandText =
                 @"SELECT * FROM `User` 
 JOIN BoardMember On User_id = BoardMember.BoardMember_UserId And BoardMember_BoardId = @Board_Id ";
-            
+
             var param = command.CreateParameter();
             param.ParameterName = "@Board_Id";
             param.Value = boardId;
             command.Parameters.Add(param);
             con.Open();
-            
+
             using var reader = command.ExecuteReader();
             while (reader.Read()) list.Add(new User(reader));
 
@@ -135,7 +134,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
             command.CommandText = @"Insert into User VALUES (@id, @username, @nickname, @profilePic)";
 
             con.Open();
-            
+
             var param1 = command.CreateParameter();
             param1.ParameterName = "@id";
             param1.Value = entity.Id;
@@ -155,7 +154,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
             param4.ParameterName = "@profilePic";
             param4.Value = entity.ProfilePicUrl;
             command.Parameters.Add(param4);
-            
+
             command.ExecuteNonQuery();
             return entity.Id;
         }
@@ -164,7 +163,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
         {
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();
-            command.CommandText = 
+            command.CommandText =
                 @"SELECT User_id FROM User WHERE Lower(User_Username) = @username";
 
             var paramUsername = command.CreateParameter();
@@ -183,7 +182,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
         {
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();
-            command.CommandText = 
+            command.CommandText =
                 @"SELECT Auth_Salt FROM Auth WHERE Auth_UserId = @UserId";
 
             var paramUsername = command.CreateParameter();

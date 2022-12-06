@@ -49,16 +49,12 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
             
         }
         
-        [Fact]
-        public void TestReadById()
+        [Theory]
+        [InlineData("81d7f01e-57c9-4151-b31b-86881192dbf0", "Demetra", "dpawlicki0", null)]
+        public void TestReadById(string id,string username,string nickname,string? profilePic)
         {
             //Arrange
-            var id = "81d7f01e-57c9-4151-b31b-86881192dbf0";
-            var username = "Demetra";
-            var nickname = "dpawlicki0";
-            string? profilePic = null;
-            var expected = new User("81d7f01e-57c9-4151-b31b-86881192dbf0","Demetra","dpawlicki0", null);
-
+            var expected = new User(id, username, nickname, profilePic);
             
             var readerMock = new Mock<IDataReader>();
             readerMock.SetupSequence(_ => _.Read())
@@ -76,17 +72,14 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
             readerMock.Setup(reader => reader.GetValue(3).ToString()).Returns(profilePic);
 
             
-            var commandMock = new Mock<IDbCommand>();
             
-
             var paramMock = new Mock<IDbDataParameter>();
             
+            var commandMock = new Mock<IDbCommand>();
             commandMock
                 .Setup(m => m.CreateParameter())
                 .Returns(paramMock.Object).Verifiable();
-
             commandMock.Setup(m => m.Parameters.Add(paramMock));
-
             commandMock.Setup(m => m.ExecuteReader()).Returns(readerMock.Object);
 
             var connectionMock = new Mock<IDbConnection>();
@@ -101,7 +94,6 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
 
             var repo = new UserRepository(connectionFactoryMock.Object);
             
-            
             //Act
             var result = repo.ReadById(id);
             
@@ -109,7 +101,50 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
             commandMock.Verify();
             Assert.Equal(expected, result, new UserComparer());
         }
+
+        [Theory]
+        [InlineData("81d7f01e-57c9-4151-b31b-86881192dbf0", "Demetra")]
+        public void Test_GetUserIdByUsername(string id, string username)
+        {
+            var expected = id;
+            //Arrange
+            var readerMock = new Mock<IDataReader>();
+            readerMock.SetupSequence(_ => _.Read())
+                .Returns(true)
+                .Returns(false);
+            readerMock.Setup(reader => reader.GetString(0)).Returns(id);
+
+            var paramMock = new Mock<IDbDataParameter>();
+            
+            var commandMock = new Mock<IDbCommand>();
+            commandMock
+                .Setup(m => m.CreateParameter())
+                .Returns(paramMock.Object).Verifiable();
+            commandMock.Setup(m => m.Parameters.Add(paramMock));
+            commandMock.Setup(m => m.ExecuteReader()).Returns(readerMock.Object);
+
+            var connectionMock = new Mock<IDbConnection>();
+            connectionMock
+                .Setup(m => m.CreateCommand())
+                .Returns(commandMock.Object);
+            
+            var connectionFactoryMock = new Mock<IDbConnectionFactory>();
+            connectionFactoryMock
+                .Setup(m => m.CreateConnection())
+                .Returns(connectionMock.Object);
+
+            var repo = new UserRepository(connectionFactoryMock.Object);
+            
+            //Act
+            var result = repo.GetUserIdByUsername(username);
+            
+            //Assert
+            commandMock.Verify();
+            Assert.Equal(expected, result);
+        }
     }
+    
+    
 
     public class UserComparer : IEqualityComparer<User>
     {
