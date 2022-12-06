@@ -22,7 +22,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using MySqlCommand command = new(
                 @"SELECT * FROM Admin
 JOIN User on User_id = Admin.Admin_UserId
-WHERE Admin_UserId = @UserId"
+WHERE Admin_UserId = @User_Id"
                 , con);
             {
                 command.Parameters.Add("@User_Id", MySqlDbType.VarChar).Value = userId;

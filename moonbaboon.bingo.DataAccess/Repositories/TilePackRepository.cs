@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using moonbaboon.bingo.Core.Models;
+using moonbaboon.bingo.Domain;
 using moonbaboon.bingo.Domain.IRepositories;
 using MySqlConnector;
 
@@ -10,10 +11,12 @@ namespace moonbaboon.bingo.DataAccess.Repositories
     public class TilePackRepository : ITilePackRepository
     {
         private readonly MySqlConnection _connection;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public TilePackRepository(MySqlConnection connection)
+        public TilePackRepository(MySqlConnection connection, IDbConnectionFactory connectionFactory)
         {
             _connection = connection;
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<List<TilePack>> FindAll()
@@ -41,7 +44,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 var ent = new TilePack(reader)
                 {
-                    IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(4)))
+                    IsOwned = Convert.ToBoolean(short.Parse(reader.GetString(reader.GetOrdinal("Owned"))))
                 };
                 list.Add(ent);
             }
@@ -110,10 +113,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
                 command.Parameters.Add("@PicUrl", MySqlDbType.VarChar).Value = entity.PicUrl;
                 command.Parameters.Add("@Stripe", MySqlDbType.VarChar).Value = entity.PriceStripe;
             }
-            await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync()) return uuid;
-
-            throw new Exception($"Error i creating {nameof(TilePack)} with name: " + entity.Name);
+            await command.ExecuteNonQueryAsync();
+            return uuid;
         }
 
         public async Task Update(TilePack entity)

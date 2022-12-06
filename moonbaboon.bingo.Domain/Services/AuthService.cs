@@ -25,6 +25,7 @@ namespace moonbaboon.bingo.Domain.Services
             SecurityTokenDescriptor tokenDescriptor;
             var admin = _adminRepository.FindByUserId(user.Id).Result;
             if (admin is not null)
+            {
                 tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new Claim[]
@@ -37,7 +38,9 @@ namespace moonbaboon.bingo.Domain.Services
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
                         SecurityAlgorithms.HmacSha256Signature)
                 };
+            }
             else
+            {
                 tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[]
@@ -49,6 +52,7 @@ namespace moonbaboon.bingo.Domain.Services
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(tokenKey),
                         SecurityAlgorithms.HmacSha256Signature)
                 };
+            }
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 

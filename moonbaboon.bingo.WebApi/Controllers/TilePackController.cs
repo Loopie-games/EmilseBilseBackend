@@ -98,7 +98,7 @@ namespace moonbaboon.bingo.WebApi.Controllers
             return _tilePackService.GetDefault();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(Admin))]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TilePackDto))]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
