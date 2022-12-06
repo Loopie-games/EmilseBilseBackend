@@ -5,24 +5,17 @@ namespace moonbaboon.bingo.Core.Models
 {
     public class UserTile : ByTile
     {
-        public UserTile(string id, Tile tile, User user, User addedByUser) : base(id, tile,
-            Models.TileType.UserTile)
-        {
-            Id = id;
-            Tile = tile;
-            User = user;
-            AddedByUser = addedByUser;
-        }
-
         public UserTile(MySqlDataReader reader) : base(reader.GetString("UserTile_Id"), new Tile(reader),
             Models.TileType.UserTile)
         {
             Id = reader.GetString("UserTile_Id");
             Tile = new Tile(reader);
             User = new User(reader.GetString("About_Id"), reader.GetString("About_Username"),
-                reader.GetString("About_Nickname"), reader.GetValue("About_ProfilePicUrl").ToString());
+                reader.GetString("About_Nickname"), reader.GetValue("About_ProfilePicUrl").ToString(), 
+                reader.GetString("About_BannerPicUrl"), reader.GetString("About_Email"), reader.GetString("About_Birthdate"));
             AddedByUser = new User(reader.GetString("AddedBy_Id"), reader.GetString("AddedBy_Username"),
-                reader.GetString("AddedBy_Nickname"), reader.GetValue("AddedBy_ProfilePicUrl").ToString());
+                reader.GetString("AddedBy_Nickname"), reader.GetValue("AddedBy_ProfilePicUrl").ToString(), 
+                reader.GetString("AddedBy_BannerPicUrl"), reader.GetString("AddedBy_Email"), reader.GetString("AddedBy_Birthdate"));
         }
 
         public User User { get; set; }
@@ -37,14 +30,6 @@ namespace moonbaboon.bingo.Core.Models
             TileId = tileId;
             AboutUserId = aboutUserId;
             AddedByUserId = addedByUserId;
-        }
-
-        public UserTileEntity(UserTile userTile)
-        {
-            Id = userTile.Id;
-            TileId = userTile.Tile.Id;
-            AboutUserId = userTile.User.Id;
-            AddedByUserId = userTile.AddedByUser.Id;
         }
 
         public string? Id { get; set; }

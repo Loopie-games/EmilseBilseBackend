@@ -22,20 +22,21 @@ namespace moonbaboon.bingo.WebApi.DTOs
             {
                 Username = username;
                 Nickname = nickname;
-                ProfilePicUrl = profilePicUrl;
                 Password = password;
                 Salt = salt;
             }
 
             public string Username { get; set; }
             public string Nickname { get; set; }
-            public string? ProfilePicUrl { get; set; }
+            
+            public string Email { get; set; }
+            public string Birthdate { get; set; }
             public string Password { get; set; }
             public string Salt { get; set; }
 
             public User ToUser()
             {
-                return new User(null, Username, Nickname, ProfilePicUrl);
+                return new User(null, Username, Nickname, null, null, Email, Birthdate);
             }
         }
     }

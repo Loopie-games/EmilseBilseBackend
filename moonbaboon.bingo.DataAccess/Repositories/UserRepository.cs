@@ -131,7 +131,7 @@ WHERE User_Username = @username AND  Auth_Password = @password";
 
             using var con = _connectionFactory.CreateConnection();
             using var command = con.CreateCommand();
-            command.CommandText = @"Insert into User VALUES (@id, @username, @nickname, @profilePic)";
+            command.CommandText = @"Insert into User VALUES (@id, @username, @nickname, @profilePic, @bannerPic, @email, @birthdate)";
 
             con.Open();
 
@@ -154,6 +154,21 @@ WHERE User_Username = @username AND  Auth_Password = @password";
             param4.ParameterName = "@profilePic";
             param4.Value = entity.ProfilePicUrl;
             command.Parameters.Add(param4);
+            
+            var param5 = command.CreateParameter();
+            param5.ParameterName = "@bannerPic";
+            param5.Value = entity.BannerPicUrl;
+            command.Parameters.Add(param5);
+            
+            var param6 = command.CreateParameter();
+            param6.ParameterName = "@email";
+            param6.Value = entity.Email;
+            command.Parameters.Add(param6);
+            
+            var param7 = command.CreateParameter();
+            param7.ParameterName = "@birthdate";
+            param7.Value = entity.BirthDate;
+            command.Parameters.Add(param7);
 
             command.ExecuteNonQuery();
             return entity.Id;
