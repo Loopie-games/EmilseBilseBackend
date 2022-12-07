@@ -1,10 +1,11 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace moonbaboon.bingo.Core.Models
 {
     public class User
     {
-        public User(string? id, string username, string nickname, string? profilePicUrl, string? bannerPicUrl, string email, string birthDate)
+        public User(string? id, string username, string nickname, string? profilePicUrl, string? bannerPicUrl, string email, DateTime birthDate)
         {
             Id = id;
             Username = username;
@@ -23,7 +24,7 @@ namespace moonbaboon.bingo.Core.Models
             ProfilePicUrl = reader.GetValue(reader.GetOrdinal("User_ProfilePicUrl")).ToString();
             BannerPicUrl = reader.GetValue(reader.GetOrdinal("User_BannerPicUrl")).ToString();
             Email = reader.GetString(reader.GetOrdinal("User_Email"));
-            BirthDate = reader.GetString(reader.GetOrdinal("User_Birthdate"));
+            BirthDate = reader.GetDateTime(reader.GetOrdinal("User_Birthdate"));
         }
         
         public User(IDataReader reader, int start)
@@ -32,7 +33,7 @@ namespace moonbaboon.bingo.Core.Models
             Username = reader.GetString(start+1);
             Nickname = reader.GetString(start+2);
             ProfilePicUrl = reader.GetValue(start+3).ToString();
-            BirthDate = reader.GetString(start + 4);
+            BirthDate = reader.GetDateTime(start + 4);
             Email = reader.GetString(start + 5);
             BannerPicUrl =  reader.GetValue(start+6).ToString();
         }
@@ -44,6 +45,6 @@ namespace moonbaboon.bingo.Core.Models
         
         public string? BannerPicUrl { get; set; }
         public string Email { get; set; }
-        public string BirthDate { get; set; }
+        public DateTime BirthDate { get; set; }
     }
 }
