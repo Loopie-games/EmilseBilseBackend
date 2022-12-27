@@ -26,8 +26,8 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             await using MySqlCommand command = new(
                 @"SELECT UserTile_ID, 
        Tile_Id, Tile_Action, 
-       About.User_id As About_Id, About.User_Username As About_Username, About.User_Nickname As About_Nickname, About.User_ProfilePicURL As About_ProfilePicUrl, 
-       AddedBy.User_id As AddedBy_Id, AddedBy.User_Username As AddedBy_Username, AddedBy.User_Nickname As AddedBy_Nickname, AddedBy.User_ProfilePicURL As AddedBy_ProfilePicUrl 
+       About.User_id As About_Id, About.User_Username As About_Username, About.User_Nickname As About_Nickname, About.User_ProfilePicURL As About_ProfilePicUrl, About.User_BannerPicURL As About_BannerPicUrl, About.User_Email As About_Email, About.User_Birthdate As About_Birthdate, 
+       AddedBy.User_id As AddedBy_Id, AddedBy.User_Username As AddedBy_Username, AddedBy.User_Nickname As AddedBy_Nickname, AddedBy.User_ProfilePicURL As AddedBy_ProfilePicUrl, AddedBy.User_BannerPicURL As AddedBy_BannerPicUrl, AddedBy.User_Email As AddedBy_Email, AddedBy.User_Birthdate As AddedBy_Birthdate 
 FROM UserTile 
     JOIN Tile ON UserTile.UserTile_TileId = Tile_Id
     JOIN User As About ON UserTile.UserTile_About_UserId= About.User_id

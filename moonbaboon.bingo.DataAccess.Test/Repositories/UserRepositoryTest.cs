@@ -39,7 +39,7 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
                 .Returns(connectionMock.Object);
 
             var repo = new UserRepository(connectionFactoryMock.Object);
-            var ent = new User("81d7f01e-57c9-4151-b31b-86881192dbf0","Demetra","dpawlicki0", null);
+            var ent = new User("81d7f01e-57c9-4151-b31b-86881192dbf0","Demetra","dpawlicki0", null, null, "nothing", Convert.ToDateTime("2000-12-12"));
             
             //Act
             repo.Insert(ent);
@@ -50,11 +50,11 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
         }
         
         [Theory]
-        [InlineData("81d7f01e-57c9-4151-b31b-86881192dbf0", "Demetra", "dpawlicki0", null)]
-        public void TestReadById(string id,string username,string nickname,string? profilePic)
+        [InlineData("81d7f01e-57c9-4151-b31b-86881192dbf0", "Demetra", "dpawlicki0", null, null, "nothing", "2000-12-12")]
+        public void TestReadById(string id,string username,string nickname,string? profilePic, string? bannerPic, string email, DateTime birthDate)
         {
             //Arrange
-            var expected = new User(id, username, nickname, profilePic);
+            var expected = new User(id, username, nickname, profilePic, bannerPic, email, birthDate);
             
             var readerMock = new Mock<IDataReader>();
             readerMock.SetupSequence(_ => _.Read())
@@ -65,14 +65,18 @@ namespace moonbaboon.bingo.DataAccess.Test.Repositories
             readerMock.Setup(reader => reader.GetOrdinal("User_Username")).Returns(1);
             readerMock.Setup(reader => reader.GetOrdinal("User_Nickname")).Returns(2);
             readerMock.Setup(reader => reader.GetOrdinal("User_ProfilePicUrl")).Returns(3);
+            readerMock.Setup(reader => reader.GetOrdinal("User_BannerPicUrl")).Returns(4);
+            readerMock.Setup(reader => reader.GetOrdinal("User_Email")).Returns(5);
+            readerMock.Setup(reader => reader.GetOrdinal("User_Birthdate")).Returns(6);
             
             readerMock.Setup(reader => reader.GetString(0)).Returns(id);
             readerMock.Setup(reader => reader.GetString(1)).Returns(username);
             readerMock.Setup(reader => reader.GetString(2)).Returns(nickname);
             readerMock.Setup(reader => reader.GetValue(3).ToString()).Returns(profilePic);
+            readerMock.Setup(reader => reader.GetValue(4).ToString()).Returns(bannerPic);
+            readerMock.Setup(reader => reader.GetString(5)).Returns(email);
+            readerMock.Setup(reader => reader.GetDateTime(6)).Returns(birthDate);
 
-            
-            
             var paramMock = new Mock<IDbDataParameter>();
             
             var commandMock = new Mock<IDbCommand>();

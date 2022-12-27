@@ -1,4 +1,5 @@
-﻿using moonbaboon.bingo.Core.Models;
+﻿using System;
+using moonbaboon.bingo.Core.Models;
 
 namespace moonbaboon.bingo.WebApi.DTOs
 {
@@ -18,24 +19,27 @@ namespace moonbaboon.bingo.WebApi.DTOs
 
         public class NewUserDto
         {
-            public NewUserDto(string username, string nickname, string? profilePicUrl, string password, string salt)
+            public NewUserDto(string username, string nickname, string email, DateTime birthdate, string password, string salt)
             {
                 Username = username;
                 Nickname = nickname;
-                ProfilePicUrl = profilePicUrl;
+                Email = email;
+                Birthdate = birthdate;
                 Password = password;
                 Salt = salt;
             }
 
             public string Username { get; set; }
             public string Nickname { get; set; }
-            public string? ProfilePicUrl { get; set; }
+            
+            public string Email { get; set; }
+            public DateTime Birthdate { get; set; }
             public string Password { get; set; }
             public string Salt { get; set; }
 
             public User ToUser()
             {
-                return new User(null, Username, Nickname, ProfilePicUrl);
+                return new User(null, Username, Nickname, null, null, Email, Birthdate);
             }
         }
     }
