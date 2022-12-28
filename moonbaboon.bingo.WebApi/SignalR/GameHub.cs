@@ -60,12 +60,13 @@ namespace moonbaboon.bingo.WebApi.SignalR
             try
             {
                 var board = _boardService.GetByUserAndGameId(GetUserId(Context), gameId);
-                if (board is null)
+                if (board?.Id is null)
                 {
                     await SendError("You are not a part of this game");
                 }
                 else
                 {
+                    await Groups.AddToGroupAsync(Context.ConnectionId, board.Id);
                     await Groups.AddToGroupAsync(Context.ConnectionId, gameId);
                     await Clients.Caller.SendAsync("gameConnected", board);
                 }
@@ -87,7 +88,7 @@ namespace moonbaboon.bingo.WebApi.SignalR
             {
                 var tile = _boardTileService.GetById(_boardTileService.TurnTile(boardTileId, GetUserId(Context)).Id);
                 var isWon = _boardService.IsBoardFilled(tile.BoardEntity.Id);
-                await Clients.Caller.SendAsync("tileTurned", tile);
+                await Clients.Group(tile.BoardEntity.Id).SendAsync("tileTurned", tile);
                 if (isWon) await Clients.Caller.SendAsync("boardFilled", tile.BoardEntity.Id);
             }
             catch (Exception e)
