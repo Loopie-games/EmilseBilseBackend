@@ -19,24 +19,27 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             _connection = connection.Clone();
         }
 
-        public async Task<List<BugReport>> FindAll(string adminId)
+        public List<BugReport> FindAll(string adminId)
         {
             var list = new List<BugReport>();
 
-            await using var con = _connection.Clone();
+            using var con = _connectionFactory.CreateConnection();
             {
-                con.Open();
-                await using MySqlCommand command = new(
-                    @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, User_Id, User_Username, User_Nickname, User_ProfilePicUrl, StarredBugReport_Id
+                
+                using var command = con.CreateCommand();
+                command.CommandText = @"SELECT BugReport.BugReport_Id, BugReport_Title, BugReport_Description, User.*, StarredBugReport_Id
                         FROM BugReport 
                             JOIN User on BugReport_ReportingUserId = User.User_id
-                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.StarredBugReport_BugReportId AND StarredBugReport_AdminId = @Admin_Id",
-                    _connection);
-                {
-                    command.Parameters.Add("@Admin_Id", MySqlDbType.VarChar).Value = adminId;
-                }
-                await using MySqlDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                            Left JOIN StarredBugReport ON BugReport.BugReport_Id = StarredBugReport.StarredBugReport_BugReportId AND StarredBugReport_AdminId = @Admin_Id";
+                var parameter = command.CreateParameter();
+                parameter.ParameterName = "@Admin_Id";
+                parameter.Value = adminId;
+                command.Parameters.Add(parameter);
+                
+                con.Open();
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
                     list.Add(new BugReport(reader));
             }
             return list;

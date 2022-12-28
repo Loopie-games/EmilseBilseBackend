@@ -30,6 +30,15 @@ namespace moonbaboon.bingo.Core.Models
             StarId = reader.GetValue("StarredBugReport_Id").ToString();
         }
 
+        public BugReport(IDataReader reader)
+        {
+            Id = reader.GetString(reader.GetOrdinal("BugReport_Id"));
+            Title = reader.GetString(reader.GetOrdinal("BugReport_Title"));
+            Description = reader.GetValue(reader.GetOrdinal("BugReport_Description")).ToString();
+            ReportingUser = new User(reader);
+            StarId = reader.GetValue(reader.GetOrdinal("StarredBugReport_Id")).ToString();
+        }
+
         public string? Id { get; set; }
         public User? ReportingUser { get; set; }
         public string Title { get; set; }

@@ -21,7 +21,7 @@ namespace moonbaboon.bingo.Domain.Services
         {
             var admin = _adminRepository.FindByUserId(userId).Result;
 
-            if (admin?.Id != null) return _bugReportRepository.FindAll(admin.Id).Result;
+            if (admin?.Id != null) return _bugReportRepository.FindAll(admin.Id);
             throw new Exception("U need to be an Admin to excess this");
         }
 
