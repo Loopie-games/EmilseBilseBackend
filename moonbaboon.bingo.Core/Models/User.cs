@@ -33,9 +33,9 @@ namespace moonbaboon.bingo.Core.Models
             Username = reader.GetString(start+1);
             Nickname = reader.GetString(start+2);
             ProfilePicUrl = reader.GetValue(start+3).ToString();
-            BirthDate = reader.GetDateTime(start + 4);
+            BannerPicUrl =  reader.GetValue(start+4).ToString();
             Email = reader.GetString(start + 5);
-            BannerPicUrl =  reader.GetValue(start+6).ToString();
+            BirthDate = reader.GetDateTime(start + 6);
         }
 
         public string? Id { get; set; }

@@ -16,9 +16,10 @@ namespace moonbaboon.bingo.Core.Models
                 ? null
                 : new User(reader, reader.GetOrdinal("AboutUser")+1);
             Position = reader.GetInt32("BoardTile_Position");
-            ActivatedBy  = string.IsNullOrEmpty(reader.GetValue(reader.GetOrdinal("ActivatedBy")).ToString())
+            ActivatedBy = string.IsNullOrEmpty(reader.GetValue(reader.GetOrdinal("ActivatedBy")).ToString())
                 ? null
                 : new User(reader, reader.GetOrdinal("ActivatedBy")+1);
+
         }
 
         public string? Id { get; set; }
