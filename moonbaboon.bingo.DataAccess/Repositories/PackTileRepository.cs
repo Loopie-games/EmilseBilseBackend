@@ -90,7 +90,7 @@ namespace moonbaboon.bingo.DataAccess.Repositories
             {
                 con.Open();
                 await using MySqlCommand command =
-                    new("DELETE FROM PackTile WHERE PackTile_Id = @packId;", con);
+                    new("DELETE FROM PackTile WHERE PackTile_PackId = @packId;", con);
                 {
                     command.Parameters.Add("@packId", MySqlDbType.VarChar).Value = id;
                 }
