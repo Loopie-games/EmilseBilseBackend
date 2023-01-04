@@ -19,15 +19,14 @@ namespace moonbaboon.bingo.Domain.Services
         private readonly IBoardMemberRepository _boardMemberRepository;
         private readonly Random _random = new();
         private readonly ITilePackRepository _tilePackRepository;
-        private readonly ITopPlayerRepository _topPlayerRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserTileRepository _userTileRepository;
 
         public GameService(IGameRepository gameRepository, IBoardRepository boardRepository,
             IPendingPlayerRepository pendingPlayerRepository, IUserTileRepository userTileRepository,
             IBoardTileRepository boardTileRepository, IPackTileRepository packTileRepository,
-            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository,
-            ITopPlayerRepository topPlayerRepository, IOwnedTilePackRepository ownedTilePackRepository, IBoardMemberRepository boardMemberRepository)
+            ITilePackRepository tilePackRepository, ILobbyRepository lobbyRepository, IUserRepository userRepository, 
+            IOwnedTilePackRepository ownedTilePackRepository, IBoardMemberRepository boardMemberRepository)
         {
             _gameRepository = gameRepository;
             _boardRepository = boardRepository;
@@ -38,7 +37,6 @@ namespace moonbaboon.bingo.Domain.Services
             _tilePackRepository = tilePackRepository;
             _lobbyRepository = lobbyRepository;
             _userRepository = userRepository;
-            _topPlayerRepository = topPlayerRepository;
             _ownedTilePackRepository = ownedTilePackRepository;
             _boardMemberRepository = boardMemberRepository;
         }

@@ -35,7 +35,7 @@ namespace moonbaboon.bingo.Core.Models
 
     public class GameEntity
     {
-        public GameEntity(string? id, string name, string hostId, string? winnerId, State state)
+        public GameEntity(string? id, string? name, string hostId, string? winnerId, State state)
         {
             Id = id;
             HostId = hostId;

@@ -12,17 +12,29 @@ namespace moonbaboon.bingo.Core.IServices
         /// <returns>Game with the given id</returns>
         public Game GetById(string id);
 
+        /// <summary>
+        /// Gets a list of a users saved games
+        /// </summary>
+        /// <param name="userId">Id for User</param>
+        /// <returns>List of saved Games</returns>
         public List<Game> GetSavedGames(string userId);
 
         /// <summary>
-        ///     Creates a new Game from lobby, if provided with id from matching lobby and host.
+        ///     Creates a new OG Game from lobby, if provided with id from matching lobby and host.
         /// </summary>
         /// <param name="lobbyId">Id specific for a lobby</param>
         /// <param name="hostId">UserId from the host of the lobby</param>
         /// <param name="tilePackIds"></param>
         /// <returns>the created game</returns>
         public string NewOG(string lobbyId, string hostId, string[]? tilePackIds);
-
+        
+        /// <summary>
+        ///     Creates a new Shared board Game from lobby, if provided with id from matching lobby and host.
+        /// </summary>
+        /// <param name="lobbyId"></param>
+        /// <param name="userId"></param>
+        /// <param name="tilePacks"></param>
+        /// <returns>the created game</returns>
         public string NewShared(string lobbyId, string userId, string[] tilePacks);
 
         /// <summary>
@@ -64,8 +76,18 @@ namespace moonbaboon.bingo.Core.IServices
         /// <param name="userId">id of the player that wants to deny</param>
         /// <returns>the game</returns>
         public Game DenyWin(string gameId, string userId);
-
+        /// <summary>
+        ///     Creates a new Free For All Game from lobby, if provided with id from matching lobby and host.
+        /// </summary>
+        /// <param name="gameDtoLobbyId"></param>
+        /// <param name="value"></param>
+        /// <param name="gameDtoTpIds"></param>
+        /// <returns>Id of created game</returns>
         string NewFreeForAll(string gameDtoLobbyId, string value, string[] gameDtoTpIds);
+        /// <summary>
+        /// Updates Game
+        /// </summary>
+        /// <param name="game"></param>
         void Update(GameEntity game);
     }
 }

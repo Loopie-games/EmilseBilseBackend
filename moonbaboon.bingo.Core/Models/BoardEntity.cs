@@ -31,12 +31,6 @@ namespace moonbaboon.bingo.Core.Models
 
     public class Board
     {
-        public Board(string? id, Game game)
-        {
-            Id = id;
-            Game = game;
-        }
-
         public Board(IDataReader reader)
         {
             Id = reader.GetString(reader.GetOrdinal("Board_Id"));
